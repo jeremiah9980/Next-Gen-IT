@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Next-Gen-IT Client Portal</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body { font-family: Arial; background:#0f172a; color:white; margin:0; }
+    .container { padding:20px; }
+    .card { background:#1e293b; padding:20px; border-radius:10px; margin-bottom:15px; }
+    button { padding:10px 15px; background:#22c55e; border:none; border-radius:5px; cursor:pointer; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Next-Gen-IT Client Portal</h1>
+    <div class="card">
+      <h3>Start New Audit</h3>
+      <input placeholder="Client Domain (example.com)" id="domain" />
+      <br><br>
+      <button onclick="startAudit()">Run Audit</button>
+    </div>
+
+    <div class="card">
+      <h3>Results</h3>
+      <pre id="results">No audit run yet</pre>
+    </div>
+  </div>
+
+<script>
+function startAudit(){
+  const domain = document.getElementById('domain').value;
+  document.getElementById('results').innerText = 'Running recon for ' + domain + '...';
+}
+</script>
+</body>
+</html>
