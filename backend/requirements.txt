@@ -1,0 +1,5 @@
+fastapi
+uvicorn[standard]
+dnspython
+python-multipart
+requests

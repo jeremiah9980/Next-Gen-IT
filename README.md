@@ -1,36 +1,67 @@
-# Next-Gen-IT
+# Next-Gen-IT Functional MVP
 
-Client-facing technical ecosystem audit platform and white-glove consulting framework for small service businesses, starting with real estate teams.
+This starter project makes the **Run Audit** flow functional for the public portal.
 
-## What this repo includes
+## What it does
 
-- Client portal starter
-- Audit workflow templates
-- Recon and reporting starter scripts
-- GitHub Actions workflows
-- Sample data models and configs
-- Docs for positioning, delivery, and operations
+- Starts an audit from a domain and optional company name
+- Runs a background DNS / mail security scan
+- Stores audit status and findings in SQLite
+- Shows findings in a client-facing portal
+- Accepts uploads as supporting evidence
+- Accepts consultant/client notes
+- Generates a Markdown report
+- Produces targeted follow-up questions for missing details
 
-## Vision
+## Project layout
 
-Next-Gen-IT helps clients understand their current technology stack, reduce duplicate spend, identify security risks, and produce a clean diagram and action plan that can be used for remediation.
+- `frontend/` static client portal
+- `backend/` FastAPI API + background audit worker
+- `scripts/` helper scripts
 
-## Initial structure
+## Quick start
 
-- `portal/` client portal frontend
-- `api/` backend starter and workflow endpoints
-- `workflows/` reusable audit workflows and templates
-- `scripts/` recon, normalization, and report helpers
-- `docs/` business, product, and delivery documentation
-- `.github/workflows/` CI and deployment automation
+### 1) Backend
 
-## Getting started
+```bash
+cd backend
+python -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+cp .env.example .env
+uvicorn app.main:app --reload --port 8000
+```
 
-1. Clone the repo
-2. Copy `.env.example` to `.env`
-3. Review `docs/architecture.md`
-4. Start with the client portal in `portal/`
+### 2) Frontend
+
+In another terminal:
+
+```bash
+cd frontend
+python -m http.server 4173
+```
+
+Open `http://localhost:4173`
+
+Set **API Base URL** to:
+
+```text
+http://localhost:8000
+```
+
+## API endpoints
+
+- `POST /api/audits`
+- `GET /api/audits`
+- `GET /api/audits/{audit_id}`
+- `GET /api/audits/{audit_id}/report`
+- `POST /api/audits/{audit_id}/evidence`
+- `POST /api/audits/{audit_id}/notes`
+- `GET /api/audits/{audit_id}/gaps`
 
 ## Notes
 
-This is the initial bootstrap commit created from ChatGPT tooling.
+- This MVP uses SQLite so it is easy to run locally.
+- The audit worker is thread-based for simplicity.
+- DKIM verification is intentionally conservative: if a selector is not known, the system reports that DKIM could not be publicly verified.
+- The generated report is Markdown. You can later swap that for PDF generation.
