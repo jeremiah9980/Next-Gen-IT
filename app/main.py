@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import shutil
+from datetime import datetime, timezone
 from pathlib import Path
 
 from fastapi import FastAPI, File, HTTPException, UploadFile
@@ -10,10 +11,12 @@ from fastapi.responses import FileResponse
 from .config import settings
 from .db import init_db
 from .repository import (
+    add_chat_message,
     add_evidence,
     add_note,
     create_audit,
     get_audit,
+    get_chat_history,
     get_evidence_items,
     get_findings,
     get_notes,
@@ -24,8 +27,12 @@ from .schemas import (
     AuditCreateResponse,
     AuditDetailResponse,
     AuditSummaryResponse,
+    ChatMessageModel,
+    ChatMessageRequest,
+    ChatResponse,
     NoteCreateRequest,
 )
+from .services.ai_agent import get_ai_response
 from .services.gap_assistant import generate_follow_up_questions
 from .services.worker import start_audit_thread
 
@@ -133,3 +140,48 @@ def download_report(audit_id: str) -> FileResponse:
         media_type="text/markdown",
         filename=f"{audit['domain']}-next-gen-it-report.md",
     )
+
+
+@app.post("/api/audits/{audit_id}/chat", response_model=ChatResponse)
+def chat_with_agent(audit_id: str, payload: ChatMessageRequest) -> ChatResponse:
+    audit = get_audit(audit_id)
+    if not audit:
+        raise HTTPException(status_code=404, detail="Audit not found.")
+    findings = get_findings(audit_id)
+    evidence_items = get_evidence_items(audit_id)
+    notes = get_notes(audit_id)
+    history = get_chat_history(audit_id)
+
+    add_chat_message(audit_id, "user", payload.message)
+
+    reply = get_ai_response(
+        message=payload.message,
+        history=history,
+        audit=audit,
+        findings=findings,
+        evidence_items=evidence_items,
+        notes=notes,
+    )
+
+    add_chat_message(audit_id, "assistant", reply)
+
+    # Build the updated history from the already-fetched state plus the two new messages,
+    # using the current UTC timestamp so the returned records are consistent with the DB.
+    now = datetime.now(timezone.utc).isoformat()
+    updated_history = history + [
+        {"role": "user", "content": payload.message, "created_at": now},
+        {"role": "assistant", "content": reply, "created_at": now},
+    ]
+    return ChatResponse(
+        reply=reply,
+        history=[ChatMessageModel(**msg) for msg in updated_history],
+    )
+
+
+@app.get("/api/audits/{audit_id}/chat", response_model=list[ChatMessageModel])
+def get_chat_endpoint(audit_id: str) -> list[ChatMessageModel]:
+    audit = get_audit(audit_id)
+    if not audit:
+        raise HTTPException(status_code=404, detail="Audit not found.")
+    history = get_chat_history(audit_id)
+    return [ChatMessageModel(**msg) for msg in history]

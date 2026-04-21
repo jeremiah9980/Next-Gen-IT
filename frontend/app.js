@@ -156,6 +156,10 @@ async function loadAudit(auditId) {
   renderEvidence(audit.evidence_items);
   renderNotes(audit.notes);
   await loadGapQuestions(audit.id);
+
+  // Enable the AI chat and load its history for this audit
+  setChatEnabled(true);
+  await loadChatHistory(audit.id);
 }
 
 async function runAudit() {
@@ -293,3 +297,150 @@ document.getElementById("refreshBtn").addEventListener("click", async () => {
 });
 document.getElementById("uploadBtn").addEventListener("click", uploadEvidence);
 document.getElementById("saveNoteBtn").addEventListener("click", saveNote);
+
+// ── Chat ────────────────────────────────────────────────────────────────────
+
+const chatMessages = document.getElementById("chatMessages");
+const chatInput = document.getElementById("chatInput");
+const chatSendBtn = document.getElementById("chatSendBtn");
+const chatStatusBadge = document.getElementById("chatStatusBadge");
+
+function setChatEnabled(enabled) {
+  chatSendBtn.disabled = !enabled;
+  chatInput.disabled = !enabled;
+}
+
+/**
+ * Escape plain text so it is safe to insert as innerHTML.
+ * Assigning to `textContent` causes the browser to HTML-encode all special
+ * characters; reading back via `innerHTML` returns the safely escaped string.
+ * This must be applied before any markdown-to-HTML transforms.
+ */
+function escapeHtml(text) {
+  const node = document.createElement("span");
+  node.textContent = text;
+  return node.innerHTML;
+}
+
+/**
+ * Convert a small subset of markdown to HTML.
+ * Input MUST be HTML-escaped before calling this function.
+ */
+function markdownToHtml(escapedText) {
+  return escapedText
+    .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
+    .replace(/`(.+?)`/g, "<code>$1</code>")
+    .replace(/\n/g, "<br>");
+}
+
+function appendChatBubble(role, content) {
+  const existing = chatMessages.querySelector(".chat-empty");
+  if (existing) existing.remove();
+
+  const bubble = document.createElement("div");
+  bubble.className = `chat-bubble chat-bubble-${role}`;
+
+  const roleEl = document.createElement("div");
+  roleEl.className = "chat-role";
+  roleEl.textContent = role === "user" ? "You" : "AI Advisor";
+
+  const contentEl = document.createElement("div");
+  contentEl.className = "chat-content";
+  // Escape first, then apply safe markdown transforms
+  contentEl.innerHTML = markdownToHtml(escapeHtml(content));
+
+  bubble.appendChild(roleEl);
+  bubble.appendChild(contentEl);
+  chatMessages.appendChild(bubble);
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+function renderChatHistory(history) {
+  chatMessages.innerHTML = "";
+  if (!history || history.length === 0) {
+    const empty = document.createElement("div");
+    empty.className = "chat-empty";
+    empty.textContent = "Run or load an audit, then ask me anything about your IT security.";
+    chatMessages.appendChild(empty);
+    return;
+  }
+  history.forEach(({ role, content }) => appendChatBubble(role, content));
+}
+
+async function loadChatHistory(auditId) {
+  try {
+    const response = await apiFetch(`/api/audits/${auditId}/chat`);
+    const history = await response.json();
+    renderChatHistory(history);
+  } catch (_) {
+    // Non-critical — chat history load failure doesn't break the page
+  }
+}
+
+async function sendChatMessage() {
+  const message = chatInput.value.trim();
+  if (!message) return;
+  if (!state.auditId) {
+    setFlash("Run or load an audit first.", true);
+    return;
+  }
+
+  chatInput.value = "";
+  appendChatBubble("user", message);
+
+  // Show typing indicator
+  const typingEl = document.createElement("div");
+  typingEl.className = "chat-bubble chat-bubble-assistant chat-typing";
+  const typingRole = document.createElement("div");
+  typingRole.className = "chat-role";
+  typingRole.textContent = "AI Advisor";
+  const typingContent = document.createElement("div");
+  typingContent.className = "chat-content";
+  ["", "", ""].forEach(() => {
+    const dot = document.createElement("span");
+    dot.className = "typing-dot";
+    typingContent.appendChild(dot);
+  });
+  typingEl.appendChild(typingRole);
+  typingEl.appendChild(typingContent);
+  chatMessages.appendChild(typingEl);
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+
+  chatSendBtn.disabled = true;
+  chatStatusBadge.textContent = "⏳ Thinking…";
+
+  try {
+    const response = await apiFetch(`/api/audits/${state.auditId}/chat`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message }),
+    });
+    const payload = await response.json();
+    typingEl.remove();
+    appendChatBubble("assistant", payload.reply);
+  } catch (error) {
+    typingEl.remove();
+    appendChatBubble("assistant", `Sorry, I couldn't reach the AI advisor: ${error.message}`);
+  } finally {
+    chatSendBtn.disabled = false;
+    chatStatusBadge.textContent = "⚡ Ready";
+  }
+}
+
+chatSendBtn.addEventListener("click", sendChatMessage);
+chatInput.addEventListener("keydown", (e) => {
+  if (e.key === "Enter" && !e.shiftKey) {
+    e.preventDefault();
+    sendChatMessage();
+  }
+});
+
+document.querySelectorAll(".chip").forEach((chip) => {
+  chip.addEventListener("click", () => {
+    const msg = chip.dataset.msg;
+    if (!msg) return;
+    chatInput.value = msg;
+    chatInput.focus();
+    sendChatMessage();
+  });
+});

@@ -88,3 +88,15 @@ def init_db() -> None:
             )
             '''
         )
+        cur.execute(
+            '''
+            CREATE TABLE IF NOT EXISTS chat_messages (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                audit_id TEXT NOT NULL,
+                role TEXT NOT NULL,
+                content TEXT NOT NULL,
+                created_at TEXT NOT NULL,
+                FOREIGN KEY(audit_id) REFERENCES audits(id)
+            )
+            '''
+        )
