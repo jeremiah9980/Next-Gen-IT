@@ -293,3 +293,120 @@ document.getElementById("refreshBtn").addEventListener("click", async () => {
 });
 document.getElementById("uploadBtn").addEventListener("click", uploadEvidence);
 document.getElementById("saveNoteBtn").addEventListener("click", saveNote);
+
+// ── Chat ────────────────────────────────────────────────────────────────────
+
+const chatMessages = document.getElementById("chatMessages");
+const chatInput = document.getElementById("chatInput");
+const chatSendBtn = document.getElementById("chatSendBtn");
+const chatStatusBadge = document.getElementById("chatStatusBadge");
+
+function setChatEnabled(enabled) {
+  chatSendBtn.disabled = !enabled;
+  chatInput.disabled = !enabled;
+}
+
+function appendChatBubble(role, content) {
+  const existing = chatMessages.querySelector(".chat-empty");
+  if (existing) existing.remove();
+
+  const bubble = document.createElement("div");
+  bubble.className = `chat-bubble chat-bubble-${role}`;
+
+  // Convert simple markdown-like syntax to HTML
+  const html = content
+    .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
+    .replace(/`(.+?)`/g, "<code>$1</code>")
+    .replace(/\n/g, "<br>");
+
+  bubble.innerHTML = `
+    <div class="chat-role">${role === "user" ? "You" : "AI Advisor"}</div>
+    <div class="chat-content">${html}</div>
+  `;
+  chatMessages.appendChild(bubble);
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+function renderChatHistory(history) {
+  chatMessages.innerHTML = "";
+  if (!history || history.length === 0) {
+    chatMessages.innerHTML = '<div class="chat-empty">Run or load an audit, then ask me anything about your IT security.</div>';
+    return;
+  }
+  history.forEach(({ role, content }) => appendChatBubble(role, content));
+}
+
+async function loadChatHistory(auditId) {
+  try {
+    const response = await apiFetch(`/api/audits/${auditId}/chat`);
+    const history = await response.json();
+    renderChatHistory(history);
+  } catch (_) {
+    // Non-critical — chat history load failure doesn't break the page
+  }
+}
+
+async function sendChatMessage() {
+  const message = chatInput.value.trim();
+  if (!message) return;
+  if (!state.auditId) {
+    setFlash("Run or load an audit first.", true);
+    return;
+  }
+
+  chatInput.value = "";
+  appendChatBubble("user", message);
+
+  // Show typing indicator
+  const typingEl = document.createElement("div");
+  typingEl.className = "chat-bubble chat-bubble-assistant chat-typing";
+  typingEl.innerHTML = '<div class="chat-role">AI Advisor</div><div class="chat-content"><span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span></div>';
+  chatMessages.appendChild(typingEl);
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+
+  chatSendBtn.disabled = true;
+  chatStatusBadge.textContent = "⏳ Thinking…";
+
+  try {
+    const response = await apiFetch(`/api/audits/${state.auditId}/chat`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message }),
+    });
+    const payload = await response.json();
+    typingEl.remove();
+    appendChatBubble("assistant", payload.reply);
+  } catch (error) {
+    typingEl.remove();
+    appendChatBubble("assistant", `Sorry, I couldn't reach the AI advisor: ${error.message}`);
+  } finally {
+    chatSendBtn.disabled = false;
+    chatStatusBadge.textContent = "⚡ Ready";
+  }
+}
+
+chatSendBtn.addEventListener("click", sendChatMessage);
+chatInput.addEventListener("keydown", (e) => {
+  if (e.key === "Enter" && !e.shiftKey) {
+    e.preventDefault();
+    sendChatMessage();
+  }
+});
+
+document.querySelectorAll(".chip").forEach((chip) => {
+  chip.addEventListener("click", () => {
+    const msg = chip.dataset.msg;
+    if (!msg) return;
+    chatInput.value = msg;
+    chatInput.focus();
+    sendChatMessage();
+  });
+});
+
+// Patch loadAudit to also load chat history and enable chat
+const _originalLoadAudit = loadAudit;
+loadAudit = async function (auditId) {
+  await _originalLoadAudit(auditId);
+  setChatEnabled(true);
+  await loadChatHistory(auditId);
+};
