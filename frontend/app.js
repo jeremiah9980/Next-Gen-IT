@@ -312,6 +312,8 @@ function setChatEnabled(enabled) {
 
 /**
  * Escape plain text so it is safe to insert as innerHTML.
+ * Assigning to `textContent` causes the browser to HTML-encode all special
+ * characters; reading back via `innerHTML` returns the safely escaped string.
  * This must be applied before any markdown-to-HTML transforms.
  */
 function escapeHtml(text) {

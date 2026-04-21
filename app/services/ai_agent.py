@@ -299,6 +299,8 @@ def get_ai_response(
         )
         return response.choices[0].message.content or "Sorry, I could not generate a response."
     except Exception:
+        # Silently fall back to rule-based responses so the UI remains functional
+        # even when the OpenAI API is unavailable or returns an unexpected error.
         return _fallback_response(message, audit, findings)
 
 
@@ -343,4 +345,5 @@ def generate_ai_follow_up_questions(
         questions = [q.strip() for q in content.strip().splitlines() if q.strip()]
         return questions[:5]
     except Exception:
+        # Silently return empty list so the rule-based fallback in gap_assistant takes over.
         return []

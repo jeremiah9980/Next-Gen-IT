@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import shutil
+from datetime import datetime, timezone
 from pathlib import Path
 
 from fastapi import FastAPI, File, HTTPException, UploadFile
@@ -164,10 +165,12 @@ def chat_with_agent(audit_id: str, payload: ChatMessageRequest) -> ChatResponse:
 
     add_chat_message(audit_id, "assistant", reply)
 
-    # Build the updated history from the already-fetched state plus the two new messages
+    # Build the updated history from the already-fetched state plus the two new messages,
+    # using the current UTC timestamp so the returned records are consistent with the DB.
+    now = datetime.now(timezone.utc).isoformat()
     updated_history = history + [
-        {"role": "user", "content": payload.message, "created_at": ""},
-        {"role": "assistant", "content": reply, "created_at": ""},
+        {"role": "user", "content": payload.message, "created_at": now},
+        {"role": "assistant", "content": reply, "created_at": now},
     ]
     return ChatResponse(
         reply=reply,
