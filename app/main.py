@@ -164,7 +164,11 @@ def chat_with_agent(audit_id: str, payload: ChatMessageRequest) -> ChatResponse:
 
     add_chat_message(audit_id, "assistant", reply)
 
-    updated_history = get_chat_history(audit_id)
+    # Build the updated history from the already-fetched state plus the two new messages
+    updated_history = history + [
+        {"role": "user", "content": payload.message, "created_at": ""},
+        {"role": "assistant", "content": reply, "created_at": ""},
+    ]
     return ChatResponse(
         reply=reply,
         history=[ChatMessageModel(**msg) for msg in updated_history],

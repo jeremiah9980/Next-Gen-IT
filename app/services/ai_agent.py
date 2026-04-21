@@ -13,6 +13,16 @@ except ImportError:
     pass
 
 
+def _score_label(score: int) -> str:
+    if score >= 80:
+        return "excellent"
+    if score >= 60:
+        return "good"
+    if score >= 40:
+        return "moderate"
+    return "needs immediate attention"
+
+
 _SYSTEM_PROMPT_TEMPLATE = """You are a senior IT advisor for Next-Gen-IT, a managed IT services consultancy. \
 You are reviewing a completed IT security audit and helping the client understand results and take action.
 
@@ -96,7 +106,7 @@ def _fallback_response(
     score = audit.get("score", 0)
 
     if any(kw in msg for kw in ["score", "rating", "grade", "how secure", "security"]):
-        label = "excellent" if score >= 80 else "good" if score >= 60 else "moderate" if score >= 40 else "needs immediate attention"
+        label = _score_label(score)
         return (
             f"**Security Score: {score}/100 ({label})**\n\n"
             f"The score for **{domain}** is calculated by deducting points for each finding:\n"
@@ -276,6 +286,7 @@ def get_ai_response(
         system_prompt = _build_system_prompt(audit, findings, evidence_items, notes)
 
         messages: list[dict[str, str]] = [{"role": "system", "content": system_prompt}]
+        # Keep the last 10 messages (5 user + 5 assistant turns) to stay within token budget
         for msg in history[-10:]:
             messages.append({"role": msg["role"], "content": msg["content"]})
         messages.append({"role": "user", "content": message})

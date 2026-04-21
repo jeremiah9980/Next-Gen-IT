@@ -156,6 +156,10 @@ async function loadAudit(auditId) {
   renderEvidence(audit.evidence_items);
   renderNotes(audit.notes);
   await loadGapQuestions(audit.id);
+
+  // Enable the AI chat and load its history for this audit
+  setChatEnabled(true);
+  await loadChatHistory(audit.id);
 }
 
 async function runAudit() {
@@ -306,6 +310,27 @@ function setChatEnabled(enabled) {
   chatInput.disabled = !enabled;
 }
 
+/**
+ * Escape plain text so it is safe to insert as innerHTML.
+ * This must be applied before any markdown-to-HTML transforms.
+ */
+function escapeHtml(text) {
+  const node = document.createElement("span");
+  node.textContent = text;
+  return node.innerHTML;
+}
+
+/**
+ * Convert a small subset of markdown to HTML.
+ * Input MUST be HTML-escaped before calling this function.
+ */
+function markdownToHtml(escapedText) {
+  return escapedText
+    .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
+    .replace(/`(.+?)`/g, "<code>$1</code>")
+    .replace(/\n/g, "<br>");
+}
+
 function appendChatBubble(role, content) {
   const existing = chatMessages.querySelector(".chat-empty");
   if (existing) existing.remove();
@@ -313,16 +338,17 @@ function appendChatBubble(role, content) {
   const bubble = document.createElement("div");
   bubble.className = `chat-bubble chat-bubble-${role}`;
 
-  // Convert simple markdown-like syntax to HTML
-  const html = content
-    .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
-    .replace(/`(.+?)`/g, "<code>$1</code>")
-    .replace(/\n/g, "<br>");
+  const roleEl = document.createElement("div");
+  roleEl.className = "chat-role";
+  roleEl.textContent = role === "user" ? "You" : "AI Advisor";
 
-  bubble.innerHTML = `
-    <div class="chat-role">${role === "user" ? "You" : "AI Advisor"}</div>
-    <div class="chat-content">${html}</div>
-  `;
+  const contentEl = document.createElement("div");
+  contentEl.className = "chat-content";
+  // Escape first, then apply safe markdown transforms
+  contentEl.innerHTML = markdownToHtml(escapeHtml(content));
+
+  bubble.appendChild(roleEl);
+  bubble.appendChild(contentEl);
   chatMessages.appendChild(bubble);
   chatMessages.scrollTop = chatMessages.scrollHeight;
 }
@@ -330,7 +356,10 @@ function appendChatBubble(role, content) {
 function renderChatHistory(history) {
   chatMessages.innerHTML = "";
   if (!history || history.length === 0) {
-    chatMessages.innerHTML = '<div class="chat-empty">Run or load an audit, then ask me anything about your IT security.</div>';
+    const empty = document.createElement("div");
+    empty.className = "chat-empty";
+    empty.textContent = "Run or load an audit, then ask me anything about your IT security.";
+    chatMessages.appendChild(empty);
     return;
   }
   history.forEach(({ role, content }) => appendChatBubble(role, content));
@@ -360,7 +389,18 @@ async function sendChatMessage() {
   // Show typing indicator
   const typingEl = document.createElement("div");
   typingEl.className = "chat-bubble chat-bubble-assistant chat-typing";
-  typingEl.innerHTML = '<div class="chat-role">AI Advisor</div><div class="chat-content"><span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span></div>';
+  const typingRole = document.createElement("div");
+  typingRole.className = "chat-role";
+  typingRole.textContent = "AI Advisor";
+  const typingContent = document.createElement("div");
+  typingContent.className = "chat-content";
+  ["", "", ""].forEach(() => {
+    const dot = document.createElement("span");
+    dot.className = "typing-dot";
+    typingContent.appendChild(dot);
+  });
+  typingEl.appendChild(typingRole);
+  typingEl.appendChild(typingContent);
   chatMessages.appendChild(typingEl);
   chatMessages.scrollTop = chatMessages.scrollHeight;
 
@@ -402,11 +442,3 @@ document.querySelectorAll(".chip").forEach((chip) => {
     sendChatMessage();
   });
 });
-
-// Patch loadAudit to also load chat history and enable chat
-const _originalLoadAudit = loadAudit;
-loadAudit = async function (auditId) {
-  await _originalLoadAudit(auditId);
-  setChatEnabled(true);
-  await loadChatHistory(auditId);
-};
