@@ -670,11 +670,11 @@ async function pollWorkflow(){
         // Mark all steps done
         for(let i=0;i<STEPS;i++) markDone(i);
         document.getElementById('progressBar').style.width='100%';
-        showMsg('Audit complete — report published!', 'success');
+        showMsg('Audit complete — waiting for publish…', 'success');
         document.getElementById('runBtn').disabled = false;
-        // Load manifest to get report URL
-        await showReportBanner(auditDomain);
-        loadReports();
+        // Both run in parallel: banner retries until entry found, grid retries until new domain appears
+        showReportBanner(auditDomain);
+        loadReports(auditDomain);
       } else {
         markError(currentStep>=0?currentStep:5);
         showMsg(`Workflow ${conclusion} — check GitHub Actions for details`, 'error');
@@ -690,59 +690,95 @@ async function pollWorkflow(){
   } catch(e){ /* silent fail, keep polling */ }
 }
 
-async function showReportBanner(domain){
-  // Wait briefly for commit to propagate
-  await new Promise(r=>setTimeout(r,4000));
-  try{
-    const url = `https://raw.githubusercontent.com/${REPO}/main/reports/manifest.json?t=${Date.now()}`;
-    const res = await fetch(url);
-    const data = await res.json();
-    const entry = (data.reports||[]).find(r=>r.domain===domain);
-    if(entry){
-      document.getElementById('reportDomain').textContent = `${domain} — ${entry.scan_date}`;
-      document.getElementById('reportLink').href = entry.url;
-      document.getElementById('reportBanner').classList.add('visible');
-    }
-  } catch(e){ /* manifest not ready yet */ }
+// ── MANIFEST FETCH (cache-busted) ─────────────────────────
+async function fetchManifest(){
+  // Try raw.githubusercontent first (most up-to-date), fall back to Pages URL
+  const urls = [
+    `https://raw.githubusercontent.com/${REPO}/main/reports/manifest.json?t=${Date.now()}`,
+    `https://${OWNER}.github.io/Next-Gen-IT/reports/manifest.json?t=${Date.now()}`
+  ];
+  for(const url of urls){
+    try{
+      const res = await fetch(url, {cache:'no-store'});
+      if(res.ok) return await res.json();
+    } catch(e){ /* try next */ }
+  }
+  return null;
 }
 
-// ── LOAD REPORTS ──────────────────────────────────────────
-async function loadReports(){
-  const grid = document.getElementById('reportsGrid');
+// ── BANNER: retry every 8s for up to 90s until new entry appears ──
+async function showReportBanner(domain){
+  const MAX_ATTEMPTS = 12;
+  const INTERVAL_MS  = 8000;
+
+  for(let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++){
+    await new Promise(r => setTimeout(r, attempt === 1 ? 5000 : INTERVAL_MS));
+    showMsg(`Waiting for report to publish… (${attempt}/${MAX_ATTEMPTS})`, '');
+    try{
+      const data = await fetchManifest();
+      if(!data) continue;
+      const entry = (data.reports||[]).find(r => r.domain === domain);
+      if(entry){
+        document.getElementById('reportDomain').textContent = `${domain} — ${entry.scan_date}`;
+        document.getElementById('reportLink').href = entry.url;
+        document.getElementById('reportBanner').classList.add('visible');
+        showMsg('Report published!', 'success');
+        return; // found — stop retrying
+      }
+    } catch(e){ /* keep trying */ }
+  }
+  // Timeout — show a fallback message but don't crash
+  showMsg('Report published — refresh the page if the card does not appear below.', 'success');
+}
+
+// ── LOAD REPORTS: retry loop so stale cache doesn't hide new entry ─
+let _knownCount = 0;
+async function loadReports(expectNewDomain){
+  const grid  = document.getElementById('reportsGrid');
   const count = document.getElementById('reportCount');
-  try{
-    const url = `https://raw.githubusercontent.com/${REPO}/main/reports/manifest.json?t=${Date.now()}`;
-    const res = await fetch(url);
-    if(!res.ok) throw new Error('manifest not found');
-    const data = await res.json();
-    const reports = data.reports || [];
 
-    count.textContent = reports.length + ' report' + (reports.length!==1?'s':'');
+  const MAX = expectNewDomain ? 10 : 1;
+  for(let attempt = 0; attempt < MAX; attempt++){
+    if(attempt > 0) await new Promise(r => setTimeout(r, 8000));
+    try{
+      const data = await fetchManifest();
+      if(!data) continue;
+      const reports = data.reports || [];
 
-    if(!reports.length){
-      grid.innerHTML = `<div class="empty-state"><div class="empty-state-icon">📋</div>No reports yet — run your first audit above.</div>`;
-      return;
-    }
+      // If we're waiting for a specific new domain, keep retrying until it appears
+      if(expectNewDomain && !reports.find(r => r.domain === expectNewDomain) && attempt < MAX-1) continue;
 
-    grid.innerHTML = reports.map(r => {
-      const grade = r.grade || '?';
-      const score = r.total_score || 0;
-      const pct = Math.round((score/30)*100);
-      const fillColor = score>=25?'#00e5a0':score>=20?'#00b4ff':score>=14?'#ffb547':'#ff4d6a';
-      return `
-      <a class="report-card" href="${r.url}" target="_blank">
-        <div class="card-top">
-          <div class="card-domain">${r.domain}</div>
-          <div class="grade-badge grade-${grade}">${grade}</div>
-        </div>
-        <div class="card-score"><strong>${score}</strong>/30 points</div>
-        <div class="card-date">${r.scan_date}</div>
-        <div class="score-mini-bar">
-          <div class="score-mini-fill" style="width:${pct}%;background:${fillColor}"></div>
-        </div>
-      </a>`;
-    }).join('');
-  } catch(e){
+      _knownCount = reports.length;
+      count.textContent = reports.length + ' report' + (reports.length !== 1 ? 's' : '');
+
+      if(!reports.length){
+        grid.innerHTML = `<div class="empty-state"><div class="empty-state-icon">📋</div>No reports yet — run your first audit above.</div>`;
+        return;
+      }
+
+      grid.innerHTML = reports.map(r => {
+        const grade = r.grade || '?';
+        const score = r.total_score || 0;
+        const pct   = Math.round((score / 30) * 100);
+        const fill  = score>=25?'#00e5a0':score>=20?'#00b4ff':score>=14?'#ffb547':'#ff4d6a';
+        return `
+        <a class="report-card" href="${r.url}" target="_blank">
+          <div class="card-top">
+            <div class="card-domain">${r.domain}</div>
+            <div class="grade-badge grade-${grade}">${grade}</div>
+          </div>
+          <div class="card-score"><strong>${score}</strong>/30 points</div>
+          <div class="card-date">${r.scan_date}</div>
+          <div class="score-mini-bar">
+            <div class="score-mini-fill" style="width:${pct}%;background:${fill}"></div>
+          </div>
+        </a>`;
+      }).join('');
+      return; // success
+    } catch(e){ /* keep retrying */ }
+  }
+  // Final fallback — only clear grid if it's genuinely empty
+  if(_knownCount === 0){
     count.textContent = '0 reports';
     grid.innerHTML = `<div class="empty-state"><div class="empty-state-icon">📋</div>No reports published yet — run your first audit above.</div>`;
   }
@@ -750,15 +786,12 @@ async function loadReports(){
 
 // ── INIT ──────────────────────────────────────────────────
 loadReports();
-setInterval(loadReports, 30000); // refresh every 30s
+setInterval(loadReports, 30000); // background refresh every 30s
 
 // Show config prompt if no token
 if(!getToken()){
-  setTimeout(()=>{
-    document.getElementById('statusMsg') && (document.getElementById('statusMsg').textContent='');
-    const hint = document.querySelector('.input-hint');
-    if(hint) hint.textContent = '⚠ Configure your GitHub token first (⚙ Config above)';
-  }, 800);
+  const hint = document.querySelector('.input-hint');
+  if(hint) hint.textContent = '⚠ Configure your GitHub token first — click ⚙ Config above';
 }
 </script>
 </body>
