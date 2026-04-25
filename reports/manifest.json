@@ -1,6 +1,15 @@
 {
   "reports": [
     {
+      "domain": "teifkerealestate.com",
+      "filename": "teifkerealestate-com-20260425-213512.html",
+      "scan_date": "2026-04-25 21:35 UTC",
+      "timestamp": "20260425-213512",
+      "grade": "C",
+      "total_score": 19,
+      "url": "https://jeremiah9980.github.io/Next-Gen-IT/reports/teifkerealestate-com-20260425-213512.html"
+    },
+    {
       "domain": "newhoperealtygroup.com",
       "filename": "newhoperealtygroup-com-20260425-213134.html",
       "scan_date": "2026-04-25 21:31 UTC",
