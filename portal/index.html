@@ -1,35 +1,764 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Next-Gen-IT Client Portal</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <style>
-    body { font-family: Arial; background:#0f172a; color:white; margin:0; }
-    .container { padding:20px; }
-    .card { background:#1e293b; padding:20px; border-radius:10px; margin-bottom:15px; }
-    button { padding:10px 15px; background:#22c55e; border:none; border-radius:5px; cursor:pointer; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Next-Gen IT · Domain Audit Portal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=Syne:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:        #050a14;
+  --bg2:       #0b1221;
+  --bg3:       #101828;
+  --border:    rgba(0,180,255,0.12);
+  --border2:   rgba(0,180,255,0.25);
+  --blue:      #00b4ff;
+  --blue-dim:  rgba(0,180,255,0.08);
+  --blue-glow: 0 0 20px rgba(0,180,255,0.2);
+  --green:     #00e5a0;
+  --red:       #ff4d6a;
+  --amber:     #ffb547;
+  --text:      #e8f0fe;
+  --muted:     #4d6080;
+  --mono:      'IBM Plex Mono', monospace;
+  --sans:      'Syne', sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:100vh;overflow-x:hidden}
+
+/* grid bg */
+body::before{
+  content:'';position:fixed;inset:0;
+  background-image:
+    linear-gradient(rgba(0,180,255,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,180,255,0.03) 1px, transparent 1px);
+  background-size:40px 40px;
+  pointer-events:none;z-index:0;
+}
+
+/* ── HEADER ─────────────────────────────────────────────── */
+header{
+  position:relative;z-index:10;
+  padding:20px 32px;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+  background:linear-gradient(180deg,rgba(0,10,25,0.95),transparent);
+  backdrop-filter:blur(8px);
+}
+.logo{display:flex;align-items:center;gap:12px}
+.logo-mark{
+  width:36px;height:36px;border-radius:8px;
+  background:var(--blue);
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--mono);font-weight:600;font-size:14px;color:#000;
+  box-shadow:var(--blue-glow);
+}
+.logo-text{font-size:15px;font-weight:600;letter-spacing:.04em}
+.logo-text span{color:var(--blue)}
+nav{display:flex;gap:8px;align-items:center}
+.btn-settings{
+  font-family:var(--mono);font-size:12px;color:var(--muted);
+  background:transparent;border:1px solid var(--border);
+  border-radius:6px;padding:7px 14px;cursor:pointer;
+  transition:all .2s;letter-spacing:.06em;
+}
+.btn-settings:hover{color:var(--blue);border-color:var(--border2)}
+
+/* ── HERO ────────────────────────────────────────────────── */
+.hero{
+  position:relative;z-index:10;
+  padding:64px 32px 48px;
+  text-align:center;max-width:680px;margin:0 auto;
+}
+.hero-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  font-family:var(--mono);font-size:11px;letter-spacing:.1em;color:var(--blue);
+  border:1px solid var(--border2);border-radius:20px;padding:6px 16px;
+  margin-bottom:24px;text-transform:uppercase;
+}
+.pulse{
+  width:7px;height:7px;border-radius:50%;background:var(--green);
+  animation:pulse 2s ease-in-out infinite;
+}
+@keyframes pulse{0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(0,229,160,.4)}50%{opacity:.7;box-shadow:0 0 0 6px rgba(0,229,160,0)}}
+h1{font-size:clamp(28px,5vw,48px);font-weight:800;line-height:1.1;margin-bottom:16px}
+h1 em{font-style:normal;color:var(--blue)}
+.hero-sub{color:var(--muted);font-size:16px;line-height:1.6;font-family:var(--mono)}
+
+/* ── AUDIT FORM ──────────────────────────────────────────── */
+.form-wrap{
+  position:relative;z-index:10;
+  max-width:560px;margin:0 auto 64px;
+  padding:0 32px;
+}
+.input-row{
+  display:flex;gap:0;
+  background:var(--bg2);
+  border:1px solid var(--border2);
+  border-radius:12px;
+  overflow:hidden;
+  box-shadow:var(--blue-glow);
+  transition:box-shadow .3s;
+}
+.input-row:focus-within{box-shadow:0 0 32px rgba(0,180,255,0.3)}
+.domain-input{
+  flex:1;
+  background:transparent;
+  border:none;outline:none;
+  font-family:var(--mono);font-size:15px;
+  color:var(--text);
+  padding:16px 20px;
+  letter-spacing:.02em;
+}
+.domain-input::placeholder{color:var(--muted)}
+.btn-run{
+  font-family:var(--sans);font-weight:600;font-size:14px;
+  background:var(--blue);color:#000;
+  border:none;cursor:pointer;
+  padding:16px 28px;
+  letter-spacing:.04em;
+  transition:all .2s;
+  white-space:nowrap;
+}
+.btn-run:hover{background:#33c5ff}
+.btn-run:active{transform:scale(.98)}
+.btn-run:disabled{opacity:.4;cursor:not-allowed}
+.input-hint{
+  font-family:var(--mono);font-size:11px;color:var(--muted);
+  text-align:center;margin-top:10px;letter-spacing:.04em;
+}
+
+/* ── PROGRESS ────────────────────────────────────────────── */
+.progress-section{
+  position:relative;z-index:10;
+  max-width:680px;margin:0 auto 64px;padding:0 32px;
+  display:none;
+}
+.progress-section.visible{display:block}
+.progress-card{
+  background:var(--bg2);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:28px;
+  overflow:hidden;
+  position:relative;
+}
+.progress-card::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(0,180,255,0.03),transparent);
+  pointer-events:none;
+}
+.progress-label{
+  font-family:var(--mono);font-size:11px;letter-spacing:.1em;
+  color:var(--blue);text-transform:uppercase;margin-bottom:20px;
+  display:flex;align-items:center;gap:8px;
+}
+.scan-domain{color:var(--text);font-weight:600}
+.steps{display:flex;flex-direction:column;gap:0}
+.step{
+  display:flex;align-items:center;gap:16px;
+  padding:12px 0;
+  border-bottom:1px solid rgba(255,255,255,0.04);
+  transition:all .3s;
+}
+.step:last-child{border-bottom:none}
+.step-icon{
+  width:28px;height:28px;border-radius:50%;
+  border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  font-size:12px;flex-shrink:0;
+  transition:all .3s;
+  background:var(--bg3);
+}
+.step.active .step-icon{
+  border-color:var(--blue);background:var(--blue-dim);
+  animation:spin-pulse 1.5s ease-in-out infinite;
+}
+.step.done .step-icon{border-color:var(--green);background:rgba(0,229,160,.1);color:var(--green)}
+.step.error .step-icon{border-color:var(--red);background:rgba(255,77,106,.1);color:var(--red)}
+@keyframes spin-pulse{0%,100%{box-shadow:0 0 0 0 rgba(0,180,255,.3)}50%{box-shadow:0 0 0 6px rgba(0,180,255,0)}}
+.step-info{flex:1}
+.step-title{font-size:14px;font-weight:600;color:var(--muted);transition:color .3s}
+.step.active .step-title{color:var(--text)}
+.step.done .step-title{color:var(--text)}
+.step-sub{font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:2px}
+.step.active .step-sub{color:var(--blue)}
+.step-time{font-family:var(--mono);font-size:11px;color:var(--muted)}
+.step.done .step-time{color:var(--green)}
+
+.progress-bar-wrap{margin-top:20px;background:var(--bg3);border-radius:4px;height:3px;overflow:hidden}
+.progress-bar{height:100%;background:linear-gradient(90deg,var(--blue),var(--green));border-radius:4px;width:0%;transition:width .8s ease}
+
+.status-msg{
+  font-family:var(--mono);font-size:12px;color:var(--muted);
+  text-align:center;margin-top:16px;min-height:18px;
+}
+.status-msg.success{color:var(--green)}
+.status-msg.error{color:var(--red)}
+
+/* report-ready banner */
+.report-banner{
+  display:none;
+  background:rgba(0,229,160,.06);
+  border:1px solid rgba(0,229,160,.25);
+  border-radius:10px;
+  padding:16px 20px;
+  margin-top:20px;
+  display:none;align-items:center;gap:14px;
+}
+.report-banner.visible{display:flex}
+.report-banner-icon{font-size:20px}
+.report-banner-text{flex:1}
+.report-banner-text strong{display:block;font-size:14px;color:var(--green);margin-bottom:2px}
+.report-banner-text span{font-family:var(--mono);font-size:11px;color:var(--muted)}
+.btn-view-report{
+  font-family:var(--mono);font-size:12px;font-weight:600;
+  background:var(--green);color:#000;
+  border:none;border-radius:6px;
+  padding:8px 16px;cursor:pointer;
+  text-decoration:none;white-space:nowrap;letter-spacing:.04em;
+}
+.btn-view-report:hover{background:#33edb5}
+
+/* ── SECTION HEADING ─────────────────────────────────────── */
+.section{
+  position:relative;z-index:10;
+  max-width:960px;margin:0 auto 80px;padding:0 32px;
+}
+.section-header{
+  display:flex;align-items:baseline;justify-content:space-between;
+  margin-bottom:24px;padding-bottom:16px;
+  border-bottom:1px solid var(--border);
+}
+.section-title{
+  font-size:13px;font-family:var(--mono);
+  letter-spacing:.1em;text-transform:uppercase;color:var(--blue);
+}
+.report-count{
+  font-family:var(--mono);font-size:11px;color:var(--muted);
+}
+
+/* ── REPORTS GRID ────────────────────────────────────────── */
+.reports-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
+  gap:16px;
+}
+.report-card{
+  background:var(--bg2);
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:20px;
+  text-decoration:none;
+  display:block;
+  transition:all .25s;
+  position:relative;overflow:hidden;
+}
+.report-card:hover{
+  border-color:var(--border2);
+  transform:translateY(-2px);
+  box-shadow:var(--blue-glow);
+}
+.report-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,var(--blue),var(--green));
+  opacity:0;transition:opacity .25s;
+}
+.report-card:hover::before{opacity:1}
+.card-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px}
+.card-domain{font-size:15px;font-weight:600;color:var(--text)}
+.grade-badge{
+  width:34px;height:34px;border-radius:8px;
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--mono);font-weight:600;font-size:15px;
+  flex-shrink:0;
+}
+.grade-A{background:rgba(0,229,160,.12);color:var(--green);border:1px solid rgba(0,229,160,.3)}
+.grade-B{background:rgba(0,180,255,.12);color:var(--blue);border:1px solid rgba(0,180,255,.3)}
+.grade-C{background:rgba(255,181,71,.1);color:var(--amber);border:1px solid rgba(255,181,71,.3)}
+.grade-D,.grade-F{background:rgba(255,77,106,.1);color:var(--red);border:1px solid rgba(255,77,106,.3)}
+.card-score{font-family:var(--mono);font-size:12px;color:var(--muted);margin-bottom:8px}
+.card-score strong{color:var(--text)}
+.card-date{font-family:var(--mono);font-size:11px;color:var(--muted)}
+.score-mini-bar{background:var(--bg3);border-radius:2px;height:3px;margin-top:10px;overflow:hidden}
+.score-mini-fill{height:100%;border-radius:2px}
+
+.empty-state{
+  text-align:center;padding:48px 24px;
+  color:var(--muted);font-family:var(--mono);font-size:13px;
+}
+.empty-state-icon{font-size:32px;margin-bottom:12px;opacity:.4}
+
+/* ── SETTINGS MODAL ──────────────────────────────────────── */
+.modal-overlay{
+  display:none;position:fixed;inset:0;
+  background:rgba(5,10,20,.85);backdrop-filter:blur(8px);
+  z-index:100;align-items:center;justify-content:center;
+}
+.modal-overlay.open{display:flex}
+.modal{
+  background:var(--bg2);
+  border:1px solid var(--border2);
+  border-radius:16px;
+  padding:32px;
+  width:min(480px,90vw);
+  box-shadow:0 24px 64px rgba(0,0,0,.6);
+}
+.modal h2{font-size:18px;font-weight:800;margin-bottom:6px}
+.modal p{font-family:var(--mono);font-size:12px;color:var(--muted);margin-bottom:24px;line-height:1.6}
+.form-group{margin-bottom:20px}
+.form-group label{
+  display:block;font-family:var(--mono);font-size:11px;
+  letter-spacing:.08em;text-transform:uppercase;color:var(--blue);
+  margin-bottom:8px;
+}
+.form-group input{
+  width:100%;background:var(--bg3);border:1px solid var(--border);
+  border-radius:8px;padding:12px 14px;
+  font-family:var(--mono);font-size:13px;color:var(--text);
+  outline:none;transition:border-color .2s;
+}
+.form-group input:focus{border-color:var(--border2)}
+.modal-hint{
+  font-family:var(--mono);font-size:11px;color:var(--muted);
+  margin-top:8px;
+}
+.modal-hint a{color:var(--blue);text-decoration:none}
+.modal-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:24px}
+.btn-cancel{
+  font-family:var(--sans);font-size:13px;font-weight:600;
+  background:transparent;border:1px solid var(--border);
+  color:var(--muted);border-radius:8px;padding:10px 20px;cursor:pointer;
+  transition:all .2s;
+}
+.btn-cancel:hover{border-color:var(--border2);color:var(--text)}
+.btn-save{
+  font-family:var(--sans);font-size:13px;font-weight:600;
+  background:var(--blue);color:#000;
+  border:none;border-radius:8px;padding:10px 20px;cursor:pointer;
+  transition:all .2s;
+}
+.btn-save:hover{background:#33c5ff}
+
+/* ── FOOTER ──────────────────────────────────────────────── */
+footer{
+  position:relative;z-index:10;
+  border-top:1px solid var(--border);
+  padding:24px 32px;
+  display:flex;justify-content:space-between;align-items:center;
+}
+.footer-l{font-family:var(--mono);font-size:11px;color:var(--muted)}
+.footer-r{font-family:var(--mono);font-size:11px;color:var(--muted)}
+.footer-r a{color:var(--blue);text-decoration:none}
+</style>
 </head>
 <body>
-  <div class="container">
-    <h1>Next-Gen-IT Client Portal</h1>
-    <div class="card">
-      <h3>Start New Audit</h3>
-      <input placeholder="Client Domain (example.com)" id="domain" />
-      <br><br>
-      <button onclick="startAudit()">Run Audit</button>
-    </div>
 
-    <div class="card">
-      <h3>Results</h3>
-      <pre id="results">No audit run yet</pre>
+<!-- SETTINGS MODAL -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <h2>Configuration</h2>
+    <p>Enter your GitHub Personal Access Token to enable audit publishing. The token is stored locally in your browser only.</p>
+    <div class="form-group">
+      <label>GitHub Personal Access Token</label>
+      <input type="password" id="ghTokenInput" placeholder="github_pat_...">
+      <div class="modal-hint">
+        Needs <strong>Actions: write</strong> permission ·
+        <a href="https://github.com/settings/tokens?type=beta" target="_blank">Create token ↗</a>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeSettings()">Cancel</button>
+      <button class="btn-save" onclick="saveSettings()">Save</button>
     </div>
   </div>
+</div>
+
+<!-- HEADER -->
+<header>
+  <div class="logo">
+    <div class="logo-mark">NG</div>
+    <div class="logo-text"><span>Next-Gen</span> IT</div>
+  </div>
+  <nav>
+    <button class="btn-settings" onclick="openSettings()">⚙ Config</button>
+  </nav>
+</header>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-badge"><span class="pulse"></span> Audit Engine Online</div>
+  <h1>Domain Health<br><em>Audit Portal</em></h1>
+  <p class="hero-sub">Full-spectrum analysis — DNS · Email · SEO · Marketing · Tech Stack</p>
+</div>
+
+<!-- FORM -->
+<div class="form-wrap">
+  <div class="input-row">
+    <input
+      class="domain-input"
+      id="domainInput"
+      type="text"
+      placeholder="starskyowen.com"
+      autocomplete="off"
+      spellcheck="false"
+      onkeydown="if(event.key==='Enter')runAudit()"
+    >
+    <button class="btn-run" id="runBtn" onclick="runAudit()">Run Audit →</button>
+  </div>
+  <div class="input-hint">Enter any domain · Results published automatically</div>
+</div>
+
+<!-- PROGRESS -->
+<div class="progress-section" id="progressSection">
+  <div class="progress-card">
+    <div class="progress-label">
+      <span class="pulse"></span>
+      Scanning <span class="scan-domain" id="scanDomain"></span>
+    </div>
+    <div class="steps" id="stepsContainer">
+      <div class="step" id="s0">
+        <div class="step-icon">1</div>
+        <div class="step-info">
+          <div class="step-title">Triggering workflow</div>
+          <div class="step-sub">Dispatching to GitHub Actions</div>
+        </div>
+        <div class="step-time" id="t0">—</div>
+      </div>
+      <div class="step" id="s1">
+        <div class="step-icon">2</div>
+        <div class="step-info">
+          <div class="step-title">Infrastructure scan</div>
+          <div class="step-sub">WHOIS · DNS · HTTP headers · IP/ASN</div>
+        </div>
+        <div class="step-time" id="t1">—</div>
+      </div>
+      <div class="step" id="s2">
+        <div class="step-icon">3</div>
+        <div class="step-info">
+          <div class="step-title">Email health check</div>
+          <div class="step-sub">MXToolbox · SPF · DMARC · Blacklist</div>
+        </div>
+        <div class="step-time" id="t2">—</div>
+      </div>
+      <div class="step" id="s3">
+        <div class="step-icon">4</div>
+        <div class="step-info">
+          <div class="step-title">Website analysis</div>
+          <div class="step-sub">SEO · Marketing · Social · Tech stack</div>
+        </div>
+        <div class="step-time" id="t3">—</div>
+      </div>
+      <div class="step" id="s4">
+        <div class="step-icon">5</div>
+        <div class="step-info">
+          <div class="step-title">AI report generation</div>
+          <div class="step-sub">Scoring · Recommendations · Pitch angle</div>
+        </div>
+        <div class="step-time" id="t4">—</div>
+      </div>
+      <div class="step" id="s5">
+        <div class="step-icon">6</div>
+        <div class="step-info">
+          <div class="step-title">Publishing to repository</div>
+          <div class="step-sub">Committing HTML report · Updating manifest</div>
+        </div>
+        <div class="step-time" id="t5">—</div>
+      </div>
+    </div>
+    <div class="progress-bar-wrap"><div class="progress-bar" id="progressBar"></div></div>
+    <div class="status-msg" id="statusMsg">Initializing…</div>
+    <div class="report-banner" id="reportBanner">
+      <div class="report-banner-icon">✅</div>
+      <div class="report-banner-text">
+        <strong>Report Published!</strong>
+        <span id="reportDomain"></span>
+      </div>
+      <a class="btn-view-report" id="reportLink" href="#" target="_blank">View Report →</a>
+    </div>
+  </div>
+</div>
+
+<!-- PUBLISHED REPORTS -->
+<div class="section" id="reportsSection">
+  <div class="section-header">
+    <span class="section-title">Published Reports</span>
+    <span class="report-count" id="reportCount">Loading…</span>
+  </div>
+  <div class="reports-grid" id="reportsGrid">
+    <div class="empty-state">
+      <div class="empty-state-icon">📋</div>
+      Loading reports…
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-l">Next-Gen IT Domain Audit Portal · v2.0</div>
+  <div class="footer-r">
+    Powered by <a href="https://github.com/jeremiah9980/Next-Gen-IT" target="_blank">jeremiah9980/Next-Gen-IT ↗</a>
+  </div>
+</footer>
 
 <script>
-function startAudit(){
-  const domain = document.getElementById('domain').value;
-  document.getElementById('results').innerText = 'Running recon for ' + domain + '...';
+const REPO  = 'jeremiah9980/Next-Gen-IT';
+const OWNER = 'jeremiah9980';
+const WFLOW = 'domain-audit.yml';
+const BASE  = `https://api.github.com/repos/${REPO}`;
+
+// ── SETTINGS ──────────────────────────────────────────────
+function getToken(){ return localStorage.getItem('ngit_gh_token') || ''; }
+function openSettings(){ document.getElementById('modalOverlay').classList.add('open'); document.getElementById('ghTokenInput').value = getToken(); }
+function closeSettings(){ document.getElementById('modalOverlay').classList.remove('open'); }
+function saveSettings(){
+  const t = document.getElementById('ghTokenInput').value.trim();
+  if(t) localStorage.setItem('ngit_gh_token', t);
+  closeSettings();
+  showMsg('Token saved', 'success');
+}
+
+// ── STATUS MESSAGES ───────────────────────────────────────
+function showMsg(msg, type=''){
+  const el = document.getElementById('statusMsg');
+  el.textContent = msg;
+  el.className = 'status-msg' + (type ? ' '+type : '');
+}
+
+// ── STEP MANAGEMENT ───────────────────────────────────────
+const STEPS = 6;
+let currentStep = -1;
+const stepTimes = new Array(STEPS).fill(null);
+
+function setStep(idx, status){ // status: active|done|error
+  const el = document.getElementById('s'+idx);
+  el.classList.remove('active','done','error');
+  el.classList.add(status);
+  const icon = el.querySelector('.step-icon');
+  if(status==='done') icon.textContent='✓';
+  else if(status==='error') icon.textContent='✕';
+  else icon.textContent = (idx+1)+'';
+}
+function markDone(idx){
+  setStep(idx,'done');
+  const now = new Date();
+  stepTimes[idx] = now;
+  document.getElementById('t'+idx).textContent = now.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  updateBar();
+}
+function markActive(idx){
+  if(currentStep !== idx){
+    if(currentStep >= 0 && currentStep < idx) markDone(currentStep);
+    currentStep = idx;
+    setStep(idx,'active');
+    updateBar();
+  }
+}
+function markError(idx){
+  setStep(idx,'error');
+  updateBar();
+}
+function updateBar(){
+  const done = document.querySelectorAll('.step.done').length;
+  const active = document.querySelectorAll('.step.active').length;
+  const pct = Math.round(((done + active*0.5) / STEPS) * 100);
+  document.getElementById('progressBar').style.width = pct+'%';
+}
+
+// ── MAIN AUDIT FLOW ───────────────────────────────────────
+let pollTimer = null;
+let startTime = null;
+let auditRunId = null;
+let auditDomain = '';
+
+async function runAudit(){
+  const domain = document.getElementById('domainInput').value.trim()
+    .replace(/^https?:\/\//,'').replace(/^www\./,'').replace(/\/.*/,'').toLowerCase();
+  if(!domain){ alert('Please enter a domain name'); return; }
+
+  const token = getToken();
+  if(!token){ openSettings(); showMsg('Set your GitHub token first, then try again.'); return; }
+
+  // Reset UI
+  auditDomain = domain;
+  auditRunId = null;
+  startTime = Date.now();
+  currentStep = -1;
+  for(let i=0;i<STEPS;i++){
+    const el=document.getElementById('s'+i);
+    el.classList.remove('active','done','error');
+    el.querySelector('.step-icon').textContent=(i+1)+'';
+    document.getElementById('t'+i).textContent='—';
+    stepTimes[i]=null;
+  }
+  document.getElementById('progressBar').style.width='0%';
+  document.getElementById('reportBanner').classList.remove('visible');
+  document.getElementById('scanDomain').textContent = domain;
+  document.getElementById('progressSection').classList.add('visible');
+  document.getElementById('progressSection').scrollIntoView({behavior:'smooth',block:'start'});
+  document.getElementById('runBtn').disabled = true;
+  showMsg('Dispatching to GitHub Actions…');
+  markActive(0);
+
+  // Trigger workflow
+  try{
+    const res = await fetch(`${BASE}/actions/workflows/${WFLOW}/dispatches`,{
+      method:'POST',
+      headers:{
+        'Authorization':`Bearer ${token}`,
+        'Accept':'application/vnd.github.v3+json',
+        'Content-Type':'application/json'
+      },
+      body: JSON.stringify({ ref:'main', inputs:{ domain } })
+    });
+    if(!res.ok){
+      const err = await res.json().catch(()=>({}));
+      throw new Error(err.message || `HTTP ${res.status}`);
+    }
+  } catch(e){
+    markError(0);
+    showMsg('Trigger failed: '+e.message, 'error');
+    document.getElementById('runBtn').disabled = false;
+    return;
+  }
+
+  markDone(0);
+  markActive(1);
+  showMsg('Workflow queued — waiting for runner…');
+
+  // Start polling
+  if(pollTimer) clearInterval(pollTimer);
+  pollTimer = setInterval(pollWorkflow, 6000);
+  setTimeout(pollWorkflow, 3000); // first check quickly
+}
+
+async function pollWorkflow(){
+  const token = getToken();
+  const elapsed = (Date.now() - startTime) / 1000; // seconds
+
+  try{
+    // Get recent runs for this workflow
+    const res = await fetch(
+      `${BASE}/actions/workflows/${WFLOW}/runs?per_page=5&event=workflow_dispatch`,
+      { headers:{ 'Authorization':`Bearer ${token}`, 'Accept':'application/vnd.github.v3+json' } }
+    );
+    if(!res.ok) return;
+    const data = await res.json();
+    const runs = data.workflow_runs || [];
+    if(!runs.length) return;
+
+    // Find our run (most recent)
+    const run = runs[0];
+    if(!auditRunId) auditRunId = run.id;
+
+    const status     = run.status;     // queued | in_progress | completed
+    const conclusion = run.conclusion; // success | failure | null
+
+    // Advance steps based on elapsed time + status
+    if(status === 'in_progress' || status === 'completed'){
+      if(elapsed > 2)  markDone(1), markActive(2);  // infra scan
+      if(elapsed > 18) markDone(2), markActive(3);  // email health
+      if(elapsed > 32) markDone(3), markActive(4);  // website
+      if(elapsed > 50) markDone(4), markActive(5);  // AI report
+    }
+
+    if(status === 'completed'){
+      clearInterval(pollTimer);
+      if(conclusion === 'success'){
+        // Mark all steps done
+        for(let i=0;i<STEPS;i++) markDone(i);
+        document.getElementById('progressBar').style.width='100%';
+        showMsg('Audit complete — report published!', 'success');
+        document.getElementById('runBtn').disabled = false;
+        // Load manifest to get report URL
+        await showReportBanner(auditDomain);
+        loadReports();
+      } else {
+        markError(currentStep>=0?currentStep:5);
+        showMsg(`Workflow ${conclusion} — check GitHub Actions for details`, 'error');
+        document.getElementById('runBtn').disabled = false;
+      }
+    } else {
+      const msgs = {
+        'queued':      'Waiting for an available runner…',
+        'in_progress': `Running — ${Math.round(elapsed)}s elapsed`
+      };
+      showMsg(msgs[status] || 'Running…');
+    }
+  } catch(e){ /* silent fail, keep polling */ }
+}
+
+async function showReportBanner(domain){
+  // Wait briefly for commit to propagate
+  await new Promise(r=>setTimeout(r,4000));
+  try{
+    const url = `https://raw.githubusercontent.com/${REPO}/main/reports/manifest.json?t=${Date.now()}`;
+    const res = await fetch(url);
+    const data = await res.json();
+    const entry = (data.reports||[]).find(r=>r.domain===domain);
+    if(entry){
+      document.getElementById('reportDomain').textContent = `${domain} — ${entry.scan_date}`;
+      document.getElementById('reportLink').href = entry.url;
+      document.getElementById('reportBanner').classList.add('visible');
+    }
+  } catch(e){ /* manifest not ready yet */ }
+}
+
+// ── LOAD REPORTS ──────────────────────────────────────────
+async function loadReports(){
+  const grid = document.getElementById('reportsGrid');
+  const count = document.getElementById('reportCount');
+  try{
+    const url = `https://raw.githubusercontent.com/${REPO}/main/reports/manifest.json?t=${Date.now()}`;
+    const res = await fetch(url);
+    if(!res.ok) throw new Error('manifest not found');
+    const data = await res.json();
+    const reports = data.reports || [];
+
+    count.textContent = reports.length + ' report' + (reports.length!==1?'s':'');
+
+    if(!reports.length){
+      grid.innerHTML = `<div class="empty-state"><div class="empty-state-icon">📋</div>No reports yet — run your first audit above.</div>`;
+      return;
+    }
+
+    grid.innerHTML = reports.map(r => {
+      const grade = r.grade || '?';
+      const score = r.total_score || 0;
+      const pct = Math.round((score/30)*100);
+      const fillColor = score>=25?'#00e5a0':score>=20?'#00b4ff':score>=14?'#ffb547':'#ff4d6a';
+      return `
+      <a class="report-card" href="${r.url}" target="_blank">
+        <div class="card-top">
+          <div class="card-domain">${r.domain}</div>
+          <div class="grade-badge grade-${grade}">${grade}</div>
+        </div>
+        <div class="card-score"><strong>${score}</strong>/30 points</div>
+        <div class="card-date">${r.scan_date}</div>
+        <div class="score-mini-bar">
+          <div class="score-mini-fill" style="width:${pct}%;background:${fillColor}"></div>
+        </div>
+      </a>`;
+    }).join('');
+  } catch(e){
+    count.textContent = '0 reports';
+    grid.innerHTML = `<div class="empty-state"><div class="empty-state-icon">📋</div>No reports published yet — run your first audit above.</div>`;
+  }
+}
+
+// ── INIT ──────────────────────────────────────────────────
+loadReports();
+setInterval(loadReports, 30000); // refresh every 30s
+
+// Show config prompt if no token
+if(!getToken()){
+  setTimeout(()=>{
+    document.getElementById('statusMsg') && (document.getElementById('statusMsg').textContent='');
+    const hint = document.querySelector('.input-hint');
+    if(hint) hint.textContent = '⚠ Configure your GitHub token first (⚙ Config above)';
+  }, 800);
 }
 </script>
 </body>
