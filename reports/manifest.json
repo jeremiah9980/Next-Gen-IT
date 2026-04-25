@@ -1,6 +1,15 @@
 {
   "reports": [
     {
+      "domain": "teleotitle.com",
+      "filename": "teleotitle-com-20260425-232132.html",
+      "scan_date": "2026-04-25 23:21 UTC",
+      "timestamp": "20260425-232132",
+      "grade": "F",
+      "total_score": 6,
+      "url": "https://jeremiah9980.github.io/Next-Gen-IT/reports/teleotitle-com-20260425-232132.html"
+    },
+    {
       "domain": "teifkerealestate.com",
       "filename": "teifkerealestate-com-20260425-213512.html",
       "scan_date": "2026-04-25 21:35 UTC",
