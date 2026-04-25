@@ -1,3 +1,13 @@
 {
-  "reports": []
+  "reports": [
+    {
+      "domain": "tkerrrealestate.com",
+      "filename": "tkerrrealestate-com-20260425-205343.html",
+      "scan_date": "2026-04-25 20:53 UTC",
+      "timestamp": "20260425-205343",
+      "grade": "D",
+      "total_score": 8,
+      "url": "https://jeremiah9980.github.io/Next-Gen-IT/reports/tkerrrealestate-com-20260425-205343.html"
+    }
+  ]
 }
