@@ -1,6 +1,15 @@
 {
   "reports": [
     {
+      "domain": "abodelabs.io",
+      "filename": "abodelabs-io-20260425-233225.html",
+      "scan_date": "2026-04-25 23:32 UTC",
+      "timestamp": "20260425-233225",
+      "grade": "F",
+      "total_score": 0,
+      "url": "https://jeremiah9980.github.io/Next-Gen-IT/reports/abodelabs-io-20260425-233225.html"
+    },
+    {
       "domain": "teleotitle.com",
       "filename": "teleotitle-com-20260425-232132.html",
       "scan_date": "2026-04-25 23:21 UTC",
