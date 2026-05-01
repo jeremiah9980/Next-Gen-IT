@@ -26,6 +26,13 @@ def db_cursor():
         conn.close()
 
 
+def ensure_column(cur: sqlite3.Cursor, table_name: str, column_name: str, column_definition: str) -> None:
+    cur.execute(f"PRAGMA table_info({table_name})")
+    existing_columns = {row[1] for row in cur.fetchall()}
+    if column_name not in existing_columns:
+        cur.execute(f"ALTER TABLE {table_name} ADD COLUMN {column_name} {column_definition}")
+
+
 def init_db() -> None:
     with db_cursor() as cur:
         cur.execute(
@@ -42,10 +49,12 @@ def init_db() -> None:
                 error TEXT,
                 summary TEXT,
                 report_path TEXT,
+                runbook_path TEXT,
                 score INTEGER DEFAULT 0
             )
             '''
         )
+        ensure_column(cur, "audits", "runbook_path", "TEXT")
         cur.execute(
             '''
             CREATE TABLE IF NOT EXISTS findings (
