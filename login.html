@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Secure Access · Next-Gen IT</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,700;0,9..144,800;1,9..144,400;1,9..144,700;1,9..144,800&family=IBM+Plex+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    /* ── Tokens — matched to jeremiah9980.2 screenshot ── */
+    :root {
+      --bg-base:   #0B0E1A;
+      --bg-grad:   #1A0E1C;           /* purple-rose hint top-right */
+      --bg-card:   rgba(255,255,255,.04);
+      --border:    rgba(255,255,255,.08);
+      --border-f:  rgba(224,107,74,.45);
+      --ink:       #F2EEE8;
+      --ink-2:     #8D93B0;
+      --ink-3:     #4E5470;
+      --coral:     #E06B4A;
+      --coral-h:   #EC7C58;
+      --coral-dim: #7A3520;
+      --err:       #C44030;
+      --radius:    4px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      font-family: 'IBM Plex Sans', sans-serif;
+      color: var(--ink);
+      /* navy → purple-rose gradient matching the hero */
+      background:
+        radial-gradient(ellipse 60% 60% at 85% 10%, rgba(120,40,60,.35) 0%, transparent 65%),
+        radial-gradient(ellipse 50% 80% at 10% 90%, rgba(30,20,60,.5) 0%, transparent 60%),
+        linear-gradient(160deg, #0A0D1B 0%, #0D1025 50%, #0F0B18 100%);
+      background-attachment: fixed;
+    }
+
+    /* ── Nav — exact match to screenshot ─────────────────── */
+    .site-nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 40px;
+      height: 60px;
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+      background: rgba(10,12,26,.6);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      text-decoration: none;
+    }
+
+    .nav-brand-name {
+      font-family: 'Fraunces', serif;
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--coral);
+      letter-spacing: -.01em;
+      line-height: 1;
+    }
+
+    .nav-brand-sub {
+      font-family: 'IBM Plex Sans', sans-serif;
+      font-size: 10px;
+      font-weight: 400;
+      color: var(--ink-3);
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      padding-top: 1px;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 32px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      font-family: 'IBM Plex Sans', sans-serif;
+      font-size: 13px;
+      font-weight: 400;
+      color: var(--ink-2);
+      text-decoration: none;
+      letter-spacing: .01em;
+      transition: color .15s;
+    }
+
+    .nav-links a:hover { color: var(--ink); }
+
+    /* ── Main ─────────────────────────────────────────────── */
+    main {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 64px 24px;
+    }
+
+    /* ── Login card ───────────────────────────────────────── */
+    .card {
+      width: 100%;
+      max-width: 420px;
+      animation: fadeUp .42s cubic-bezier(.22,1,.36,1) both;
+    }
+
+    /* eyebrow — matches "JEREMIAH CARGILL · AUSTIN, TX" style */
+    .eyebrow {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: 'IBM Plex Sans', sans-serif;
+      font-size: 10px;
+      font-weight: 400;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: var(--coral);
+      margin-bottom: 16px;
+    }
+
+    .eyebrow-line {
+      display: block;
+      width: 28px;
+      height: 1.5px;
+      background: var(--coral);
+      flex-shrink: 0;
+    }
+
+    /* heading — matches heavy Fraunces hero style */
+    h1 {
+      font-family: 'Fraunces', serif;
+      font-size: clamp(32px, 6vw, 46px);
+      font-weight: 800;
+      line-height: 1.08;
+      color: var(--ink);
+      margin-bottom: 10px;
+      letter-spacing: -.02em;
+    }
+
+    h1 em {
+      font-style: italic;
+      font-weight: 700;
+      color: var(--coral);
+    }
+
+    .sub {
+      font-size: 13px;
+      font-weight: 300;
+      color: var(--ink-3);
+      line-height: 1.6;
+      margin-bottom: 40px;
+    }
+
+    /* rule */
+    .rule {
+      height: 1px;
+      background: var(--border);
+      margin-bottom: 36px;
+    }
+
+    /* ── Form fields ──────────────────────────────────────── */
+    .field { margin-bottom: 22px; }
+
+    label {
+      display: block;
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--ink-3);
+      margin-bottom: 8px;
+    }
+
+    .input-wrap { position: relative; }
+
+    input[type="password"],
+    input[type="text"] {
+      width: 100%;
+      padding: 12px 46px 12px 16px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-family: 'IBM Plex Sans', sans-serif;
+      font-size: 15px;
+      font-weight: 300;
+      color: var(--ink);
+      outline: none;
+      transition: border-color .18s, box-shadow .18s;
+      -webkit-appearance: none;
+      letter-spacing: .03em;
+    }
+
+    input:focus {
+      border-color: var(--border-f);
+      box-shadow: 0 0 0 3px rgba(224,107,74,.12);
+    }
+
+    input::placeholder { color: var(--ink-3); font-weight: 300; }
+
+    .eye-btn {
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--ink-3);
+      padding: 3px;
+      display: flex;
+      align-items: center;
+      transition: color .15s;
+    }
+    .eye-btn:hover { color: var(--ink-2); }
+
+    /* error */
+    .err-row {
+      font-size: 12px;
+      color: var(--err);
+      margin-top: 8px;
+      min-height: 16px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      opacity: 0;
+      transition: opacity .2s;
+    }
+    .err-row.show { opacity: 1; }
+
+    @keyframes shake {
+      0%,100% { transform: translateX(0); }
+      20%      { transform: translateX(-7px); }
+      40%      { transform: translateX(7px); }
+      60%      { transform: translateX(-4px); }
+      80%      { transform: translateX(4px); }
+    }
+    .shaking { animation: shake .38s ease; }
+
+    /* ── Button — coral fill, matches site CTA style ──────── */
+    .btn {
+      width: 100%;
+      padding: 14px 20px;
+      margin-top: 10px;
+      background: var(--coral);
+      color: #FAF5F0;
+      border: none;
+      border-radius: var(--radius);
+      font-family: 'IBM Plex Sans', sans-serif;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      transition: background .16s, opacity .16s;
+    }
+    .btn:hover   { background: var(--coral-h); }
+    .btn:active  { opacity: .85; }
+    .btn:disabled { opacity: .4; cursor: not-allowed; }
+
+    .btn .spinner {
+      width: 14px; height: 14px;
+      border: 1.5px solid rgba(255,255,255,.25);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin .55s linear infinite;
+      display: none;
+      position: absolute;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .btn.loading .lbl     { opacity: 0; }
+    .btn.loading .spinner { display: block; }
+
+    /* ── Footer ───────────────────────────────────────────── */
+    .site-footer {
+      border-top: 1px solid var(--border);
+      height: 48px;
+      padding: 0 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+      background: rgba(10,12,26,.4);
+    }
+
+    .footer-copy {
+      font-size: 11px;
+      font-weight: 300;
+      color: var(--ink-3);
+      letter-spacing: .03em;
+    }
+
+    .footer-tag {
+      font-size: 10px;
+      color: var(--ink-3);
+      letter-spacing: .08em;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+    .footer-tag::before {
+      content: '';
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--coral-dim);
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 600px) {
+      .nav-links        { display: none; }
+      .site-nav,
+      .site-footer      { padding: 0 20px; }
+      main              { padding: 48px 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Nav — matches screenshot exactly -->
+<nav class="site-nav">
+  <a class="nav-brand" href="https://jeremiah9980.github.io/jeremiah9980.2/">
+    <span class="nav-brand-name">Cargill &amp; Co</span>
+    <span class="nav-brand-sub">Enterprise · SMB · Lab</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="https://jeremiah9980.github.io/jeremiah9980.2/professional/">Professional</a></li>
+    <li><a href="https://jeremiah9980.github.io/jeremiah9980.2/professional/cargill-consulting/">Cargill Consulting</a></li>
+    <li><a href="https://jeremiah9980.github.io/jeremiah9980.2/professional/next-gen-it/">Next‑Gen‑IT</a></li>
+    <li><a href="https://jeremiah9980.github.io/jeremiah9980.2/projects/">Projects</a></li>
+    <li><a href="https://jeremiah9980.github.io/jeremiah9980.2/professional/about/">About</a></li>
+  </ul>
+</nav>
+
+<!-- Login -->
+<main>
+  <div class="card">
+    <p class="eyebrow">
+      <span class="eyebrow-line"></span>
+      Next-Gen IT · Client Portal
+    </p>
+    <h1>Secure <em>access</em><br>required.</h1>
+    <p class="sub">
+      This portal is restricted to authorized users.<br>
+      Enter the access key to continue.
+    </p>
+
+    <div class="rule"></div>
+
+    <div class="field">
+      <label for="password">Access Key</label>
+      <div class="input-wrap" id="field-wrap">
+        <input
+          type="password"
+          id="password"
+          placeholder="••••••••••••"
+          autocomplete="current-password"
+          autofocus
+        />
+        <button class="eye-btn" id="eye-btn" type="button" aria-label="Toggle visibility">
+          <svg id="eye-icon" viewBox="0 0 20 20" width="17" height="17" fill="currentColor">
+            <path d="M10 4C6 4 2.7 6.5 1 10c1.7 3.5 5 6 9 6s7.3-2.5 9-6c-1.7-3.5-5-6-9-6zm0 10a4 4 0 110-8 4 4 0 010 8zm0-6.5a2.5 2.5 0 100 5 2.5 2.5 0 000-5z"/>
+          </svg>
+        </button>
+      </div>
+      <div class="err-row" id="err-row">
+        <svg viewBox="0 0 12 12" width="11" height="11" fill="currentColor">
+          <path d="M6 0a6 6 0 100 12A6 6 0 006 0zm.5 8.5h-1v-1h1v1zm0-2h-1V3h1v3.5z"/>
+        </svg>
+        <span id="err-text">Incorrect access key.</span>
+      </div>
+    </div>
+
+    <button class="btn" id="login-btn" type="button">
+      <span class="lbl">Enter portal</span>
+      <span class="spinner"></span>
+    </button>
+  </div>
+</main>
+
+<!-- Footer -->
+<footer class="site-footer">
+  <span class="footer-copy">© 2026 Jeremiah Cargill</span>
+  <span class="footer-tag">Built in production · Portfolio &amp; practice</span>
+</footer>
+
+<script>
+  /**
+   * ─────────────────────────────────────────────────────────
+   *  HOW TO SET YOUR PASSWORD
+   *
+   *  Open browser DevTools → Console and run:
+   *
+   *    const h = async pw => [...new Uint8Array(
+   *      await crypto.subtle.digest('SHA-256',
+   *        new TextEncoder().encode(pw))
+   *    )].map(b => b.toString(16).padStart(2,'0')).join('');
+   *    h('yourPassword').then(console.log);
+   *
+   *  Paste the 64-char hex string into CORRECT_HASH below.
+   * ─────────────────────────────────────────────────────────
+   */
+  const CORRECT_HASH = 'REPLACE_WITH_YOUR_SHA256_HASH';
+  const SESSION_KEY  = 'ngit_portal_auth';
+  const PORTAL_URL   = './index.html';
+
+  // Skip login if already authenticated
+  if (sessionStorage.getItem(SESSION_KEY) === '1') {
+    window.location.replace(PORTAL_URL);
+  }
+
+  async function sha256(str) {
+    const buf = await crypto.subtle.digest(
+      'SHA-256', new TextEncoder().encode(str)
+    );
+    return [...new Uint8Array(buf)]
+      .map(b => b.toString(16).padStart(2, '0')).join('');
+  }
+
+  const pwEl   = document.getElementById('password');
+  const btnEl  = document.getElementById('login-btn');
+  const errRow = document.getElementById('err-row');
+  const errTxt = document.getElementById('err-text');
+  const wrap   = document.getElementById('field-wrap');
+  const eyeBtn = document.getElementById('eye-btn');
+  const eyeIco = document.getElementById('eye-icon');
+
+  eyeBtn.addEventListener('click', () => {
+    const showing = pwEl.type === 'password';
+    pwEl.type = showing ? 'text' : 'password';
+    eyeIco.innerHTML = showing
+      ? '<path d="M17.9 3.5a1 1 0 00-1.4 0l-2 2A9.5 9.5 0 0010 4.5C6 4.5 2.7 7 1 10.5c.8 1.6 2 3 3.4 4l-1.9 1.8a1 1 0 101.4 1.4l14-14a1 1 0 000-1.2zM10 9a2.5 2.5 0 012.4 3.1L9.4 9A2.5 2.5 0 0110 9zm0 8c-1.3 0-2.6-.4-3.7-1l1.5-1.4A4 4 0 0014 10.5c0-.2 0-.4-.1-.6l2-2c1 .9 1.8 2 2.3 3.1C16.5 14.6 13.4 17 10 17z"/>'
+      : '<path d="M10 4C6 4 2.7 6.5 1 10c1.7 3.5 5 6 9 6s7.3-2.5 9-6c-1.7-3.5-5-6-9-6zm0 10a4 4 0 110-8 4 4 0 010 8zm0-6.5a2.5 2.5 0 100 5 2.5 2.5 0 000-5z"/>';
+  });
+
+  pwEl.addEventListener('input', () => {
+    errRow.classList.remove('show');
+    pwEl.style.borderColor = '';
+  });
+
+  pwEl.addEventListener('keydown', e => { if (e.key === 'Enter') login(); });
+  btnEl.addEventListener('click', login);
+
+  async function login() {
+    const val = pwEl.value;
+    if (!val) { showErr('Enter your access key.'); return; }
+
+    btnEl.classList.add('loading');
+    btnEl.disabled = true;
+    errRow.classList.remove('show');
+
+    await new Promise(r => setTimeout(r, 380));
+    const hash = await sha256(val);
+
+    if (hash === CORRECT_HASH) {
+      sessionStorage.setItem(SESSION_KEY, '1');
+      window.location.replace(PORTAL_URL);
+    } else {
+      btnEl.classList.remove('loading');
+      btnEl.disabled = false;
+      pwEl.value = '';
+      pwEl.focus();
+      showErr('Incorrect access key. Try again.');
+    }
+  }
+
+  function showErr(msg) {
+    errTxt.textContent = msg;
+    errRow.classList.add('show');
+    pwEl.style.borderColor = 'rgba(196,64,48,.6)';
+    wrap.classList.remove('shaking');
+    void wrap.offsetWidth;
+    wrap.classList.add('shaking');
+  }
+</script>
+</body>
+</html>
