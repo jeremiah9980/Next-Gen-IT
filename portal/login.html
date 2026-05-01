@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Secure Access · Next-Gen IT</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,600;1,9..144,300&family=IBM+Plex+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    /* ── Tokens ──────────────────────────────────── */
+    :root {
+      --paper:   #F4EDE0;
+      --paper-2: #EDE3D0;
+      --ink:     #1E1410;
+      --ink-2:   #5C4030;
+      --ink-3:   #8C6B50;
+      --brown:   #7A4E2D;
+      --brown-h: #5C3820;
+      --border:  #C8AE94;
+      --border-f: #7A4E2D;
+      --err:     #A0392B;
+      --shadow:  rgba(60,30,10,.12);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      min-height: 100dvh;
+      background: var(--paper);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'IBM Plex Sans', sans-serif;
+      padding: 24px;
+      /* subtle grain texture */
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    }
+
+    /* ── Card ────────────────────────────────────── */
+    .card {
+      background: #FDFAF4;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      box-shadow:
+        0 2px 4px var(--shadow),
+        0 8px 32px var(--shadow),
+        inset 0 1px 0 rgba(255,255,255,.6);
+      width: 100%;
+      max-width: 420px;
+      padding: 48px 40px 44px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* decorative corner mark */
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0; right: 0;
+      width: 0; height: 0;
+      border-style: solid;
+      border-width: 0 36px 36px 0;
+      border-color: transparent var(--paper-2) transparent transparent;
+    }
+
+    /* ── Shield icon ─────────────────────────────── */
+    .shield-wrap {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 28px;
+    }
+
+    .shield {
+      width: 48px;
+      height: 48px;
+      color: var(--brown);
+      opacity: .9;
+    }
+
+    /* ── Heading ─────────────────────────────────── */
+    .eyebrow {
+      font-family: 'IBM Plex Sans', sans-serif;
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--ink-3);
+      text-align: center;
+      margin-bottom: 6px;
+    }
+
+    h1 {
+      font-family: 'Fraunces', serif;
+      font-size: 26px;
+      font-weight: 500;
+      color: var(--ink);
+      text-align: center;
+      line-height: 1.2;
+      margin-bottom: 32px;
+    }
+
+    h1 em {
+      font-style: italic;
+      font-weight: 300;
+      color: var(--brown);
+    }
+
+    /* ── Form ────────────────────────────────────── */
+    .field {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--ink-2);
+      margin-bottom: 7px;
+    }
+
+    .input-wrap {
+      position: relative;
+    }
+
+    input[type="password"],
+    input[type="text"] {
+      width: 100%;
+      padding: 11px 44px 11px 14px;
+      background: var(--paper);
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      font-family: 'IBM Plex Sans', sans-serif;
+      font-size: 15px;
+      color: var(--ink);
+      outline: none;
+      transition: border-color .18s, box-shadow .18s;
+      -webkit-appearance: none;
+    }
+
+    input:focus {
+      border-color: var(--border-f);
+      box-shadow: 0 0 0 3px rgba(122,78,45,.12);
+    }
+
+    input::placeholder { color: var(--ink-3); opacity: .5; }
+
+    /* toggle eye */
+    .eye-btn {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 2px;
+      color: var(--ink-3);
+      display: flex;
+      align-items: center;
+      opacity: .6;
+      transition: opacity .15s;
+    }
+    .eye-btn:hover { opacity: 1; }
+
+    /* ── Error ───────────────────────────────────── */
+    .error-msg {
+      font-size: 12px;
+      color: var(--err);
+      margin-top: 6px;
+      min-height: 16px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      opacity: 0;
+      transition: opacity .2s;
+    }
+    .error-msg.visible { opacity: 1; }
+
+    @keyframes shake {
+      0%,100% { transform: translateX(0); }
+      20%      { transform: translateX(-7px); }
+      40%      { transform: translateX(7px); }
+      60%      { transform: translateX(-5px); }
+      80%      { transform: translateX(5px); }
+    }
+    .shaking { animation: shake .4s ease; }
+
+    /* ── Button ──────────────────────────────────── */
+    .btn {
+      width: 100%;
+      padding: 13px;
+      margin-top: 8px;
+      background: var(--brown);
+      color: #FAF5EE;
+      border: none;
+      border-radius: 3px;
+      font-family: 'IBM Plex Sans', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: background .18s, transform .1s;
+      position: relative;
+      overflow: hidden;
+    }
+    .btn:hover  { background: var(--brown-h); }
+    .btn:active { transform: scale(.99); }
+    .btn:disabled { opacity: .6; cursor: not-allowed; transform: none; }
+
+    .btn .spinner {
+      width: 14px; height: 14px;
+      border: 2px solid rgba(255,255,255,.3);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin .6s linear infinite;
+      display: none;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .btn.loading .btn-label { opacity: 0; }
+    .btn.loading .spinner   { display: block; position: absolute; }
+
+    /* ── Footer ──────────────────────────────────── */
+    .card-footer {
+      margin-top: 28px;
+      padding-top: 20px;
+      border-top: 1px solid var(--paper-2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      font-size: 11px;
+      color: var(--ink-3);
+      letter-spacing: .04em;
+    }
+
+    .card-footer svg { width: 10px; height: 10px; opacity: .6; }
+
+    /* ── Fade-in ─────────────────────────────────── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .card { animation: fadeUp .45s cubic-bezier(.22,1,.36,1) both; }
+  </style>
+</head>
+<body>
+
+<div class="card" id="card">
+
+  <div class="shield-wrap">
+    <svg class="shield" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M24 4L6 12v14c0 10.5 7.7 20.3 18 22.9C35.3 46.3 42 36.5 42 26V12L24 4z"
+            fill="currentColor" fill-opacity=".12"
+            stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+      <path d="M17 24l5 5 9-9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </div>
+
+  <p class="eyebrow">Next-Gen IT · Client Portal</p>
+  <h1>Secure <em>Access</em></h1>
+
+  <div class="field">
+    <label for="password">Portal Password</label>
+    <div class="input-wrap" id="field-wrap">
+      <input
+        type="password"
+        id="password"
+        placeholder="Enter access key"
+        autocomplete="current-password"
+        autofocus
+      />
+      <button class="eye-btn" id="eye-btn" type="button" aria-label="Toggle visibility">
+        <svg id="eye-icon" viewBox="0 0 20 20" width="18" height="18" fill="currentColor">
+          <path d="M10 3C5.5 3 1.7 5.9 0 10c1.7 4.1 5.5 7 10 7s8.3-2.9 10-7c-1.7-4.1-5.5-7-10-7zm0 12a5 5 0 110-10 5 5 0 010 10zm0-8a3 3 0 100 6 3 3 0 000-6z"/>
+        </svg>
+      </button>
+    </div>
+    <div class="error-msg" id="error-msg">
+      <svg viewBox="0 0 16 16" fill="currentColor" width="12" height="12">
+        <path d="M8 1a7 7 0 100 14A7 7 0 008 1zm.75 4a.75.75 0 00-1.5 0v3.5a.75.75 0 001.5 0V5zm-.75 6a1 1 0 100-2 1 1 0 000 2z"/>
+      </svg>
+      <span id="error-text">Incorrect password. Please try again.</span>
+    </div>
+  </div>
+
+  <button class="btn" id="login-btn" type="button">
+    <span class="btn-label">Access Portal</span>
+    <span class="spinner"></span>
+  </button>
+
+  <div class="card-footer">
+    <svg viewBox="0 0 16 16" fill="currentColor">
+      <path d="M8 1a3 3 0 00-3 3v1H4a1 1 0 00-1 1v7a1 1 0 001 1h8a1 1 0 001-1V6a1 1 0 00-1-1h-1V4a3 3 0 00-3-3zM6 4a2 2 0 114 0v1H6V4zm2 5a1 1 0 100 2 1 1 0 000-2z" fill-rule="evenodd" clip-rule="evenodd"/>
+    </svg>
+    Encrypted · Private · Internal Use Only
+  </div>
+
+</div>
+
+<script>
+  /**
+   * ─────────────────────────────────────────────────────────
+   *  Next-Gen IT · Portal Auth
+   *
+   *  HOW TO CHANGE THE PASSWORD:
+   *  1. Open browser DevTools → Console
+   *  2. Run this one-liner:
+   *       hashPw('yourNewPassword').then(h => console.log(h))
+   *  3. Paste the result into CORRECT_HASH below.
+   *
+   *  async function hashPw(pw) {
+   *    const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(pw));
+   *    return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2,'0')).join('');
+   *  }
+   *
+   *  Default password: nextgenit2024
+   * ─────────────────────────────────────────────────────────
+   */
+  const CORRECT_HASH = 'a1c9e4b3a6f2d7e08c5b94f1e3d6a2b8c0f4e7d9a3b5c8f2e6d1a4b9c7f0e3d5';
+  // ↑ Replace this with your own hash. The value above is a placeholder.
+  //   Run hashPw('nextgenit2024') in the console to get the real hash.
+
+  const SESSION_KEY = 'ngit_portal_auth';
+  const PORTAL_URL  = './index.html';
+
+  // Redirect immediately if already authenticated
+  if (sessionStorage.getItem(SESSION_KEY) === '1') {
+    window.location.replace(PORTAL_URL);
+  }
+
+  async function sha256(str) {
+    const buf = await crypto.subtle.digest(
+      'SHA-256',
+      new TextEncoder().encode(str)
+    );
+    return [...new Uint8Array(buf)]
+      .map(b => b.toString(16).padStart(2, '0'))
+      .join('');
+  }
+
+  const pwInput   = document.getElementById('password');
+  const loginBtn  = document.getElementById('login-btn');
+  const errorMsg  = document.getElementById('error-msg');
+  const errorText = document.getElementById('error-text');
+  const fieldWrap = document.getElementById('field-wrap');
+  const eyeBtn    = document.getElementById('eye-btn');
+  const eyeIcon   = document.getElementById('eye-icon');
+
+  // Toggle password visibility
+  eyeBtn.addEventListener('click', () => {
+    const showing = pwInput.type === 'text';
+    pwInput.type = showing ? 'password' : 'text';
+    eyeIcon.innerHTML = showing
+      ? '<path d="M10 3C5.5 3 1.7 5.9 0 10c1.7 4.1 5.5 7 10 7s8.3-2.9 10-7c-1.7-4.1-5.5-7-10-7zm0 12a5 5 0 110-10 5 5 0 010 10zm0-8a3 3 0 100 6 3 3 0 000-6z"/>'
+      : '<path d="M17.7 3.7a1 1 0 00-1.4 0l-1.9 1.9A9.9 9.9 0 0010 5C5.5 5 1.7 7.9 0 12c.8 1.9 2 3.5 3.6 4.7L1.3 19a1 1 0 001.4 1.4l15-15a1 1 0 000-1.7zM10 9a3 3 0 012.6 4.2l-3.8-3.8A3 3 0 0110 9zm0 9c-1.5 0-2.9-.4-4.1-1.1L7.4 15a5 5 0 006.6-6.6l1.6-1.6C17.1 8.2 18.4 10 19 12c-1.7 4.1-5.5 7-9 7z"/>';
+  });
+
+  // Clear error on typing
+  pwInput.addEventListener('input', () => {
+    errorMsg.classList.remove('visible');
+    pwInput.style.borderColor = '';
+  });
+
+  // Submit on Enter
+  pwInput.addEventListener('keydown', e => {
+    if (e.key === 'Enter') attemptLogin();
+  });
+
+  loginBtn.addEventListener('click', attemptLogin);
+
+  async function attemptLogin() {
+    const pw = pwInput.value.trim();
+    if (!pw) {
+      showError('Please enter the portal password.');
+      return;
+    }
+
+    // Loading state
+    loginBtn.classList.add('loading');
+    loginBtn.disabled = true;
+    errorMsg.classList.remove('visible');
+
+    // Small artificial delay so the spinner is visible
+    await new Promise(r => setTimeout(r, 400));
+
+    const hash = await sha256(pw);
+
+    if (hash === CORRECT_HASH) {
+      sessionStorage.setItem(SESSION_KEY, '1');
+      window.location.replace(PORTAL_URL);
+    } else {
+      loginBtn.classList.remove('loading');
+      loginBtn.disabled = false;
+      showError('Incorrect password. Please try again.');
+      pwInput.value = '';
+      pwInput.focus();
+    }
+  }
+
+  function showError(msg) {
+    errorText.textContent = msg;
+    errorMsg.classList.add('visible');
+    pwInput.style.borderColor = 'var(--err)';
+    fieldWrap.classList.remove('shaking');
+    void fieldWrap.offsetWidth; // reflow
+    fieldWrap.classList.add('shaking');
+  }
+</script>
+</body>
+</html>
