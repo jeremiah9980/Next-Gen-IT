@@ -2,797 +2,1346 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Next-Gen IT · Domain Audit Portal</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Next-Gen IT | Domain Health Portal</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=Syne:wght@400;600;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@700;800&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
 <style>
-:root {
-  --bg:        #050a14;
-  --bg2:       #0b1221;
-  --bg3:       #101828;
-  --border:    rgba(0,180,255,0.12);
-  --border2:   rgba(0,180,255,0.25);
-  --blue:      #00b4ff;
-  --blue-dim:  rgba(0,180,255,0.08);
-  --blue-glow: 0 0 20px rgba(0,180,255,0.2);
-  --green:     #00e5a0;
-  --red:       #ff4d6a;
-  --amber:     #ffb547;
-  --text:      #e8f0fe;
-  --muted:     #4d6080;
-  --mono:      'IBM Plex Mono', monospace;
-  --sans:      'Syne', sans-serif;
-}
-*{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth}
-body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:100vh;overflow-x:hidden}
-  <script src="./auth.js"></script>
+/* ── RESET & TOKENS ─────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-/* grid bg */
-body::before{
-  content:'';position:fixed;inset:0;
-  background-image:
-    linear-gradient(rgba(0,180,255,0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0,180,255,0.03) 1px, transparent 1px);
-  background-size:40px 40px;
-  pointer-events:none;z-index:0;
+:root {
+  --bg:        #08080d;
+  --bg2:       #0f0f17;
+  --bg3:       #161622;
+  --border:    rgba(255,255,255,.07);
+  --border-hi: rgba(200,75,47,.4);
+  --red:       #c84b2f;
+  --red-dim:   rgba(200,75,47,.15);
+  --red-glow:  rgba(200,75,47,.25);
+  --amber:     #d4922a;
+  --green:     #3aab6f;
+  --text:      #e8e4df;
+  --text-dim:  #8a8580;
+  --text-mute: #4a4642;
+  --mono:      'DM Mono', monospace;
+  --display:   'Syne', sans-serif;
+  --body:      'Instrument Serif', serif;
+  --radius:    6px;
+}
+
+html, body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 14px;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── NOISE OVERLAY ──────────────────────────────────────── */
+body::before {
+  content: '';
+  position: fixed; inset: 0; z-index: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+  background-size: 200px;
+  pointer-events: none;
+}
+
+/* ── AUTH GATE ──────────────────────────────────────────── */
+#auth-gate {
+  position: fixed; inset: 0; z-index: 1000;
+  background: var(--bg);
+  display: flex; align-items: center; justify-content: center;
+  transition: opacity .4s ease;
+}
+#auth-gate.unlocked {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.auth-card {
+  width: 100%; max-width: 400px;
+  padding: 48px 40px;
+  border: 1px solid var(--border-hi);
+  background: var(--bg2);
+  position: relative;
+}
+.auth-card::before {
+  content: '';
+  position: absolute; top: -1px; left: 0; width: 80px; height: 3px;
+  background: var(--red);
+}
+
+.auth-logo {
+  font-family: var(--display);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--red);
+  margin-bottom: 32px;
+}
+.auth-logo span { color: var(--text-dim); }
+
+.auth-title {
+  font-family: var(--display);
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+.auth-sub {
+  font-size: 12px;
+  color: var(--text-dim);
+  margin-bottom: 32px;
+  line-height: 1.6;
+}
+
+.field-label {
+  font-size: 10px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: 8px;
+}
+.auth-input {
+  width: 100%;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 15px;
+  letter-spacing: .12em;
+  padding: 12px 16px;
+  outline: none;
+  transition: border-color .2s;
+  border-radius: var(--radius);
+}
+.auth-input:focus { border-color: var(--red); }
+.auth-input.error { border-color: var(--red); animation: shake .3s ease; }
+
+@keyframes shake {
+  0%,100% { transform: translateX(0); }
+  25% { transform: translateX(-6px); }
+  75% { transform: translateX(6px); }
+}
+
+.btn-unlock {
+  margin-top: 16px;
+  width: 100%;
+  background: var(--red);
+  color: #fff;
+  font-family: var(--display);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  border: none;
+  padding: 14px;
+  cursor: pointer;
+  border-radius: var(--radius);
+  transition: background .2s, transform .1s;
+}
+.btn-unlock:hover { background: #d9583a; }
+.btn-unlock:active { transform: scale(.98); }
+
+.auth-error {
+  font-size: 11px;
+  color: var(--red);
+  margin-top: 10px;
+  min-height: 16px;
+}
+
+.lock-icon {
+  width: 36px; height: 36px;
+  margin-bottom: 24px;
+  color: var(--red);
+}
+
+/* ── MAIN LAYOUT ────────────────────────────────────────── */
+#app {
+  position: relative; z-index: 1;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 40px 24px 80px;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity .5s ease, transform .5s ease;
+}
+#app.visible {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 /* ── HEADER ─────────────────────────────────────────────── */
-header{
-  position:relative;z-index:10;
-  padding:20px 32px;
-  border-bottom:1px solid var(--border);
-  display:flex;align-items:center;justify-content:space-between;
-  background:linear-gradient(180deg,rgba(0,10,25,0.95),transparent);
-  backdrop-filter:blur(8px);
-}
-.logo{display:flex;align-items:center;gap:12px}
-.logo-mark{
-  width:36px;height:36px;border-radius:8px;
-  background:var(--blue);
-  display:flex;align-items:center;justify-content:center;
-  font-family:var(--mono);font-weight:600;font-size:14px;color:#000;
-  box-shadow:var(--blue-glow);
-}
-.logo-text{font-size:15px;font-weight:600;letter-spacing:.04em}
-.logo-text span{color:var(--blue)}
-nav{display:flex;gap:8px;align-items:center}
-.btn-settings{
-  font-family:var(--mono);font-size:12px;color:var(--muted);
-  background:transparent;border:1px solid var(--border);
-  border-radius:6px;padding:7px 14px;cursor:pointer;
-  transition:all .2s;letter-spacing:.06em;
-}
-.btn-settings:hover{color:var(--blue);border-color:var(--border2)}
-
-/* ── HERO ────────────────────────────────────────────────── */
-.hero{
-  position:relative;z-index:10;
-  padding:64px 32px 48px;
-  text-align:center;max-width:680px;margin:0 auto;
-}
-.hero-badge{
-  display:inline-flex;align-items:center;gap:8px;
-  font-family:var(--mono);font-size:11px;letter-spacing:.1em;color:var(--blue);
-  border:1px solid var(--border2);border-radius:20px;padding:6px 16px;
-  margin-bottom:24px;text-transform:uppercase;
-}
-.pulse{
-  width:7px;height:7px;border-radius:50%;background:var(--green);
-  animation:pulse 2s ease-in-out infinite;
-}
-@keyframes pulse{0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(0,229,160,.4)}50%{opacity:.7;box-shadow:0 0 0 6px rgba(0,229,160,0)}}
-h1{font-size:clamp(28px,5vw,48px);font-weight:800;line-height:1.1;margin-bottom:16px}
-h1 em{font-style:normal;color:var(--blue)}
-.hero-sub{color:var(--muted);font-size:16px;line-height:1.6;font-family:var(--mono)}
-
-/* ── AUDIT FORM ──────────────────────────────────────────── */
-.form-wrap{
-  position:relative;z-index:10;
-  max-width:560px;margin:0 auto 64px;
-  padding:0 32px;
-}
-.input-row{
-  display:flex;gap:0;
-  background:var(--bg2);
-  border:1px solid var(--border2);
-  border-radius:12px;
-  overflow:hidden;
-  box-shadow:var(--blue-glow);
-  transition:box-shadow .3s;
-}
-.input-row:focus-within{box-shadow:0 0 32px rgba(0,180,255,0.3)}
-.domain-input{
-  flex:1;
-  background:transparent;
-  border:none;outline:none;
-  font-family:var(--mono);font-size:15px;
-  color:var(--text);
-  padding:16px 20px;
-  letter-spacing:.02em;
-}
-.domain-input::placeholder{color:var(--muted)}
-.btn-run{
-  font-family:var(--sans);font-weight:600;font-size:14px;
-  background:var(--blue);color:#000;
-  border:none;cursor:pointer;
-  padding:16px 28px;
-  letter-spacing:.04em;
-  transition:all .2s;
-  white-space:nowrap;
-}
-.btn-run:hover{background:#33c5ff}
-.btn-run:active{transform:scale(.98)}
-.btn-run:disabled{opacity:.4;cursor:not-allowed}
-.input-hint{
-  font-family:var(--mono);font-size:11px;color:var(--muted);
-  text-align:center;margin-top:10px;letter-spacing:.04em;
+.portal-header {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  margin-bottom: 48px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--border);
 }
 
-/* ── PROGRESS ────────────────────────────────────────────── */
-.progress-section{
-  position:relative;z-index:10;
-  max-width:680px;margin:0 auto 64px;padding:0 32px;
-  display:none;
+.brand {
+  font-family: var(--display);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--red);
 }
-.progress-section.visible{display:block}
-.progress-card{
-  background:var(--bg2);
-  border:1px solid var(--border);
-  border-radius:16px;
-  padding:28px;
-  overflow:hidden;
-  position:relative;
-}
-.progress-card::before{
-  content:'';position:absolute;inset:0;
-  background:linear-gradient(135deg,rgba(0,180,255,0.03),transparent);
-  pointer-events:none;
-}
-.progress-label{
-  font-family:var(--mono);font-size:11px;letter-spacing:.1em;
-  color:var(--blue);text-transform:uppercase;margin-bottom:20px;
-  display:flex;align-items:center;gap:8px;
-}
-.scan-domain{color:var(--text);font-weight:600}
-.steps{display:flex;flex-direction:column;gap:0}
-.step{
-  display:flex;align-items:center;gap:16px;
-  padding:12px 0;
-  border-bottom:1px solid rgba(255,255,255,0.04);
-  transition:all .3s;
-}
-.step:last-child{border-bottom:none}
-.step-icon{
-  width:28px;height:28px;border-radius:50%;
-  border:1px solid var(--border);
-  display:flex;align-items:center;justify-content:center;
-  font-size:12px;flex-shrink:0;
-  transition:all .3s;
-  background:var(--bg3);
-}
-.step.active .step-icon{
-  border-color:var(--blue);background:var(--blue-dim);
-  animation:spin-pulse 1.5s ease-in-out infinite;
-}
-.step.done .step-icon{border-color:var(--green);background:rgba(0,229,160,.1);color:var(--green)}
-.step.error .step-icon{border-color:var(--red);background:rgba(255,77,106,.1);color:var(--red)}
-@keyframes spin-pulse{0%,100%{box-shadow:0 0 0 0 rgba(0,180,255,.3)}50%{box-shadow:0 0 0 6px rgba(0,180,255,0)}}
-.step-info{flex:1}
-.step-title{font-size:14px;font-weight:600;color:var(--muted);transition:color .3s}
-.step.active .step-title{color:var(--text)}
-.step.done .step-title{color:var(--text)}
-.step-sub{font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:2px}
-.step.active .step-sub{color:var(--blue)}
-.step-time{font-family:var(--mono);font-size:11px;color:var(--muted)}
-.step.done .step-time{color:var(--green)}
-
-.progress-bar-wrap{margin-top:20px;background:var(--bg3);border-radius:4px;height:3px;overflow:hidden}
-.progress-bar{height:100%;background:linear-gradient(90deg,var(--blue),var(--green));border-radius:4px;width:0%;transition:width .8s ease}
-
-.status-msg{
-  font-family:var(--mono);font-size:12px;color:var(--muted);
-  text-align:center;margin-top:16px;min-height:18px;
-}
-.status-msg.success{color:var(--green)}
-.status-msg.error{color:var(--red)}
-
-/* report-ready banner */
-.report-banner{
-  display:none;
-  background:rgba(0,229,160,.06);
-  border:1px solid rgba(0,229,160,.25);
-  border-radius:10px;
-  padding:16px 20px;
-  margin-top:20px;
-  display:none;align-items:center;gap:14px;
-}
-.report-banner.visible{display:flex}
-.report-banner-icon{font-size:20px}
-.report-banner-text{flex:1}
-.report-banner-text strong{display:block;font-size:14px;color:var(--green);margin-bottom:2px}
-.report-banner-text span{font-family:var(--mono);font-size:11px;color:var(--muted)}
-.btn-view-report{
-  font-family:var(--mono);font-size:12px;font-weight:600;
-  background:var(--green);color:#000;
-  border:none;border-radius:6px;
-  padding:8px 16px;cursor:pointer;
-  text-decoration:none;white-space:nowrap;letter-spacing:.04em;
-}
-.btn-view-report:hover{background:#33edb5}
-
-/* ── SECTION HEADING ─────────────────────────────────────── */
-.section{
-  position:relative;z-index:10;
-  max-width:960px;margin:0 auto 80px;padding:0 32px;
-}
-.section-header{
-  display:flex;align-items:baseline;justify-content:space-between;
-  margin-bottom:24px;padding-bottom:16px;
-  border-bottom:1px solid var(--border);
-}
-.section-title{
-  font-size:13px;font-family:var(--mono);
-  letter-spacing:.1em;text-transform:uppercase;color:var(--blue);
-}
-.report-count{
-  font-family:var(--mono);font-size:11px;color:var(--muted);
+.brand-sub {
+  font-size: 10px;
+  color: var(--text-dim);
+  letter-spacing: .1em;
+  margin-top: 3px;
 }
 
-/* ── REPORTS GRID ────────────────────────────────────────── */
-.reports-grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
-  gap:16px;
+.session-info {
+  text-align: right;
+  font-size: 10px;
+  color: var(--text-mute);
 }
-.report-card{
-  background:var(--bg2);
-  border:1px solid var(--border);
-  border-radius:12px;
-  padding:20px;
-  text-decoration:none;
-  display:block;
-  transition:all .25s;
-  position:relative;overflow:hidden;
+.session-dot {
+  display: inline-block;
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--green);
+  margin-right: 5px;
+  animation: pulse-green 2s infinite;
 }
-.report-card:hover{
-  border-color:var(--border2);
-  transform:translateY(-2px);
-  box-shadow:var(--blue-glow);
+@keyframes pulse-green {
+  0%,100% { opacity: 1; }
+  50% { opacity: .4; }
 }
-.report-card::before{
-  content:'';position:absolute;top:0;left:0;right:0;height:2px;
-  background:linear-gradient(90deg,var(--blue),var(--green));
-  opacity:0;transition:opacity .25s;
-}
-.report-card:hover::before{opacity:1}
-.card-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px}
-.card-domain{font-size:15px;font-weight:600;color:var(--text)}
-.grade-badge{
-  width:34px;height:34px;border-radius:8px;
-  display:flex;align-items:center;justify-content:center;
-  font-family:var(--mono);font-weight:600;font-size:15px;
-  flex-shrink:0;
-}
-.grade-A{background:rgba(0,229,160,.12);color:var(--green);border:1px solid rgba(0,229,160,.3)}
-.grade-B{background:rgba(0,180,255,.12);color:var(--blue);border:1px solid rgba(0,180,255,.3)}
-.grade-C{background:rgba(255,181,71,.1);color:var(--amber);border:1px solid rgba(255,181,71,.3)}
-.grade-D,.grade-F{background:rgba(255,77,106,.1);color:var(--red);border:1px solid rgba(255,77,106,.3)}
-.card-score{font-family:var(--mono);font-size:12px;color:var(--muted);margin-bottom:8px}
-.card-score strong{color:var(--text)}
-.card-date{font-family:var(--mono);font-size:11px;color:var(--muted)}
-.score-mini-bar{background:var(--bg3);border-radius:2px;height:3px;margin-top:10px;overflow:hidden}
-.score-mini-fill{height:100%;border-radius:2px}
 
-.empty-state{
-  text-align:center;padding:48px 24px;
-  color:var(--muted);font-family:var(--mono);font-size:13px;
+.portal-title {
+  font-family: var(--display);
+  font-size: 36px;
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -.02em;
+  color: var(--text);
+  margin-bottom: 8px;
 }
-.empty-state-icon{font-size:32px;margin-bottom:12px;opacity:.4}
+.portal-title em { color: var(--red); font-style: normal; }
 
-/* ── SETTINGS MODAL ──────────────────────────────────────── */
-.modal-overlay{
-  display:none;position:fixed;inset:0;
-  background:rgba(5,10,20,.85);backdrop-filter:blur(8px);
-  z-index:100;align-items:center;justify-content:center;
+.portal-desc {
+  font-family: var(--body);
+  font-style: italic;
+  font-size: 15px;
+  color: var(--text-dim);
+  max-width: 500px;
 }
-.modal-overlay.open{display:flex}
-.modal{
-  background:var(--bg2);
-  border:1px solid var(--border2);
-  border-radius:16px;
-  padding:32px;
-  width:min(480px,90vw);
-  box-shadow:0 24px 64px rgba(0,0,0,.6);
-}
-.modal h2{font-size:18px;font-weight:800;margin-bottom:6px}
-.modal p{font-family:var(--mono);font-size:12px;color:var(--muted);margin-bottom:24px;line-height:1.6}
-.form-group{margin-bottom:20px}
-.form-group label{
-  display:block;font-family:var(--mono);font-size:11px;
-  letter-spacing:.08em;text-transform:uppercase;color:var(--blue);
-  margin-bottom:8px;
-}
-.form-group input{
-  width:100%;background:var(--bg3);border:1px solid var(--border);
-  border-radius:8px;padding:12px 14px;
-  font-family:var(--mono);font-size:13px;color:var(--text);
-  outline:none;transition:border-color .2s;
-}
-.form-group input:focus{border-color:var(--border2)}
-.modal-hint{
-  font-family:var(--mono);font-size:11px;color:var(--muted);
-  margin-top:8px;
-}
-.modal-hint a{color:var(--blue);text-decoration:none}
-.modal-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:24px}
-.btn-cancel{
-  font-family:var(--sans);font-size:13px;font-weight:600;
-  background:transparent;border:1px solid var(--border);
-  color:var(--muted);border-radius:8px;padding:10px 20px;cursor:pointer;
-  transition:all .2s;
-}
-.btn-cancel:hover{border-color:var(--border2);color:var(--text)}
-.btn-save{
-  font-family:var(--sans);font-size:13px;font-weight:600;
-  background:var(--blue);color:#000;
-  border:none;border-radius:8px;padding:10px 20px;cursor:pointer;
-  transition:all .2s;
-}
-.btn-save:hover{background:#33c5ff}
 
-/* ── FOOTER ──────────────────────────────────────────────── */
-footer{
-  position:relative;z-index:10;
-  border-top:1px solid var(--border);
-  padding:24px 32px;
-  display:flex;justify-content:space-between;align-items:center;
+/* ── SCAN FORM ──────────────────────────────────────────── */
+.scan-form {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-top: 3px solid var(--red);
+  padding: 28px 28px 24px;
+  margin-bottom: 32px;
 }
-.footer-l{font-family:var(--mono);font-size:11px;color:var(--muted)}
-.footer-r{font-family:var(--mono);font-size:11px;color:var(--muted)}
-.footer-r a{color:var(--blue);text-decoration:none}
+
+.scan-row {
+  display: flex; gap: 12px; align-items: flex-end;
+  flex-wrap: wrap;
+}
+
+.domain-field { flex: 1; min-width: 200px; }
+.domain-input {
+  width: 100%;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 14px;
+  padding: 12px 16px;
+  outline: none;
+  transition: border-color .2s;
+  border-radius: var(--radius);
+}
+.domain-input:focus { border-color: var(--red); }
+.domain-input::placeholder { color: var(--text-mute); }
+
+.btn-scan {
+  background: var(--red);
+  color: #fff;
+  font-family: var(--display);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  border: none;
+  padding: 12px 24px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background .2s;
+  border-radius: var(--radius);
+}
+.btn-scan:hover { background: #d9583a; }
+.btn-scan:disabled { opacity: .4; cursor: not-allowed; }
+
+/* ── PROGRESS ───────────────────────────────────────────── */
+#progress-section { display: none; margin-bottom: 24px; }
+#progress-section.active { display: block; }
+
+.progress-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  padding: 20px 24px;
+}
+.progress-title {
+  font-size: 11px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: 12px;
+}
+.progress-bar-wrap {
+  height: 3px;
+  background: var(--bg3);
+  margin-bottom: 16px;
+  border-radius: 2px;
+  overflow: hidden;
+}
+.progress-bar-fill {
+  height: 100%;
+  background: var(--red);
+  width: 0%;
+  transition: width .4s ease;
+  border-radius: 2px;
+}
+.progress-steps { display: flex; flex-direction: column; gap: 6px; }
+.progress-step {
+  font-size: 12px;
+  color: var(--text-mute);
+  display: flex; align-items: center; gap: 8px;
+  transition: color .3s;
+}
+.progress-step.active { color: var(--text); }
+.progress-step.done { color: var(--green); }
+.step-dot {
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: currentColor;
+  flex-shrink: 0;
+}
+
+/* ── RESULTS ────────────────────────────────────────────── */
+#results-section { display: none; }
+#results-section.active { display: block; }
+
+.results-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 24px;
+  flex-wrap: wrap; gap: 12px;
+}
+.results-domain {
+  font-family: var(--display);
+  font-size: 24px;
+  font-weight: 800;
+}
+.scan-timestamp {
+  font-size: 11px;
+  color: var(--text-dim);
+}
+
+/* GRADE BADGE */
+.grade-badge {
+  display: flex; align-items: center; gap: 16px;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  padding: 16px 20px;
+  margin-bottom: 24px;
+}
+.grade-letter {
+  font-family: var(--display);
+  font-size: 52px;
+  font-weight: 800;
+  line-height: 1;
+}
+.grade-A { color: var(--green); }
+.grade-B { color: #6ab04c; }
+.grade-C { color: var(--amber); }
+.grade-D { color: #e07b39; }
+.grade-F { color: var(--red); }
+
+.grade-meta { flex: 1; }
+.grade-score { font-size: 16px; font-weight: 500; margin-bottom: 4px; }
+.grade-label {
+  font-size: 11px;
+  color: var(--text-dim);
+  letter-spacing: .08em;
+}
+
+/* SECTION BLOCKS */
+.result-section { margin-bottom: 24px; }
+.section-title {
+  font-size: 10px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+}
+
+/* PROVIDER TABLE */
+.provider-table { width: 100%; border-collapse: collapse; }
+.provider-table td {
+  padding: 9px 12px;
+  font-size: 12px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+}
+.provider-table td:first-child {
+  color: var(--text-dim);
+  width: 160px;
+  text-transform: uppercase;
+  font-size: 10px;
+  letter-spacing: .08em;
+}
+.provider-table td:last-child { color: var(--text); }
+
+/* CHECK GRID */
+.check-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 8px;
+}
+.check-item {
+  display: flex; align-items: flex-start; gap: 10px;
+  background: var(--bg2);
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+.check-icon { font-size: 14px; flex-shrink: 0; margin-top: 1px; }
+.check-label { font-size: 12px; line-height: 1.4; }
+.check-detail { font-size: 11px; color: var(--text-dim); margin-top: 2px; }
+
+/* SCORE TABLE */
+.score-table { width: 100%; border-collapse: collapse; }
+.score-table tr { border-bottom: 1px solid var(--border); }
+.score-table td { padding: 10px 12px; font-size: 12px; }
+.score-table td:first-child { color: var(--text-dim); }
+.score-table td:last-child { text-align: right; font-weight: 500; }
+.score-bar-cell { width: 140px; }
+.score-bar {
+  height: 4px;
+  background: var(--bg3);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.score-bar-fill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 1s ease;
+}
+
+/* FRAUD CALLOUT */
+.fraud-callout {
+  border: 2px solid var(--red);
+  background: rgba(200,75,47,.06);
+  padding: 20px 24px;
+  margin-bottom: 24px;
+}
+.fraud-callout-title {
+  font-family: var(--display);
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  color: var(--red);
+  margin-bottom: 10px;
+  display: flex; align-items: center; gap: 8px;
+}
+.fraud-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-top: 14px;
+}
+.fraud-stat { text-align: center; }
+.fraud-stat-num {
+  font-family: var(--display);
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--red);
+}
+.fraud-stat-label { font-size: 10px; color: var(--text-dim); margin-top: 2px; }
+
+/* RECOMMENDATIONS */
+.rec-list { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+.rec-item {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--red);
+  padding: 12px 14px;
+  font-size: 12px;
+  line-height: 1.5;
+  border-radius: 0 var(--radius) var(--radius) 0;
+}
+.rec-priority {
+  font-size: 10px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--red);
+  margin-bottom: 3px;
+}
+
+/* ── ACTION BAR ─────────────────────────────────────────── */
+#action-bar {
+  position: sticky;
+  bottom: 0;
+  background: var(--bg);
+  border-top: 1px solid var(--border-hi);
+  padding: 16px 0;
+  margin-top: 32px;
+  display: none;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  z-index: 100;
+}
+#action-bar.visible { display: flex; }
+
+.action-label {
+  font-size: 10px;
+  color: var(--text-dim);
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  margin-right: 4px;
+}
+
+.button-link {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: var(--display);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  padding: 10px 18px;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  border-radius: var(--radius);
+  transition: background .2s, opacity .2s;
+}
+.button-link.primary {
+  background: var(--red);
+  color: #fff;
+}
+.button-link.primary:hover { background: #d9583a; }
+.button-link.secondary {
+  background: var(--bg2);
+  color: var(--text);
+  border: 1px solid var(--border-hi);
+}
+.button-link.secondary:hover { background: var(--bg3); }
+.button-link.ghost {
+  background: transparent;
+  color: var(--text-dim);
+  border: 1px solid var(--border);
+}
+.button-link.ghost:hover { color: var(--text); border-color: var(--border-hi); }
+.button-link.hidden { display: none; }
+
+#copyShareBtn {
+  display: none;
+  font-family: var(--display);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  padding: 10px 18px;
+  background: transparent;
+  color: var(--text-dim);
+  border: 1px solid var(--border);
+  cursor: pointer;
+  border-radius: var(--radius);
+  transition: color .2s, border-color .2s;
+}
+#copyShareBtn:hover { color: var(--text); border-color: var(--border-hi); }
+#copyShareBtn.visible { display: inline-flex; align-items: center; gap: 6px; }
+#copyShareBtn.copied { color: var(--green); border-color: var(--green); }
+
+/* ── LOGOUT ─────────────────────────────────────────────── */
+#logout-btn {
+  background: none;
+  border: none;
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--text-mute);
+  cursor: pointer;
+  letter-spacing: .08em;
+  padding: 4px 8px;
+  transition: color .2s;
+}
+#logout-btn:hover { color: var(--red); }
+
+/* ── UTIL ───────────────────────────────────────────────── */
+.hidden { display: none !important; }
+.tag-pass { color: var(--green); }
+.tag-warn { color: var(--amber); }
+.tag-fail { color: var(--red); }
 </style>
 </head>
 <body>
 
-<!-- SETTINGS MODAL -->
-<div class="modal-overlay" id="modalOverlay">
-  <div class="modal">
-    <h2>Configuration</h2>
-    <p>Enter your GitHub Personal Access Token to enable audit publishing. The token is stored locally in your browser only.</p>
-    <div class="form-group">
-      <label>GitHub Personal Access Token</label>
-      <input type="password" id="ghTokenInput" placeholder="github_pat_...">
-      <div class="modal-hint">
-        Needs <strong>Actions: write</strong> permission ·
-        <a href="https://github.com/settings/tokens?type=beta" target="_blank">Create token ↗</a>
-      </div>
-    </div>
-    <div class="modal-actions">
-      <button class="btn-cancel" onclick="closeSettings()">Cancel</button>
-      <button class="btn-save" onclick="saveSettings()">Save</button>
-    </div>
+<!-- ═══════════════════════════════════════════════════════ -->
+<!--  AUTH GATE                                             -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div id="auth-gate">
+  <div class="auth-card">
+    <svg class="lock-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="3" y="11" width="18" height="11" rx="2"/>
+      <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+    </svg>
+    <div class="auth-logo">Next-Gen IT <span>/ Operator Portal</span></div>
+    <div class="auth-title">Access Required</div>
+    <p class="auth-sub">This portal is restricted to authorized operators. Enter your access code to continue.</p>
+    <div class="field-label">Access Code</div>
+    <input type="password" id="passcode-input" class="auth-input" placeholder="••••••••" autocomplete="off" maxlength="20">
+    <div class="auth-error" id="auth-error"></div>
+    <button class="btn-unlock" onclick="attemptAuth()">Unlock Portal →</button>
   </div>
 </div>
 
-<!-- HEADER -->
-<header>
-  <div class="logo">
-    <div class="logo-mark">NG</div>
-    <div class="logo-text"><span>Next-Gen</span> IT</div>
-  </div>
-  <nav>
-    <button class="btn-settings" onclick="openSettings()">⚙ Config</button>
-  </nav>
-</header>
+<!-- ═══════════════════════════════════════════════════════ -->
+<!--  MAIN APP                                              -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div id="app">
 
-<!-- HERO -->
-<div class="hero">
-  <div class="hero-badge"><span class="pulse"></span> Audit Engine Online</div>
-  <h1>Domain Health<br><em>Audit Portal</em></h1>
-  <p class="hero-sub">Full-spectrum analysis — DNS · Email · SEO · Marketing · Tech Stack</p>
-</div>
-
-<!-- FORM -->
-<div class="form-wrap">
-  <div class="input-row">
-    <input
-      class="domain-input"
-      id="domainInput"
-      type="text"
-      placeholder="starskyowen.com"
-      autocomplete="off"
-      spellcheck="false"
-      onkeydown="if(event.key==='Enter')runAudit()"
-    >
-    <button class="btn-run" id="runBtn" onclick="runAudit()">Run Audit →</button>
-  </div>
-  <div class="input-hint">Enter any domain · Results published automatically</div>
-</div>
-
-<!-- PROGRESS -->
-<div class="progress-section" id="progressSection">
-  <div class="progress-card">
-    <div class="progress-label">
-      <span class="pulse"></span>
-      Scanning <span class="scan-domain" id="scanDomain"></span>
+  <!-- HEADER -->
+  <header class="portal-header">
+    <div>
+      <div class="brand">Next-Gen IT</div>
+      <div class="brand-sub">Domain Health Portal · v2.1</div>
     </div>
-    <div class="steps" id="stepsContainer">
-      <div class="step" id="s0">
-        <div class="step-icon">1</div>
-        <div class="step-info">
-          <div class="step-title">Triggering workflow</div>
-          <div class="step-sub">Dispatching to GitHub Actions</div>
-        </div>
-        <div class="step-time" id="t0">—</div>
-      </div>
-      <div class="step" id="s1">
-        <div class="step-icon">2</div>
-        <div class="step-info">
-          <div class="step-title">Infrastructure scan</div>
-          <div class="step-sub">WHOIS · DNS · HTTP headers · IP/ASN</div>
-        </div>
-        <div class="step-time" id="t1">—</div>
-      </div>
-      <div class="step" id="s2">
-        <div class="step-icon">3</div>
-        <div class="step-info">
-          <div class="step-title">Email health check</div>
-          <div class="step-sub">MXToolbox · SPF · DMARC · Blacklist</div>
-        </div>
-        <div class="step-time" id="t2">—</div>
-      </div>
-      <div class="step" id="s3">
-        <div class="step-icon">4</div>
-        <div class="step-info">
-          <div class="step-title">Website analysis</div>
-          <div class="step-sub">SEO · Marketing · Social · Tech stack</div>
-        </div>
-        <div class="step-time" id="t3">—</div>
-      </div>
-      <div class="step" id="s4">
-        <div class="step-icon">5</div>
-        <div class="step-info">
-          <div class="step-title">AI report generation</div>
-          <div class="step-sub">Scoring · Recommendations · Pitch angle</div>
-        </div>
-        <div class="step-time" id="t4">—</div>
-      </div>
-      <div class="step" id="s5">
-        <div class="step-icon">6</div>
-        <div class="step-info">
-          <div class="step-title">Publishing to repository</div>
-          <div class="step-sub">Committing HTML report · Updating manifest</div>
-        </div>
-        <div class="step-time" id="t5">—</div>
-      </div>
+    <div class="session-info">
+      <div><span class="session-dot"></span>Session Active</div>
+      <div id="session-time" style="margin-top:4px;"></div>
+      <button id="logout-btn" onclick="logout()">[ lock ]</button>
     </div>
-    <div class="progress-bar-wrap"><div class="progress-bar" id="progressBar"></div></div>
-    <div class="status-msg" id="statusMsg">Initializing…</div>
-    <div class="report-banner" id="reportBanner">
-      <div class="report-banner-icon">✅</div>
-      <div class="report-banner-text">
-        <strong>Report Published!</strong>
-        <span id="reportDomain"></span>
+  </header>
+
+  <div>
+    <div class="portal-title">Domain <em>Audit</em><br>Engine</div>
+    <p class="portal-desc">External domain & email health analysis for real estate team prospects. Enter any domain to generate a full report + client runbook.</p>
+  </div>
+
+  <br><br>
+
+  <!-- SCAN FORM -->
+  <div class="scan-form">
+    <div class="field-label">Target Domain</div>
+    <div class="scan-row">
+      <div class="domain-field">
+        <input type="text" id="domain-input" class="domain-input"
+          placeholder="starskyowen.com" autocomplete="off" autocapitalize="none"
+          onkeydown="if(event.key==='Enter') startAudit()">
       </div>
-      <a class="btn-view-report" id="reportLink" href="#" target="_blank">View Report →</a>
+      <button class="btn-scan" onclick="startAudit()" id="scan-btn">Run Audit →</button>
+    </div>
+    <div style="margin-top:12px;font-size:11px;color:var(--text-mute);">
+      Checks DNS · SPF · DMARC · MX · Blacklists · Web stack · SEO · Marketing
     </div>
   </div>
-</div>
 
-<!-- PUBLISHED REPORTS -->
-<div class="section" id="reportsSection">
-  <div class="section-header">
-    <span class="section-title">Published Reports</span>
-    <span class="report-count" id="reportCount">Loading…</span>
-  </div>
-  <div class="reports-grid" id="reportsGrid">
-    <div class="empty-state">
-      <div class="empty-state-icon">📋</div>
-      Loading reports…
+  <!-- PROGRESS -->
+  <div id="progress-section">
+    <div class="progress-card">
+      <div class="progress-title">Scanning <span id="scan-domain-label"></span></div>
+      <div class="progress-bar-wrap">
+        <div class="progress-bar-fill" id="progress-fill"></div>
+      </div>
+      <div class="progress-steps" id="progress-steps"></div>
     </div>
   </div>
-</div>
 
-<!-- FOOTER -->
-<footer>
-  <div class="footer-l">Next-Gen IT Domain Audit Portal · v2.0</div>
-  <div class="footer-r">
-    Powered by <a href="https://github.com/jeremiah9980/Next-Gen-IT" target="_blank">jeremiah9980/Next-Gen-IT ↗</a>
+  <!-- RESULTS -->
+  <div id="results-section">
+
+    <!-- Domain header + grade -->
+    <div class="results-header">
+      <div>
+        <div class="results-domain" id="r-domain"></div>
+        <div class="scan-timestamp" id="r-timestamp"></div>
+      </div>
+    </div>
+
+    <!-- Grade badge -->
+    <div class="grade-badge">
+      <div class="grade-letter" id="r-grade-letter"></div>
+      <div class="grade-meta">
+        <div class="grade-score" id="r-grade-score"></div>
+        <div class="grade-label" id="r-grade-label"></div>
+      </div>
+    </div>
+
+    <!-- Wire fraud callout (shown when DMARC not enforced) -->
+    <div class="fraud-callout" id="fraud-callout" style="display:none;">
+      <div class="fraud-callout-title">⚠ Wire Fraud Risk — DMARC Not Enforced</div>
+      <p style="font-size:12px;line-height:1.6;color:var(--text-dim);">Without DMARC enforcement, anyone can send email appearing to be from this domain. For real estate teams, this is the primary attack vector for wire fraud and business email compromise.</p>
+      <div class="fraud-stats">
+        <div class="fraud-stat">
+          <div class="fraud-stat-num">$275M</div>
+          <div class="fraud-stat-label">RE fraud losses · IC3 2025</div>
+        </div>
+        <div class="fraud-stat">
+          <div class="fraud-stat-num">12,368</div>
+          <div class="fraud-stat-label">Complaints filed · FBI</div>
+        </div>
+        <div class="fraud-stat">
+          <div class="fraud-stat-num">$3.04B</div>
+          <div class="fraud-stat-label">BEC total losses · 2025</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Provider table -->
+    <div class="result-section">
+      <div class="section-title">Infrastructure</div>
+      <table class="provider-table" id="r-providers"></table>
+    </div>
+
+    <!-- Email health -->
+    <div class="result-section">
+      <div class="section-title">Email Authentication</div>
+      <div class="check-grid" id="r-email-checks"></div>
+    </div>
+
+    <!-- Audit scorecard -->
+    <div class="result-section">
+      <div class="section-title">Audit Scorecard</div>
+      <table class="score-table" id="r-scorecard"></table>
+    </div>
+
+    <!-- Recommendations -->
+    <div class="result-section">
+      <div class="section-title">Priority Recommendations</div>
+      <ul class="rec-list" id="r-recs"></ul>
+    </div>
+
+  </div><!-- /results-section -->
+
+  <!-- ACTION BAR (sticky bottom) -->
+  <div id="action-bar">
+    <span class="action-label">Deliverables</span>
+
+    <!-- Runbook link — opens runbook.html in new tab -->
+    <a id="runbookLink" class="button-link secondary hidden" target="_blank">
+      📋 Open Runbook
+    </a>
+
+    <!-- Share with client — copies shareable URL -->
+    <a id="shareRunbookLink" class="button-link primary hidden" target="_blank">
+      🔗 Open Client View
+    </a>
+
+    <button id="copyShareBtn" onclick="copyShareLink()">
+      📋 Copy Share Link
+    </button>
   </div>
-</footer>
-<script src="auth.js"></script>
+
+</div><!-- /app -->
+
+
 <script>
-const REPO  = 'jeremiah9980/Next-Gen-IT';
-const OWNER = 'jeremiah9980';
-const WFLOW = 'domain-audit.yml';
-const BASE  = `https://api.github.com/repos/${REPO}`;
+/* ══════════════════════════════════════════════════════════
+   AUTH
+══════════════════════════════════════════════════════════ */
+const PORTAL_PASS = 'NGIT2024';   // ← change this in your repo
+const SESSION_KEY = 'ngit_portal_auth';
 
-// ── SETTINGS ──────────────────────────────────────────────
-function getToken(){ return localStorage.getItem('ngit_gh_token') || ''; }
-function openSettings(){ document.getElementById('modalOverlay').classList.add('open'); document.getElementById('ghTokenInput').value = getToken(); }
-function closeSettings(){ document.getElementById('modalOverlay').classList.remove('open'); }
-function saveSettings(){
-  const t = document.getElementById('ghTokenInput').value.trim();
-  if(t) localStorage.setItem('ngit_gh_token', t);
-  closeSettings();
-  showMsg('Token saved', 'success');
-}
-
-// ── STATUS MESSAGES ───────────────────────────────────────
-function showMsg(msg, type=''){
-  const el = document.getElementById('statusMsg');
-  el.textContent = msg;
-  el.className = 'status-msg' + (type ? ' '+type : '');
-}
-
-// ── STEP MANAGEMENT ───────────────────────────────────────
-const STEPS = 6;
-let currentStep = -1;
-const stepTimes = new Array(STEPS).fill(null);
-
-function setStep(idx, status){ // status: active|done|error
-  const el = document.getElementById('s'+idx);
-  el.classList.remove('active','done','error');
-  el.classList.add(status);
-  const icon = el.querySelector('.step-icon');
-  if(status==='done') icon.textContent='✓';
-  else if(status==='error') icon.textContent='✕';
-  else icon.textContent = (idx+1)+'';
-}
-function markDone(idx){
-  setStep(idx,'done');
-  const now = new Date();
-  stepTimes[idx] = now;
-  document.getElementById('t'+idx).textContent = now.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',second:'2-digit'});
-  updateBar();
-}
-function markActive(idx){
-  if(currentStep !== idx){
-    if(currentStep >= 0 && currentStep < idx) markDone(currentStep);
-    currentStep = idx;
-    setStep(idx,'active');
-    updateBar();
+function attemptAuth() {
+  const val = document.getElementById('passcode-input').value.trim();
+  const errEl = document.getElementById('auth-error');
+  if (val === PORTAL_PASS) {
+    sessionStorage.setItem(SESSION_KEY, '1');
+    const gate = document.getElementById('auth-gate');
+    gate.classList.add('unlocked');
+    setTimeout(() => gate.remove(), 450);
+    revealApp();
+    errEl.textContent = '';
+  } else {
+    errEl.textContent = 'Incorrect access code.';
+    const inp = document.getElementById('passcode-input');
+    inp.classList.add('error');
+    setTimeout(() => inp.classList.remove('error'), 600);
   }
 }
-function markError(idx){
-  setStep(idx,'error');
-  updateBar();
+
+document.getElementById('passcode-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') attemptAuth();
+});
+
+function logout() {
+  sessionStorage.removeItem(SESSION_KEY);
+  sessionStorage.removeItem('ngit_audit_data');
+  location.reload();
 }
-function updateBar(){
-  const done = document.querySelectorAll('.step.done').length;
-  const active = document.querySelectorAll('.step.active').length;
-  const pct = Math.round(((done + active*0.5) / STEPS) * 100);
-  document.getElementById('progressBar').style.width = pct+'%';
+
+function revealApp() {
+  const app = document.getElementById('app');
+  app.classList.add('visible');
+  updateSessionClock();
+  setInterval(updateSessionClock, 10000);
 }
 
-// ── MAIN AUDIT FLOW ───────────────────────────────────────
-let pollTimer = null;
-let startTime = null;
-let auditRunId = null;
-let auditDomain = '';
+function updateSessionClock() {
+  const el = document.getElementById('session-time');
+  if (el) el.textContent = new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+}
 
-async function runAudit(){
-  const domain = document.getElementById('domainInput').value.trim()
-    .replace(/^https?:\/\//,'').replace(/^www\./,'').replace(/\/.*/,'').toLowerCase();
-  if(!domain){ alert('Please enter a domain name'); return; }
-
-  const token = getToken();
-  if(!token){ openSettings(); showMsg('Set your GitHub token first, then try again.'); return; }
-
-  // Reset UI
-  auditDomain = domain;
-  auditRunId = null;
-  startTime = Date.now();
-  currentStep = -1;
-  for(let i=0;i<STEPS;i++){
-    const el=document.getElementById('s'+i);
-    el.classList.remove('active','done','error');
-    el.querySelector('.step-icon').textContent=(i+1)+'';
-    document.getElementById('t'+i).textContent='—';
-    stepTimes[i]=null;
+// Auto-check session on load
+window.addEventListener('DOMContentLoaded', () => {
+  if (sessionStorage.getItem(SESSION_KEY) === '1') {
+    document.getElementById('auth-gate').style.display = 'none';
+    revealApp();
   }
-  document.getElementById('progressBar').style.width='0%';
-  document.getElementById('reportBanner').classList.remove('visible');
-  document.getElementById('scanDomain').textContent = domain;
-  document.getElementById('progressSection').classList.add('visible');
-  document.getElementById('progressSection').scrollIntoView({behavior:'smooth',block:'start'});
-  document.getElementById('runBtn').disabled = true;
-  showMsg('Dispatching to GitHub Actions…');
-  markActive(0);
+});
 
-  // Trigger workflow
-  try{
-    const res = await fetch(`${BASE}/actions/workflows/${WFLOW}/dispatches`,{
-      method:'POST',
-      headers:{
-        'Authorization':`Bearer ${token}`,
-        'Accept':'application/vnd.github.v3+json',
-        'Content-Type':'application/json'
-      },
-      body: JSON.stringify({ ref:'main', inputs:{ domain } })
-    });
-    if(!res.ok){
-      const err = await res.json().catch(()=>({}));
-      throw new Error(err.message || `HTTP ${res.status}`);
-    }
-  } catch(e){
-    markError(0);
-    showMsg('Trigger failed: '+e.message, 'error');
-    document.getElementById('runBtn').disabled = false;
+
+/* ══════════════════════════════════════════════════════════
+   AUDIT ENGINE
+══════════════════════════════════════════════════════════ */
+
+// Progress steps definition
+const STEPS = [
+  { id: 'step-dns',       label: 'Resolving DNS records (NS, A, MX)' },
+  { id: 'step-email',     label: 'Checking SPF & DMARC' },
+  { id: 'step-bl',        label: 'Blacklist & reputation check' },
+  { id: 'step-site',      label: 'Inspecting live site & headers' },
+  { id: 'step-score',     label: 'Calculating audit score' },
+  { id: 'step-runbook',   label: 'Building runbook template' },
+];
+
+let auditData = null;
+
+async function startAudit() {
+  const rawDomain = document.getElementById('domain-input').value.trim().toLowerCase()
+    .replace(/^https?:\/\//, '').replace(/^www\./, '').replace(/\/.*$/, '');
+
+  if (!rawDomain || !/^[a-z0-9.-]+\.[a-z]{2,}$/.test(rawDomain)) {
+    document.getElementById('domain-input').style.borderColor = 'var(--red)';
+    setTimeout(() => document.getElementById('domain-input').style.borderColor = '', 1000);
     return;
   }
 
-  markDone(0);
-  markActive(1);
-  showMsg('Workflow queued — waiting for runner…');
+  // Reset UI
+  document.getElementById('results-section').classList.remove('active');
+  document.getElementById('action-bar').classList.remove('visible');
+  document.getElementById('progress-section').classList.add('active');
+  document.getElementById('scan-btn').disabled = true;
+  document.getElementById('scan-domain-label').textContent = rawDomain;
 
-  // Start polling
-  if(pollTimer) clearInterval(pollTimer);
-  pollTimer = setInterval(pollWorkflow, 6000);
-  setTimeout(pollWorkflow, 3000); // first check quickly
+  renderProgressSteps();
+
+  try {
+    const data = await runFullAudit(rawDomain);
+    auditData = data;
+
+    setProgress(100);
+    markStepDone('step-runbook');
+
+    await sleep(400);
+    document.getElementById('progress-section').classList.remove('active');
+    renderResults(data);
+    document.getElementById('results-section').classList.add('active');
+    document.getElementById('action-bar').classList.add('visible');
+
+    // Store for runbook
+    sessionStorage.setItem('ngit_audit_data', JSON.stringify(data));
+
+    // Wire up buttons
+    wireButtons(data);
+
+  } catch (err) {
+    console.error(err);
+    document.getElementById('progress-section').classList.remove('active');
+    alert('Audit failed: ' + err.message);
+  }
+  document.getElementById('scan-btn').disabled = false;
 }
 
-async function pollWorkflow(){
-  const token = getToken();
-  const elapsed = (Date.now() - startTime) / 1000; // seconds
-
-  try{
-    // Get recent runs for this workflow
-    const res = await fetch(
-      `${BASE}/actions/workflows/${WFLOW}/runs?per_page=5&event=workflow_dispatch`,
-      { headers:{ 'Authorization':`Bearer ${token}`, 'Accept':'application/vnd.github.v3+json' } }
-    );
-    if(!res.ok) return;
-    const data = await res.json();
-    const runs = data.workflow_runs || [];
-    if(!runs.length) return;
-
-    // Find our run (most recent)
-    const run = runs[0];
-    if(!auditRunId) auditRunId = run.id;
-
-    const status     = run.status;     // queued | in_progress | completed
-    const conclusion = run.conclusion; // success | failure | null
-
-    // Advance steps based on elapsed time + status
-    if(status === 'in_progress' || status === 'completed'){
-      if(elapsed > 2)  markDone(1), markActive(2);  // infra scan
-      if(elapsed > 18) markDone(2), markActive(3);  // email health
-      if(elapsed > 32) markDone(3), markActive(4);  // website
-      if(elapsed > 50) markDone(4), markActive(5);  // AI report
-    }
-
-    if(status === 'completed'){
-      clearInterval(pollTimer);
-      if(conclusion === 'success'){
-        // Mark all steps done
-        for(let i=0;i<STEPS;i++) markDone(i);
-        document.getElementById('progressBar').style.width='100%';
-        showMsg('Audit complete — waiting for publish…', 'success');
-        document.getElementById('runBtn').disabled = false;
-        // Both run in parallel: banner retries until entry found, grid retries until new domain appears
-        showReportBanner(auditDomain);
-        loadReports(auditDomain);
-      } else {
-        markError(currentStep>=0?currentStep:5);
-        showMsg(`Workflow ${conclusion} — check GitHub Actions for details`, 'error');
-        document.getElementById('runBtn').disabled = false;
-      }
-    } else {
-      const msgs = {
-        'queued':      'Waiting for an available runner…',
-        'in_progress': `Running — ${Math.round(elapsed)}s elapsed`
-      };
-      showMsg(msgs[status] || 'Running…');
-    }
-  } catch(e){ /* silent fail, keep polling */ }
+function renderProgressSteps() {
+  const container = document.getElementById('progress-steps');
+  container.innerHTML = '';
+  STEPS.forEach(s => {
+    const el = document.createElement('div');
+    el.id = s.id;
+    el.className = 'progress-step';
+    el.innerHTML = `<span class="step-dot"></span><span>${s.label}</span>`;
+    container.appendChild(el);
+  });
+  setProgress(0);
 }
 
-// ── MANIFEST FETCH (cache-busted) ─────────────────────────
-async function fetchManifest(){
-  // Try raw.githubusercontent first (most up-to-date), fall back to Pages URL
-  const urls = [
-    `https://raw.githubusercontent.com/${REPO}/main/reports/manifest.json?t=${Date.now()}`,
-    `https://${OWNER}.github.io/Next-Gen-IT/reports/manifest.json?t=${Date.now()}`
+function setProgress(pct) {
+  document.getElementById('progress-fill').style.width = pct + '%';
+}
+
+function markStepActive(id) {
+  const el = document.getElementById(id);
+  if (el) el.className = 'progress-step active';
+}
+function markStepDone(id) {
+  const el = document.getElementById(id);
+  if (el) el.className = 'progress-step done';
+}
+
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+/* ── DNS over HTTPS (Cloudflare) ─────────────────────── */
+async function dnsQuery(name, type) {
+  try {
+    const r = await fetch(`https://cloudflare-dns.com/dns-query?name=${encodeURIComponent(name)}&type=${type}`, {
+      headers: { 'Accept': 'application/dns-json' }
+    });
+    if (!r.ok) return { Answer: [] };
+    return await r.json();
+  } catch { return { Answer: [] }; }
+}
+
+function extractTxt(answers) {
+  return (answers || [])
+    .filter(a => a.type === 16)
+    .map(a => (a.data || '').replace(/^"|"$/g, '').replace(/"\s*"/g, ''));
+}
+
+/* ── Detect email provider from MX ──────────────────── */
+function mxToProvider(mx = '') {
+  const m = mx.toLowerCase();
+  if (m.includes('google') || m.includes('googlemail') || m.includes('aspmx')) return 'Google Workspace';
+  if (m.includes('outlook') || m.includes('microsoft') || m.includes('protection.outlook')) return 'Microsoft 365';
+  if (m.includes('zoho')) return 'Zoho Mail';
+  if (m.includes('mxroute')) return 'MXroute';
+  if (m.includes('protonmail')) return 'Proton Mail';
+  if (m.includes('fastmail')) return 'Fastmail';
+  return mx || 'Unknown';
+}
+
+/* ── Detect DNS host from NS ─────────────────────────── */
+function nsToProvider(ns = '') {
+  const n = ns.toLowerCase();
+  if (n.includes('cloudflare')) return 'Cloudflare DNS';
+  if (n.includes('godaddy') || n.includes('domaincontrol')) return 'GoDaddy DNS';
+  if (n.includes('awsdns')) return 'AWS Route 53';
+  if (n.includes('google')) return 'Google Cloud DNS';
+  if (n.includes('namecheap') || n.includes('registrar-servers')) return 'Namecheap DNS';
+  if (n.includes('squarespace')) return 'Squarespace DNS';
+  if (n.includes('wixdns')) return 'Wix DNS';
+  if (n.includes('hover')) return 'Hover';
+  return ns;
+}
+
+/* ── Detect web host from headers / IP ──────────────── */
+function headersToHost(headers = {}) {
+  const via = (headers['via'] || '').toLowerCase();
+  const server = (headers['server'] || '').toLowerCase();
+  const xServedBy = (headers['x-served-by'] || '').toLowerCase();
+  const cfRay = headers['cf-ray'];
+  const xCF = headers['cf-cache-status'];
+  if (cfRay || xCF) return 'Cloudflare';
+  if (via.includes('fastly') || xServedBy.includes('fastly')) return 'Fastly CDN';
+  if (server.includes('squarespace')) return 'Squarespace';
+  if (server.includes('wix')) return 'Wix';
+  if (server.includes('wordpress') || server.includes('apache')) return 'WordPress / Apache';
+  if (server.includes('nginx')) return 'NGINX';
+  if (server.includes('iis')) return 'IIS (Microsoft)';
+  if (via.includes('aws') || server.includes('awselb')) return 'AWS';
+  if (server.includes('github')) return 'GitHub Pages';
+  return server || 'Unknown';
+}
+
+/* ── Main audit runner ───────────────────────────────── */
+async function runFullAudit(domain) {
+  const data = {
+    domain,
+    timestamp: new Date().toISOString(),
+    ns: [],
+    a: '',
+    mx: [],
+    spf: '',
+    dmarc: '',
+    dmarcPolicy: 'none',
+    emailProvider: '',
+    dnsHost: '',
+    webHost: '',
+    cms: '',
+    ssl: false,
+    hasSitemap: false,
+    hasRobots: false,
+    hasGA: false,
+    hasFBPixel: false,
+    hasCRM: false,
+    hasContactForm: false,
+    hasSocialLinks: false,
+    titleTag: '',
+    metaDesc: '',
+    spfHardFail: false,
+    blacklisted: false,
+    score: { domain: 0, email: 0, website: 0, marketing: 0, tech: 0, total: 0 },
+    checks: {},
+    recommendations: [],
+    rawSiteHtml: '',
+  };
+
+  // Step 1 — DNS
+  markStepActive('step-dns'); setProgress(5);
+  const [nsRes, aRes, mxRes] = await Promise.all([
+    dnsQuery(domain, 'NS'),
+    dnsQuery(domain, 'A'),
+    dnsQuery(domain, 'MX'),
+  ]);
+  data.ns = (nsRes.Answer || []).filter(a => a.type === 2).map(a => a.data.replace(/\.$/, ''));
+  data.a  = (aRes.Answer  || []).filter(a => a.type === 1).map(a => a.data)[0] || '';
+  data.mx = (mxRes.Answer || []).filter(a => a.type === 15).map(a => ({ pref: a.data.split(' ')[0], host: a.data.split(' ')[1]?.replace(/\.$/, '') || '' }));
+  data.dnsHost = data.ns.length ? nsToProvider(data.ns[0]) : 'Unknown';
+  data.emailProvider = data.mx.length ? mxToProvider(data.mx[0].host) : 'None found';
+  markStepDone('step-dns'); setProgress(20);
+
+  // Step 2 — SPF / DMARC
+  markStepActive('step-email');
+  const [txtRes, dmarcRes] = await Promise.all([
+    dnsQuery(domain, 'TXT'),
+    dnsQuery('_dmarc.' + domain, 'TXT'),
+  ]);
+  const txts = extractTxt(txtRes.Answer);
+  data.spf = txts.find(t => t.startsWith('v=spf1')) || '';
+  data.spfHardFail = data.spf.includes('-all');
+  const dmarcTxts = extractTxt(dmarcRes.Answer);
+  data.dmarc = dmarcTxts.find(t => t.includes('v=DMARC1')) || '';
+  if (data.dmarc) {
+    const pol = data.dmarc.match(/p=([a-z]+)/i);
+    data.dmarcPolicy = pol ? pol[1].toLowerCase() : 'none';
+  }
+  markStepDone('step-email'); setProgress(40);
+
+  // Step 3 — Blacklist check (simplified: check known DNSBL)
+  markStepActive('step-bl');
+  // We check SPAMHAUS ZEN via DoH for the IP (reversed)
+  let blStatus = false;
+  if (data.a) {
+    const reversed = data.a.split('.').reverse().join('.');
+    const bl = await dnsQuery(reversed + '.zen.spamhaus.org', 'A');
+    blStatus = (bl.Answer || []).length > 0;
+  }
+  data.blacklisted = blStatus;
+  markStepDone('step-bl'); setProgress(55);
+
+  // Step 4 — Live site inspection
+  markStepActive('step-site');
+  try {
+    const siteUrl = 'https://' + domain;
+    const resp = await fetch(siteUrl, { method: 'GET', redirect: 'follow' });
+    data.ssl = resp.url.startsWith('https://');
+    const html = await resp.text();
+    data.rawSiteHtml = html.substring(0, 20000); // truncate
+
+    // Title & meta
+    const titleMatch = html.match(/<title[^>]*>([^<]+)<\/title>/i);
+    data.titleTag = titleMatch ? titleMatch[1].trim() : '';
+    const metaMatch = html.match(/<meta\s+name=["']description["']\s+content=["']([^"']+)["']/i)
+                  || html.match(/<meta\s+content=["']([^"']+)["']\s+name=["']description["']/i);
+    data.metaDesc = metaMatch ? metaMatch[1].trim() : '';
+
+    // CMS
+    if (html.includes('/wp-content/') || html.includes('wp-json')) data.cms = 'WordPress';
+    else if (html.includes('squarespace')) data.cms = 'Squarespace';
+    else if (html.includes('wix.com') || html.includes('wixsite')) data.cms = 'Wix';
+    else if (html.includes('webflow')) data.cms = 'Webflow';
+    else if (html.includes('shopify')) data.cms = 'Shopify';
+    else data.cms = '';
+
+    // Analytics & pixels
+    data.hasGA = html.includes('gtag') || html.includes("'G-") || html.includes('"G-') || html.includes('UA-');
+    data.hasFBPixel = html.includes('fbq') || html.includes('facebook.com/tr');
+
+    // Social links
+    data.hasSocialLinks = html.includes('facebook.com/') || html.includes('instagram.com/') ||
+                          html.includes('linkedin.com/') || html.includes('twitter.com/') ||
+                          html.includes('youtube.com/');
+
+    // Contact form
+    data.hasContactForm = /<form/i.test(html) || /contact/i.test(html);
+
+    // CRM detection
+    const crmPatterns = ['hubspot', 'followupboss', 'kvcore', 'lofty', 'ylopo', 'firepoint', 'boomtown', 'realgeeks', 'intercom', 'drift', 'chime'];
+    data.hasCRM = crmPatterns.some(p => html.toLowerCase().includes(p));
+
+    // Headers
+    const hdrs = {};
+    resp.headers.forEach((v, k) => { hdrs[k.toLowerCase()] = v; });
+    data.webHost = headersToHost(hdrs);
+
+    // Sitemap & robots
+    try {
+      const smR = await fetch(`https://${domain}/sitemap.xml`, { method: 'HEAD' });
+      data.hasSitemap = smR.ok;
+    } catch {}
+    try {
+      const rbR = await fetch(`https://${domain}/robots.txt`, { method: 'GET' });
+      data.hasRobots = rbR.ok;
+    } catch {}
+
+  } catch (e) {
+    // Site unreachable or CORS blocked — partial data
+    data.ssl = null;
+    data.webHost = 'Unable to inspect (CORS)';
+  }
+  markStepDone('step-site'); setProgress(78);
+
+  // Step 5 — Score
+  markStepActive('step-score');
+  await sleep(200);
+  data.score = computeScore(data);
+  data.recommendations = buildRecommendations(data);
+  markStepDone('step-score'); setProgress(92);
+
+  markStepActive('step-runbook');
+  await sleep(300);
+  return data;
+}
+
+/* ── Scoring (30-point system) ───────────────────────── */
+function computeScore(d) {
+  const checks = {};
+
+  // DOMAIN & EMAIL (10 pts)
+  checks.mx        = d.mx.length > 0;                             // 1
+  checks.spf       = d.spf.length > 0;                            // 1
+  checks.spfHard   = d.spfHardFail;                               // 1
+  checks.dmarc     = d.dmarc.length > 0;                          // 1
+  checks.dmarcEnf  = d.dmarcPolicy === 'quarantine' || d.dmarcPolicy === 'reject'; // 2
+  checks.notBL     = !d.blacklisted;                              // 1
+  checks.hasNS     = d.ns.length > 0;                             // 1
+  checks.hasA      = d.a.length > 0;                              // 2
+
+  const emailScore =
+    (checks.mx ? 1 : 0) +
+    (checks.spf ? 1 : 0) +
+    (checks.spfHard ? 1 : 0) +
+    (checks.dmarc ? 1 : 0) +
+    (checks.dmarcEnf ? 2 : 0) +
+    (checks.notBL ? 1 : 0) +
+    (checks.hasNS ? 1 : 0) +
+    (checks.hasA ? 1 : 0);
+  // max 9 → normalize to 10
+  const emailScore10 = Math.min(10, Math.round((emailScore / 9) * 10));
+
+  // WEBSITE (10 pts)
+  checks.ssl        = d.ssl === true;                              // 2
+  checks.titleTag   = d.titleTag.length > 5;                      // 1
+  checks.metaDesc   = d.metaDesc.length > 10;                     // 1
+  checks.sitemap    = d.hasSitemap;                                // 2
+  checks.robots     = d.hasRobots;                                 // 1
+  checks.contactF   = d.hasContactForm;                            // 1
+  checks.cms        = d.cms.length > 0;                            // 1 (has identifiable platform)
+  checks.hostId     = d.webHost !== 'Unknown';                     // 1
+
+  const webScore =
+    (checks.ssl ? 2 : 0) +
+    (checks.titleTag ? 1 : 0) +
+    (checks.metaDesc ? 1 : 0) +
+    (checks.sitemap ? 2 : 0) +
+    (checks.robots ? 1 : 0) +
+    (checks.contactF ? 1 : 0) +
+    (checks.cms ? 1 : 0) +
+    (checks.hostId ? 1 : 0);
+  const webScore10 = Math.min(10, webScore);
+
+  // MARKETING & TECH (10 pts)
+  checks.ga       = d.hasGA;                                       // 2
+  checks.fbpx     = d.hasFBPixel;                                  // 1
+  checks.social   = d.hasSocialLinks;                              // 2
+  checks.crm      = d.hasCRM;                                      // 3
+  checks.emailPv  = d.emailProvider !== 'None found';              // 2
+
+  const mktScore =
+    (checks.ga ? 2 : 0) +
+    (checks.fbpx ? 1 : 0) +
+    (checks.social ? 2 : 0) +
+    (checks.crm ? 3 : 0) +
+    (checks.emailPv ? 2 : 0);
+  const mktScore10 = Math.min(10, mktScore);
+
+  const total = emailScore10 + webScore10 + mktScore10;
+
+  d.checks = checks;
+  return {
+    email: emailScore10,
+    website: webScore10,
+    marketing: mktScore10,
+    total
+  };
+}
+
+function gradeFromScore(total) {
+  if (total >= 25) return { letter: 'A', label: 'Strong posture — minor gaps' };
+  if (total >= 20) return { letter: 'B', label: 'Good — several improvements available' };
+  if (total >= 14) return { letter: 'C', label: 'Average — notable vulnerabilities' };
+  if (total >= 8)  return { letter: 'D', label: 'Poor — significant exposure' };
+  return { letter: 'F', label: 'Critical — immediate action required' };
+}
+
+/* ── Recommendations ──────────────────────────────────── */
+function buildRecommendations(d) {
+  const recs = [];
+  if (!d.dmarc) {
+    recs.push({ priority: 'CRITICAL', text: 'No DMARC record detected. Publish v=DMARC1; p=none; rua=mailto:dmarc@' + d.domain + ' immediately to begin visibility before enforcing.' });
+  } else if (d.dmarcPolicy === 'none') {
+    recs.push({ priority: 'HIGH', text: 'DMARC is published at p=none (monitor only). Advance to p=quarantine, then p=reject to prevent domain spoofing and BEC attacks.' });
+  }
+  if (!d.spf) {
+    recs.push({ priority: 'CRITICAL', text: 'No SPF record found. Add: v=spf1 include:_spf.' + (d.emailProvider.toLowerCase().includes('google') ? 'google.com' : 'provider.com') + ' -all' });
+  } else if (!d.spfHardFail) {
+    recs.push({ priority: 'HIGH', text: 'SPF uses ~all (soft fail). Change to -all (hard fail) after confirming all sending sources are included.' });
+  }
+  if (d.blacklisted) {
+    recs.push({ priority: 'CRITICAL', text: 'Domain IP is listed on a DNSBL (Spamhaus ZEN). Investigate and initiate delisting immediately — this blocks email delivery.' });
+  }
+  if (!d.hasSitemap) {
+    recs.push({ priority: 'MEDIUM', text: 'No sitemap.xml found. Add one to improve search engine indexing and organic visibility.' });
+  }
+  if (!d.hasGA) {
+    recs.push({ priority: 'MEDIUM', text: 'No Google Analytics detected. Install GA4 to track web traffic and lead sources.' });
+  }
+  if (!d.hasCRM) {
+    recs.push({ priority: 'LOW', text: 'No CRM or lead capture platform detected. Consider integrating Follow Up Boss, KvCORE, or HubSpot for lead management.' });
+  }
+  if (!d.hasSocialLinks) {
+    recs.push({ priority: 'LOW', text: 'No social media links detected on homepage. Connect Facebook, Instagram, and LinkedIn to improve trust signals.' });
+  }
+  if (!d.metaDesc) {
+    recs.push({ priority: 'LOW', text: 'Missing meta description. Add unique descriptions to key pages to improve click-through rates from search results.' });
+  }
+  return recs.slice(0, 6);
+}
+
+/* ══════════════════════════════════════════════════════════
+   RENDER RESULTS
+══════════════════════════════════════════════════════════ */
+function renderResults(d) {
+  document.getElementById('r-domain').textContent = d.domain;
+  document.getElementById('r-timestamp').textContent = 'Scanned ' + new Date(d.timestamp).toLocaleString();
+
+  // Grade
+  const g = gradeFromScore(d.score.total);
+  const gl = document.getElementById('r-grade-letter');
+  gl.textContent = g.letter;
+  gl.className = 'grade-letter grade-' + g.letter;
+  document.getElementById('r-grade-score').textContent = d.score.total + ' / 30 pts';
+  document.getElementById('r-grade-label').textContent = g.label;
+
+  // Fraud callout
+  const shouldShow = !d.dmarc || d.dmarcPolicy === 'none';
+  document.getElementById('fraud-callout').style.display = shouldShow ? '' : 'none';
+
+  // Providers
+  const pt = document.getElementById('r-providers');
+  const providers = [
+    ['Registrar / DNS Host', d.dnsHost || 'Unknown'],
+    ['A Record / IP',        d.a || 'Not resolved'],
+    ['Nameservers',          d.ns.slice(0,2).join(', ') || 'Unknown'],
+    ['Email Provider',       d.emailProvider],
+    ['MX Record',            d.mx.length ? d.mx[0].host : 'None'],
+    ['Web Platform / Host',  d.webHost || 'Unknown'],
+    ['CMS / Builder',        d.cms || 'Not detected'],
   ];
-  for(const url of urls){
-    try{
-      const res = await fetch(url, {cache:'no-store'});
-      if(res.ok) return await res.json();
-    } catch(e){ /* try next */ }
-  }
-  return null;
+  pt.innerHTML = providers.map(([k,v]) =>
+    `<tr><td>${k}</td><td>${v}</td></tr>`
+  ).join('');
+
+  // Email checks
+  const emailChecks = [
+    { icon: d.mx.length ? '✅' : '❌', label: 'MX Records', detail: d.mx.length ? d.mx[0].host : 'No MX found' },
+    { icon: d.spf ? '✅' : '❌', label: 'SPF Record', detail: d.spf ? (d.spfHardFail ? '-all (hard fail) ✓' : '~all — should be -all') : 'Missing' },
+    { icon: d.dmarc ? (d.dmarcPolicy !== 'none' ? '✅' : '⚠️') : '❌', label: 'DMARC', detail: d.dmarc ? `p=${d.dmarcPolicy}` : 'Not published' },
+    { icon: d.dmarcPolicy === 'reject' ? '✅' : d.dmarcPolicy === 'quarantine' ? '⚠️' : '❌', label: 'DMARC Enforcement', detail: d.dmarcPolicy === 'none' ? 'Monitor only — not protecting' : 'p=' + d.dmarcPolicy },
+    { icon: d.blacklisted ? '❌' : '✅', label: 'Blacklist Status', detail: d.blacklisted ? 'LISTED on Spamhaus ZEN' : 'Not blacklisted' },
+    { icon: d.ssl === true ? '✅' : d.ssl === null ? '⚠️' : '❌', label: 'SSL / HTTPS', detail: d.ssl === true ? 'Valid certificate' : d.ssl === null ? 'Could not verify' : 'No SSL' },
+  ];
+  document.getElementById('r-email-checks').innerHTML = emailChecks.map(c =>
+    `<div class="check-item"><span class="check-icon">${c.icon}</span><div><div class="check-label">${c.label}</div><div class="check-detail">${c.detail}</div></div></div>`
+  ).join('');
+
+  // Scorecard
+  const cats = [
+    { label: 'Email Authentication', score: d.score.email,    max: 10, color: '#c84b2f' },
+    { label: 'Website & SEO',        score: d.score.website,  max: 10, color: '#d4922a' },
+    { label: 'Marketing & Tech',     score: d.score.marketing,max: 10, color: '#3aab6f' },
+  ];
+  document.getElementById('r-scorecard').innerHTML = cats.map(c =>
+    `<tr>
+      <td>${c.label}</td>
+      <td class="score-bar-cell">
+        <div class="score-bar">
+          <div class="score-bar-fill" style="width:${(c.score/c.max)*100}%;background:${c.color};"></div>
+        </div>
+      </td>
+      <td>${c.score} / ${c.max}</td>
+    </tr>`
+  ).join('') +
+  `<tr style="border-top:2px solid var(--border-hi);">
+    <td style="font-weight:500;">Total</td>
+    <td></td>
+    <td style="font-weight:700;">${d.score.total} / 30</td>
+  </tr>`;
+
+  // Recommendations
+  const priorityColor = { CRITICAL: '#c84b2f', HIGH: '#e07b39', MEDIUM: '#d4922a', LOW: '#6ab04c' };
+  document.getElementById('r-recs').innerHTML = d.recommendations.map(r =>
+    `<li class="rec-item" style="border-left-color:${priorityColor[r.priority] || '#c84b2f'}">
+      <div class="rec-priority">${r.priority}</div>
+      ${r.text}
+    </li>`
+  ).join('');
 }
 
-// ── BANNER: retry every 8s for up to 90s until new entry appears ──
-async function showReportBanner(domain){
-  const MAX_ATTEMPTS = 12;
-  const INTERVAL_MS  = 8000;
+/* ══════════════════════════════════════════════════════════
+   RUNBOOK & SHARE BUTTONS
+══════════════════════════════════════════════════════════ */
+function wireButtons(data) {
+  // Encode data for URL
+  const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(data))));
 
-  for(let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++){
-    await new Promise(r => setTimeout(r, attempt === 1 ? 5000 : INTERVAL_MS));
-    showMsg(`Waiting for report to publish… (${attempt}/${MAX_ATTEMPTS})`, '');
-    try{
-      const data = await fetchManifest();
-      if(!data) continue;
-      const entry = (data.reports||[]).find(r => r.domain === domain);
-      if(entry){
-        document.getElementById('reportDomain').textContent = `${domain} — ${entry.scan_date}`;
-        document.getElementById('reportLink').href = entry.url;
-        document.getElementById('reportBanner').classList.add('visible');
-        showMsg('Report published!', 'success');
-        return; // found — stop retrying
-      }
-    } catch(e){ /* keep trying */ }
-  }
-  // Timeout — show a fallback message but don't crash
-  showMsg('Report published — refresh the page if the card does not appear below.', 'success');
+  const runbookLink     = document.getElementById('runbookLink');
+  const shareRunbookLink = document.getElementById('shareRunbookLink');
+  const copyBtn         = document.getElementById('copyShareBtn');
+
+  const runbookUrl = 'runbook.html';
+  const shareUrl   = 'runbook.html#data=' + encoded;
+
+  // Open Runbook (operator view — reads sessionStorage)
+  runbookLink.href = runbookUrl;
+  runbookLink.classList.remove('hidden');
+
+  // Open Client View (public URL with encoded data)
+  shareRunbookLink.href = shareUrl;
+  shareRunbookLink.classList.remove('hidden');
+
+  // Copy share link button
+  copyBtn.classList.add('visible');
+  copyBtn._shareUrl = shareUrl;
 }
 
-// ── LOAD REPORTS: retry loop so stale cache doesn't hide new entry ─
-let _knownCount = 0;
-async function loadReports(expectNewDomain){
-  const grid  = document.getElementById('reportsGrid');
-  const count = document.getElementById('reportCount');
-
-  const MAX = expectNewDomain ? 10 : 1;
-  for(let attempt = 0; attempt < MAX; attempt++){
-    if(attempt > 0) await new Promise(r => setTimeout(r, 8000));
-    try{
-      const data = await fetchManifest();
-      if(!data) continue;
-      const reports = data.reports || [];
-
-      // If we're waiting for a specific new domain, keep retrying until it appears
-      if(expectNewDomain && !reports.find(r => r.domain === expectNewDomain) && attempt < MAX-1) continue;
-
-      _knownCount = reports.length;
-      count.textContent = reports.length + ' report' + (reports.length !== 1 ? 's' : '');
-
-      if(!reports.length){
-        grid.innerHTML = `<div class="empty-state"><div class="empty-state-icon">📋</div>No reports yet — run your first audit above.</div>`;
-        return;
-      }
-
-      grid.innerHTML = reports.map(r => {
-        const grade = r.grade || '?';
-        const score = r.total_score || 0;
-        const pct   = Math.round((score / 30) * 100);
-        const fill  = score>=25?'#00e5a0':score>=20?'#00b4ff':score>=14?'#ffb547':'#ff4d6a';
-        return `
-        <a class="report-card" href="${r.url}" target="_blank">
-          <div class="card-top">
-            <div class="card-domain">${r.domain}</div>
-            <div class="grade-badge grade-${grade}">${grade}</div>
-          </div>
-          <div class="card-score"><strong>${score}</strong>/30 points</div>
-          <div class="card-date">${r.scan_date}</div>
-          <div class="score-mini-bar">
-            <div class="score-mini-fill" style="width:${pct}%;background:${fill}"></div>
-          </div>
-        </a>`;
-      }).join('');
-      return; // success
-    } catch(e){ /* keep retrying */ }
-  }
-  // Final fallback — only clear grid if it's genuinely empty
-  if(_knownCount === 0){
-    count.textContent = '0 reports';
-    grid.innerHTML = `<div class="empty-state"><div class="empty-state-icon">📋</div>No reports published yet — run your first audit above.</div>`;
-  }
-}
-
-// ── INIT ──────────────────────────────────────────────────
-loadReports();
-setInterval(loadReports, 30000); // background refresh every 30s
-
-// Show config prompt if no token
-if(!getToken()){
-  const hint = document.querySelector('.input-hint');
-  if(hint) hint.textContent = '⚠ Configure your GitHub token first — click ⚙ Config above';
+function copyShareLink() {
+  const btn = document.getElementById('copyShareBtn');
+  const url = window.location.origin + window.location.pathname.replace('index.html','') + btn._shareUrl;
+  navigator.clipboard.writeText(url).then(() => {
+    btn.innerHTML = '✓ Copied!';
+    btn.classList.add('copied');
+    setTimeout(() => {
+      btn.innerHTML = '📋 Copy Share Link';
+      btn.classList.remove('copied');
+    }, 2200);
+  }).catch(() => {
+    prompt('Copy this link to share with the client:', url);
+  });
 }
 </script>
 </body>
