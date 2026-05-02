@@ -1,4 +1,3 @@
-import requests
 
 
 def run_basic_recon(domain):

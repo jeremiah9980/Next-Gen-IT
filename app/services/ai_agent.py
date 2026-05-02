@@ -191,7 +191,7 @@ def _fallback_response(
                 "2. Check your hosting provider's status page\n"
                 "3. Verify A/AAAA DNS records point to the correct server"
             )
-        return f"Your website appears reachable. For deeper security analysis, consider an SSL/TLS scan via SSL Labs (ssllabs.com/ssltest)."
+        return "Your website appears reachable. For deeper security analysis, consider an SSL/TLS scan via SSL Labs (ssllabs.com/ssltest)."
 
     if any(kw in msg for kw in [
         "priority", "first", "fix first", "where to start", "action plan",

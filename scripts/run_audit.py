@@ -5,7 +5,13 @@ Usage: python run_audit.py <domain> <output_dir>
 Requires: ANTHROPIC_API_KEY environment variable
 """
 
-import sys, os, json, re, subprocess, urllib.request, urllib.error
+import sys
+import os
+import json
+import re
+import subprocess
+import urllib.request
+import urllib.error
 from datetime import datetime, timezone
 
 # ── HELPERS ───────────────────────────────────────────────────────────────────

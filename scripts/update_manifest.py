@@ -5,7 +5,9 @@ Reads reports/_latest_meta.json (written by run_audit.py) and
 prepends the entry to the manifest, keeping the 200 most recent reports.
 """
 
-import json, os, sys
+import json
+import os
+import sys
 
 REPORTS_DIR   = os.path.join(os.path.dirname(__file__), '..', 'reports')
 META_FILE     = os.path.join(REPORTS_DIR, '_latest_meta.json')
