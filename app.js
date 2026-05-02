@@ -11,12 +11,13 @@ const statusBox = document.getElementById("statusBox");
 const summaryBox = document.getElementById("summaryBox");
 const findingsBox = document.getElementById("findings");
 const reportLink = document.getElementById("reportLink");
+const runbookLink = document.getElementById("runbookLink");
+const shareRunbookLink = document.getElementById("shareRunbookLink");
 const actionsBox = document.getElementById("actions");
 const historyBox = document.getElementById("history");
 const evidenceList = document.getElementById("evidenceList");
 const notesList = document.getElementById("notesList");
 const gapQuestions = document.getElementById("gapQuestions");
-const shareRunbookLink = document.getElementById("shareRunbookLink");
 
 const storedBase = localStorage.getItem("nextGenItApiBase");
 apiBaseInput.value = storedBase || "http://localhost:8000";
@@ -46,15 +47,42 @@ function clearPolling() {
 
 async function apiFetch(path, options = {}) {
   const response = await fetch(`${getApiBase()}${path}`, options);
+
   if (!response.ok) {
     let message = `Request failed (${response.status})`;
+
     try {
       const payload = await response.json();
       if (payload.detail) message = payload.detail;
     } catch (_) {}
+
     throw new Error(message);
   }
+
   return response;
+}
+
+function hideArtifactLinks() {
+  reportLink.classList.add("hidden");
+  runbookLink.classList.add("hidden");
+  shareRunbookLink.classList.add("hidden");
+
+  reportLink.removeAttribute("href");
+  runbookLink.removeAttribute("href");
+  shareRunbookLink.removeAttribute("href");
+}
+
+function showArtifactLinks(audit) {
+  const apiBase = getApiBase();
+
+  reportLink.classList.remove("hidden");
+  reportLink.href = `${apiBase}/api/audits/${audit.id}/report`;
+
+  runbookLink.classList.remove("hidden");
+  runbookLink.href = `${apiBase}/api/audits/${audit.id}/runbook`;
+
+  shareRunbookLink.classList.remove("hidden");
+  shareRunbookLink.href = `${apiBase}/share/${audit.id}/runbook`;
 }
 
 function renderFindings(findings) {
@@ -82,6 +110,7 @@ function renderEvidence(items) {
     evidenceList.innerHTML = "<li>No evidence uploaded.</li>";
     return;
   }
+
   evidenceList.innerHTML = items
     .map((item) => `<li>${item.filename} <span class="meta">(${item.content_type})</span></li>`)
     .join("");
@@ -92,6 +121,7 @@ function renderNotes(items) {
     notesList.innerHTML = "<li>No notes yet.</li>";
     return;
   }
+
   notesList.innerHTML = items
     .map((item) => `<li><strong>${item.source}:</strong> ${item.content}</li>`)
     .join("");
@@ -102,6 +132,7 @@ function renderQuestions(questions) {
     gapQuestions.innerHTML = "<li>No follow-up questions yet.</li>";
     return;
   }
+
   gapQuestions.innerHTML = questions.map((q) => `<li>${q}</li>`).join("");
 }
 
@@ -118,6 +149,7 @@ async function loadGapQuestions(auditId) {
 async function loadAudit(auditId) {
   const response = await apiFetch(`/api/audits/${auditId}`);
   const audit = await response.json();
+
   state.auditId = audit.id;
 
   const statusClass = audit.status === "completed"
@@ -141,11 +173,10 @@ async function loadAudit(auditId) {
   actionsBox.classList.remove("hidden");
 
   if (audit.status === "completed") {
-    reportLink.classList.remove("hidden");
-    reportLink.href = `${getApiBase()}/api/audits/${audit.id}/report`;
+    showArtifactLinks(audit);
     clearPolling();
   } else {
-    reportLink.classList.add("hidden");
+    hideArtifactLinks();
   }
 
   if (audit.status === "failed") {
@@ -162,6 +193,7 @@ async function loadAudit(auditId) {
 async function runAudit() {
   const domain = domainInput.value.trim();
   const companyName = companyNameInput.value.trim();
+
   if (!domain) {
     setFlash("Please enter a domain.", true);
     return;
@@ -169,10 +201,12 @@ async function runAudit() {
 
   setFlash("Starting audit...");
   setStatus("Submitting audit...", "status-running");
+
   renderFindings([]);
   renderEvidence([]);
   renderNotes([]);
   renderQuestions([]);
+  hideArtifactLinks();
   clearPolling();
 
   try {
@@ -181,11 +215,17 @@ async function runAudit() {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ domain, company_name: companyName || null }),
+      body: JSON.stringify({
+        domain,
+        company_name: companyName || null,
+      }),
     });
+
     const payload = await response.json();
     state.auditId = payload.audit_id;
+
     await loadAudit(state.auditId);
+
     state.pollHandle = setInterval(() => loadAudit(state.auditId), 2500);
     setFlash(`Audit queued: ${state.auditId}`);
   } catch (error) {
@@ -198,6 +238,7 @@ async function loadHistory() {
   try {
     const response = await apiFetch("/api/audits");
     const audits = await response.json();
+
     if (!audits.length) {
       historyBox.className = "history empty";
       historyBox.textContent = "No audits found.";
@@ -211,6 +252,11 @@ async function loadHistory() {
         <div class="meta">${audit.domain} · ${audit.status} · score ${audit.score}</div>
         <div class="row">
           <button data-audit-id="${audit.id}" class="secondary history-load">Open</button>
+          ${
+            audit.status === "completed"
+              ? `<a class="button-link secondary" target="_blank" rel="noreferrer" href="${getApiBase()}/share/${audit.id}/runbook">Share Runbook</a>`
+              : ""
+          }
         </div>
       </div>
     `).join("");
@@ -230,10 +276,12 @@ async function loadHistory() {
 async function uploadEvidence() {
   const fileInput = document.getElementById("evidenceFile");
   const file = fileInput.files[0];
+
   if (!state.auditId) {
     setFlash("Run or load an audit first.", true);
     return;
   }
+
   if (!file) {
     setFlash("Select a file to upload.", true);
     return;
@@ -247,6 +295,7 @@ async function uploadEvidence() {
       method: "POST",
       body: formData,
     });
+
     setFlash("Evidence uploaded.");
     fileInput.value = "";
     await loadAudit(state.auditId);
@@ -258,10 +307,12 @@ async function uploadEvidence() {
 async function saveNote() {
   const noteText = document.getElementById("noteText");
   const content = noteText.value.trim();
+
   if (!state.auditId) {
     setFlash("Run or load an audit first.", true);
     return;
   }
+
   if (!content) {
     setFlash("Enter a note first.", true);
     return;
@@ -273,8 +324,12 @@ async function saveNote() {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ source: "portal", content }),
+      body: JSON.stringify({
+        source: "portal",
+        content,
+      }),
     });
+
     noteText.value = "";
     setFlash("Note saved.");
     await loadAudit(state.auditId);
@@ -285,12 +340,15 @@ async function saveNote() {
 
 document.getElementById("runAuditBtn").addEventListener("click", runAudit);
 document.getElementById("loadAuditsBtn").addEventListener("click", loadHistory);
+
 document.getElementById("refreshBtn").addEventListener("click", async () => {
   if (!state.auditId) {
     setFlash("No audit selected.", true);
     return;
   }
+
   await loadAudit(state.auditId);
 });
+
 document.getElementById("uploadBtn").addEventListener("click", uploadEvidence);
 document.getElementById("saveNoteBtn").addEventListener("click", saveNote);
