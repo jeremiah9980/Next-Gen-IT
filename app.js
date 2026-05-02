@@ -16,6 +16,7 @@ const historyBox = document.getElementById("history");
 const evidenceList = document.getElementById("evidenceList");
 const notesList = document.getElementById("notesList");
 const gapQuestions = document.getElementById("gapQuestions");
+const shareRunbookLink = document.getElementById("shareRunbookLink");
 
 const storedBase = localStorage.getItem("nextGenItApiBase");
 apiBaseInput.value = storedBase || "http://localhost:8000";
