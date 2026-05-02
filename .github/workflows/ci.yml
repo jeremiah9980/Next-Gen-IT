@@ -1,0 +1,62 @@
+name: CI
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  lint-python:
+    name: Lint Python
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install ruff
+        run: pip install ruff
+
+      - name: Run ruff
+        run: ruff check .
+
+  lint-markdown:
+    name: Lint Markdown
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: markdownlint
+        uses: DavidAnson/markdownlint-cli2-action@v16
+        with:
+          globs: "**/*.md"
+          config: |
+            {
+              "MD013": false,
+              "MD033": false,
+              "MD041": false
+            }
+
+  link-check:
+    name: Check links
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Lychee link check
+        uses: lycheeverse/lychee-action@v2
+        with:
+          args: >
+            --no-progress
+            --exclude-mail
+            --exclude 'localhost'
+            --exclude '127\.0\.0\.'
+            --exclude 'example\.com'
+            --exclude 'your_key_here'
+            --exclude 'starskyowen\.com'
+            README.md
+          fail: true

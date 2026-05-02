@@ -1,0 +1,3 @@
+[lint]
+# E701/E702 – compact inline statements in the audit script are intentional
+ignore = ["E701", "E702"]
