@@ -13,35 +13,53 @@
         <p class="eyebrow">Next-Gen-IT</p>
         <h1>Client Audit Portal</h1>
         <p class="subhead">
-          Run an external domain audit, review findings, upload evidence, and generate a shareable report.
+          Run an external domain audit, review findings, upload evidence, and generate a shareable executive report and client-facing runbook.
         </p>
       </div>
-      <div class="pill">Single-tenant audit workflow MVP</div>
+      <div class="pill">Audit + Report + Runbook Workflow</div>
     </header>
 
     <main class="grid">
       <section class="card">
         <h2>Start New Audit</h2>
+
         <label>API Base URL</label>
         <input id="apiBase" placeholder="http://localhost:8000" />
+
         <label>Company Name</label>
-        <input id="companyName" placeholder="Starsky Owen" />
+        <input id="companyName" placeholder="Teleo Title" />
+
         <label>Domain</label>
-        <input id="domain" placeholder="example.com" />
+        <input id="domain" placeholder="teleotitle.com" />
+
         <div class="row">
           <button id="runAuditBtn">Run Audit</button>
           <button id="loadAuditsBtn" class="secondary">Load History</button>
         </div>
+
         <p id="flash" class="flash"></p>
       </section>
 
       <section class="card">
         <h2>Audit Status</h2>
+
         <div id="statusBox" class="status status-idle">No audit run yet.</div>
         <div id="summaryBox" class="summary hidden"></div>
+
         <div id="actions" class="row hidden">
           <button id="refreshBtn" class="secondary">Refresh</button>
-          <a id="reportLink" class="button-link secondary hidden" target="_blank" rel="noreferrer">Download Report</a>
+
+          <a id="reportLink" class="button-link secondary hidden" target="_blank" rel="noreferrer">
+            Download Report
+          </a>
+
+          <a id="runbookLink" class="button-link secondary hidden" target="_blank" rel="noreferrer">
+            Open Runbook
+          </a>
+
+          <a id="shareRunbookLink" class="button-link secondary hidden" target="_blank" rel="noreferrer">
+            Share with Client
+          </a>
         </div>
       </section>
 
@@ -59,10 +77,12 @@
 
       <section class="card">
         <h2>Upload Evidence</h2>
+
         <div class="row">
           <input id="evidenceFile" type="file" />
           <button id="uploadBtn" class="secondary">Upload</button>
         </div>
+
         <ul id="evidenceList" class="plain-list">
           <li>No evidence uploaded.</li>
         </ul>
@@ -70,10 +90,17 @@
 
       <section class="card">
         <h2>Add Notes</h2>
-        <textarea id="noteText" rows="5" placeholder="Add workflow notes, tool ownership details, or follow-up interview answers."></textarea>
+
+        <textarea
+          id="noteText"
+          rows="5"
+          placeholder="Add workflow notes, tool ownership details, or follow-up interview answers."
+        ></textarea>
+
         <div class="row">
           <button id="saveNoteBtn" class="secondary">Save Note</button>
         </div>
+
         <ul id="notesList" class="plain-list">
           <li>No notes yet.</li>
         </ul>
@@ -85,6 +112,7 @@
       </section>
     </main>
   </div>
+
   <script src="auth.js"></script>
   <script src="./app.js"></script>
 </body>
