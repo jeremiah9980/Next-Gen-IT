@@ -418,11 +418,11 @@
    * ─────────────────────────────────────────────────────────
    */
   const CORRECT_HASH = '7a7645fdb4a74b9e2d9dab0c03ca7d3743010088dac7bc11fa5a696168b7ed63';
-  const SESSION_KEY  = 'ngit_portal_auth';
+  const SESSION_KEY  = 'ngit_auth';
   const PORTAL_URL   = './index.html';
 
   // Skip login if already authenticated
-  if (sessionStorage.getItem(SESSION_KEY) === '1') {
+  if (sessionStorage.getItem('ngit_auth') === '1') {
     window.location.replace(PORTAL_URL);
   }
 
@@ -470,7 +470,7 @@
     const hash = await sha256(val);
 
     if (hash === CORRECT_HASH) {
-      sessionStorage.setItem(SESSION_KEY, '1');
+      sessionStorage.setItem('ngit_auth', '1');
       window.location.replace(PORTAL_URL);
     } else {
       btnEl.classList.remove('loading');
