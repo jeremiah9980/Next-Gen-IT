@@ -43,7 +43,7 @@
     {
       keywords: ["finding", "findings", "vulnerability", "issue", "risk"],
       reply:
-        "Findings are colour-coded by severity: **Critical/High** (red) need immediate action, **Medium** (yellow) should be addressed soon, and **Low** (blue) are informational. Click any finding card to see the full description, recommendation, and evidence.",
+        "Findings are color-coded by severity: **Critical/High** (red) need immediate action, **Medium** (yellow) should be addressed soon, and **Low** (blue) are informational. Click any finding card to see the full description, recommendation, and evidence.",
     },
     {
       keywords: ["report", "download", "export", "pdf"],
@@ -345,7 +345,7 @@
     }, 1200);
   }
 
-  // Initialise after the DOM is ready
+  // Initialize after the DOM is ready
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", init);
   } else {
