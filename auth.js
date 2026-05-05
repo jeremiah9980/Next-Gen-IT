@@ -3,11 +3,8 @@
  *  Next-Gen IT · auth.js
  *  Shared session-auth utility used by the portal.
  *
- *  Include this script in portal/index.html BEFORE any other JS:
- *    <script src="auth.js"></script>
- *
- *  It will immediately redirect to login.html if the session
- *  is not authenticated. No flash of portal content.
+ *  Include this script before protected portal/app JavaScript.
+ *  It redirects unauthenticated users to the portal login page.
  * ══════════════════════════════════════════════════════════
  */
 
@@ -15,15 +12,33 @@
   'use strict';
 
   const SESSION_KEY = 'ngit_portal_auth';
-  const LOGIN_URL   = './login.html';
+  const LEGACY_SESSION_KEY = 'ngit_auth';
+
+  function getLoginUrl() {
+    const path = window.location.pathname || '';
+    return path.includes('/portal/') ? './login.html' : './portal/login.html';
+  }
+
+  function markAuthenticated() {
+    sessionStorage.setItem(SESSION_KEY, '1');
+    sessionStorage.setItem(LEGACY_SESSION_KEY, '1');
+  }
 
   /**
-   * Call at the top of index.html to guard the portal.
+   * Call at the top of protected pages to guard the portal.
    * Redirects to login.html if not authenticated.
    */
   function requireAuth() {
-    if (sessionStorage.getItem(SESSION_KEY) !== '1') {
-      window.location.replace(LOGIN_URL);
+    const current = sessionStorage.getItem(SESSION_KEY) === '1';
+    const legacy = sessionStorage.getItem(LEGACY_SESSION_KEY) === '1';
+
+    if (legacy && !current) {
+      sessionStorage.setItem(SESSION_KEY, '1');
+      return;
+    }
+
+    if (!current) {
+      window.location.replace(getLoginUrl());
     }
   }
 
@@ -33,19 +48,20 @@
    */
   function logout() {
     sessionStorage.removeItem(SESSION_KEY);
-    window.location.replace(LOGIN_URL);
+    sessionStorage.removeItem(LEGACY_SESSION_KEY);
+    window.location.replace(getLoginUrl());
   }
 
   /**
    * Returns true if the session is authenticated.
    */
   function isAuthenticated() {
-    return sessionStorage.getItem(SESSION_KEY) === '1';
+    return sessionStorage.getItem(SESSION_KEY) === '1' || sessionStorage.getItem(LEGACY_SESSION_KEY) === '1';
   }
 
   // Expose public API
-  window.Auth = { requireAuth, logout, isAuthenticated };
+  window.Auth = { requireAuth, logout, isAuthenticated, markAuthenticated };
 
-  // Auto-guard: if this script is loaded, enforce auth immediately
+  // Auto-guard: if this script is loaded, enforce auth immediately.
   requireAuth();
 })();
