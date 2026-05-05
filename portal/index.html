@@ -8,484 +8,263 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet"/>
 <style>
-  :root {
-    --bg: #0a0c10;
-    --surface: #111318;
-    --surface2: #181c24;
-    --border: #1e2330;
-    --border2: #2a3045;
-    --accent: #2563eb;
-    --accent2: #3b82f6;
-    --accent-dim: rgba(37,99,235,0.15);
-    --green: #10b981;
-    --green-dim: rgba(16,185,129,0.12);
-    --amber: #f59e0b;
-    --amber-dim: rgba(245,158,11,0.12);
-    --red: #ef4444;
-    --red-dim: rgba(239,68,68,0.12);
-    --text: #e8ecf4;
-    --text2: #8b95a8;
-    --text3: #4e5769;
-    --font-head: 'Syne', sans-serif;
-    --font-mono: 'IBM Plex Mono', monospace;
-    --radius: 8px;
-    --radius-lg: 12px;
-  }
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  html, body { height: 100%; background: var(--bg); color: var(--text); font-family: var(--font-mono); font-size: 13px; line-height: 1.5; }
+:root {
+  --bg: #0a0c10; --surface: #111318; --surface2: #181c24;
+  --border: #1e2330; --border2: #2a3045;
+  --accent: #2563eb; --accent2: #3b82f6; --accent-dim: rgba(37,99,235,.15);
+  --green: #10b981; --green-dim: rgba(16,185,129,.12);
+  --amber: #f59e0b; --amber-dim: rgba(245,158,11,.12);
+  --red: #ef4444;   --red-dim: rgba(239,68,68,.12);
+  --text: #e8ecf4; --text2: #8b95a8; --text3: #4e5769;
+  --mono: 'IBM Plex Mono', monospace;
+  --head: 'Syne', sans-serif;
+  --r: 8px; --rlg: 12px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--mono);font-size:13px;line-height:1.5}
 
-  /* ── AUTH GATE ─────────────────────────────────────── */
-  #authGate {
-    position: fixed; inset: 0; z-index: 9999;
-    background: var(--bg);
-    display: flex; align-items: center; justify-content: center;
-    flex-direction: column;
-  }
-  #authGate::before {
-    content: '';
-    position: absolute; inset: 0;
-    background: radial-gradient(ellipse 60% 50% at 50% 0%, rgba(37,99,235,0.12) 0%, transparent 70%);
-    pointer-events: none;
-  }
-  .auth-card {
-    position: relative;
-    width: 100%; max-width: 420px;
-    background: var(--surface);
-    border: 1px solid var(--border2);
-    border-radius: var(--radius-lg);
-    padding: 40px 36px 32px;
-    box-shadow: 0 24px 80px rgba(0,0,0,0.6);
-  }
-  .auth-logo {
-    display: flex; align-items: center; gap: 10px;
-    margin-bottom: 28px;
-  }
-  .auth-logo-icon {
-    width: 36px; height: 36px;
-    background: var(--accent-dim);
-    border: 1px solid var(--accent);
-    border-radius: 8px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 16px;
-  }
-  .auth-logo-text {
-    font-family: var(--font-head);
-    font-weight: 700; font-size: 15px;
-    letter-spacing: 0.02em;
-    color: var(--text);
-  }
-  .auth-logo-text span { color: var(--accent2); }
-  .auth-heading {
-    font-family: var(--font-head);
-    font-size: 22px; font-weight: 800;
-    color: var(--text); margin-bottom: 6px;
-    letter-spacing: -0.02em;
-  }
-  .auth-sub { color: var(--text2); font-size: 12px; margin-bottom: 28px; }
-  .auth-label { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text3); margin-bottom: 8px; display: block; }
-  .auth-input {
-    width: 100%; padding: 12px 14px;
-    background: var(--bg); border: 1px solid var(--border2);
-    border-radius: var(--radius); color: var(--text);
-    font-family: var(--font-mono); font-size: 14px; letter-spacing: 0.15em;
-    outline: none; transition: border-color 0.2s;
-  }
-  .auth-input:focus { border-color: var(--accent); }
-  .auth-input.error { border-color: var(--red); }
-  .auth-error { color: var(--red); font-size: 11px; margin-top: 8px; min-height: 16px; }
-  .auth-btn {
-    width: 100%; margin-top: 20px;
-    padding: 13px; background: var(--accent);
-    border: none; border-radius: var(--radius);
-    color: #fff; font-family: var(--font-mono); font-size: 13px;
-    font-weight: 600; letter-spacing: 0.05em; cursor: pointer;
-    transition: background 0.2s, transform 0.1s;
-  }
-  .auth-btn:hover { background: var(--accent2); }
-  .auth-btn:active { transform: scale(0.98); }
-  .auth-footer { margin-top: 16px; font-size: 10px; color: var(--text3); text-align: center; }
+/* AUTH */
+#gate{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:100}
+#gate.hidden{display:none}
+.gate-card{background:var(--surface);border:1px solid var(--border2);border-radius:var(--rlg);padding:36px 32px;width:340px;text-align:center}
+.gate-logo{font-family:var(--head);font-size:18px;font-weight:800;margin-bottom:6px}
+.gate-logo span{color:var(--accent2)}
+.gate-sub{font-size:11px;color:var(--text3);margin-bottom:24px;letter-spacing:.06em;text-transform:uppercase}
+.gate-input{width:100%;background:var(--surface2);border:1px solid var(--border2);border-radius:var(--r);color:var(--text);font-family:var(--mono);font-size:14px;padding:10px 14px;outline:none;text-align:center;letter-spacing:.2em;margin-bottom:8px}
+.gate-input:focus{border-color:var(--accent2)}
+.gate-input.err{border-color:var(--red)}
+.gate-err{color:var(--red);font-size:11px;min-height:16px;margin-bottom:10px}
+.gate-btn{width:100%;background:var(--accent);border:none;border-radius:var(--r);color:#fff;font-family:var(--mono);font-size:13px;font-weight:600;padding:11px;cursor:pointer;letter-spacing:.06em;transition:background .15s}
+.gate-btn:hover{background:var(--accent2)}
 
-  /* ── MAIN APP ─────────────────────────────────────── */
-  #app { display: none; min-height: 100vh; }
-  #app.visible { display: flex; flex-direction: column; }
+/* APP */
+#app{display:none;flex-direction:column;min-height:100vh}
+#app.on{display:flex}
 
-  /* ── HEADER ─────────────────────────────────────── */
-  .header {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 0 24px; height: 56px;
-    background: var(--surface);
-    border-bottom: 1px solid var(--border);
-    position: sticky; top: 0; z-index: 100;
-  }
-  .header-brand {
-    display: flex; align-items: center; gap: 10px;
-    font-family: var(--font-head); font-weight: 700;
-    font-size: 14px; letter-spacing: 0.02em;
-  }
-  .header-brand .dot {
-    width: 8px; height: 8px; border-radius: 50%;
-    background: var(--green);
-    box-shadow: 0 0 8px var(--green);
-    animation: pulse 2s infinite;
-  }
-  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
-  .header-brand span { color: var(--accent2); }
-  .header-actions { display: flex; align-items: center; gap: 12px; }
-  .badge-operator {
-    font-size: 10px; letter-spacing: 0.08em;
-    padding: 3px 10px; border-radius: 20px;
-    background: var(--accent-dim); color: var(--accent2);
-    border: 1px solid rgba(37,99,235,0.3); text-transform: uppercase;
-  }
-  .btn-lock {
-    background: none; border: 1px solid var(--border2);
-    color: var(--text2); font-family: var(--font-mono);
-    font-size: 11px; padding: 5px 12px; border-radius: 6px;
-    cursor: pointer; transition: all 0.2s; letter-spacing: 0.05em;
-  }
-  .btn-lock:hover { border-color: var(--red); color: var(--red); }
+/* HEADER */
+.hdr{display:flex;align-items:center;justify-content:space-between;padding:0 20px;height:52px;border-bottom:1px solid var(--border);background:var(--surface);flex-shrink:0}
+.hdr-brand{font-family:var(--head);font-weight:700;font-size:14px}
+.hdr-brand span{color:var(--accent2)}
+.hdr-right{display:flex;align-items:center;gap:10px}
+.badge{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent2);background:var(--accent-dim);border:1px solid rgba(59,130,246,.2);padding:2px 8px;border-radius:4px}
+.lock-btn{background:none;border:1px solid var(--border2);border-radius:var(--r);color:var(--text3);font-family:var(--mono);font-size:11px;padding:5px 10px;cursor:pointer;transition:all .15s}
+.lock-btn:hover{border-color:var(--red);color:var(--red)}
 
-  /* ── MAIN CONTENT ─────────────────────────────────── */
-  .main { flex: 1; padding: 28px 24px; max-width: 960px; margin: 0 auto; width: 100%; }
+/* MAIN */
+main{flex:1;padding:20px;max-width:900px;width:100%;margin:0 auto}
 
-  /* ── SEARCH BAR ─────────────────────────────────── */
-  .search-section { margin-bottom: 28px; }
-  .search-label {
-    font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase;
-    color: var(--text3); margin-bottom: 12px; display: block;
-  }
-  .search-row { display: flex; gap: 10px; }
-  .search-input {
-    flex: 1; padding: 12px 16px;
-    background: var(--surface); border: 1px solid var(--border2);
-    border-radius: var(--radius); color: var(--text);
-    font-family: var(--font-mono); font-size: 14px;
-    outline: none; transition: border-color 0.2s;
-  }
-  .search-input:focus { border-color: var(--accent); }
-  .btn-run {
-    padding: 12px 24px; background: var(--accent);
-    border: none; border-radius: var(--radius);
-    color: #fff; font-family: var(--font-mono); font-size: 13px;
-    font-weight: 600; cursor: pointer; white-space: nowrap;
-    transition: background 0.2s; letter-spacing: 0.04em;
-  }
-  .btn-run:hover { background: var(--accent2); }
-  .btn-run:disabled { opacity: 0.4; cursor: not-allowed; }
+/* SEARCH */
+.search-wrap{background:var(--surface);border:1px solid var(--border2);border-radius:var(--rlg);padding:16px 20px;margin-bottom:16px}
+.search-label{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent2);margin-bottom:10px;display:block}
+.search-row{display:flex;gap:8px}
+.search-input{flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);color:var(--text);font-family:var(--mono);font-size:13px;padding:9px 14px;outline:none;min-width:0}
+.search-input:focus{border-color:var(--accent2)}
+.run-btn{background:var(--accent);border:none;border-radius:var(--r);color:#fff;font-family:var(--mono);font-size:12px;font-weight:600;padding:9px 18px;cursor:pointer;white-space:nowrap;letter-spacing:.04em;transition:background .15s}
+.run-btn:hover{background:var(--accent2)}
+.run-btn:disabled{opacity:.4;cursor:not-allowed}
 
-  /* ── STATUS PIPELINE ─────────────────────────────── */
-  .pipeline { display: none; margin-bottom: 24px; }
-  .pipeline.active { display: block; }
-  .pipeline-header {
-    display: flex; align-items: center; justify-content: space-between;
-    margin-bottom: 12px;
-  }
-  .pipeline-title { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text3); }
-  .pipeline-domain { font-family: var(--font-head); font-size: 14px; font-weight: 700; color: var(--accent2); }
-  .steps { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; }
-  .step {
-    background: var(--surface); border: 1px solid var(--border);
-    border-radius: var(--radius); padding: 10px 8px;
-    text-align: center; transition: all 0.3s;
-  }
-  .step-icon { font-size: 18px; margin-bottom: 4px; filter: grayscale(1); opacity: 0.3; transition: all 0.3s; }
-  .step-label { font-size: 9px; color: var(--text3); letter-spacing: 0.06em; transition: color 0.3s; }
-  .step.scanning { border-color: var(--accent); background: var(--accent-dim); }
-  .step.scanning .step-icon { filter: none; opacity: 1; animation: spin 1s linear infinite; }
-  .step.scanning .step-label { color: var(--accent2); }
-  .step.done { border-color: var(--green); background: var(--green-dim); }
-  .step.done .step-icon { filter: none; opacity: 1; }
-  .step.done .step-label { color: var(--green); }
-  .step.warn { border-color: var(--amber); background: var(--amber-dim); }
-  .step.warn .step-icon { filter: none; opacity: 1; }
-  .step.warn .step-label { color: var(--amber); }
-  @keyframes spin { to { transform: rotate(360deg); } }
-  .progress-bar { height: 2px; background: var(--border); border-radius: 2px; margin-top: 12px; overflow: hidden; }
-  .progress-fill { height: 100%; background: var(--accent); border-radius: 2px; transition: width 0.4s ease; width: 0%; }
+/* PIPELINE */
+.pipeline{background:var(--surface);border:1px solid var(--border);border-radius:var(--rlg);padding:16px 20px;margin-bottom:16px;display:none}
+.pipeline.on{display:block}
+.pipeline-hdr{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.pipeline-title{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--text3)}
+.pipeline-domain{font-size:13px;color:var(--accent2);font-weight:600}
+.steps{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap}
+.step{display:flex;align-items:center;gap:6px;padding:6px 10px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);font-size:11px;color:var(--text3);transition:all .2s}
+.step.scanning{border-color:var(--amber);color:var(--amber);background:var(--amber-dim)}
+.step.done{border-color:var(--green);color:var(--green);background:var(--green-dim)}
+.step.warn{border-color:var(--amber);color:var(--amber);background:var(--amber-dim)}
+.step.fail{border-color:var(--red);color:var(--red);background:var(--red-dim)}
+.progress{height:3px;background:var(--border);border-radius:3px;overflow:hidden}
+.progress-fill{height:100%;background:var(--accent2);border-radius:3px;transition:width .4s ease;width:0}
 
-  /* ── FRAUD WARNING ───────────────────────────────── */
-  .fraud-warning {
-    display: none; margin-bottom: 20px;
-    background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.4);
-    border-left: 4px solid var(--red);
-    border-radius: var(--radius); padding: 16px 18px;
-  }
-  .fraud-warning.show { display: block; }
-  .fraud-title { font-family: var(--font-head); font-weight: 700; color: var(--red); font-size: 13px; margin-bottom: 8px; letter-spacing: 0.02em; }
-  .fraud-stats { display: flex; gap: 20px; margin-bottom: 10px; flex-wrap: wrap; }
-  .fraud-stat { text-align: center; }
-  .fraud-stat-val { font-family: var(--font-head); font-size: 18px; font-weight: 800; color: var(--red); }
-  .fraud-stat-lbl { font-size: 9px; color: var(--text3); letter-spacing: 0.06em; text-transform: uppercase; }
-  .fraud-body { font-size: 11px; color: var(--text2); line-height: 1.6; }
+/* FRAUD */
+.fraud{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.3);border-radius:var(--rlg);padding:16px 20px;margin-bottom:16px;display:none}
+.fraud.on{display:block}
+.fraud-title{color:var(--red);font-weight:600;margin-bottom:8px}
+.fraud-stats{display:flex;gap:20px;margin-bottom:10px;flex-wrap:wrap}
+.fraud-stat-val{font-family:var(--head);font-size:20px;font-weight:800;color:var(--red)}
+.fraud-stat-lbl{font-size:10px;color:var(--text3);letter-spacing:.06em}
+.fraud-body{font-size:12px;color:var(--text2);line-height:1.6}
+.fraud-body code{color:var(--amber)}
 
-  /* ── SCORE CARD ───────────────────────────────────── */
-  .scorecard { display: none; margin-bottom: 20px; }
-  .scorecard.show { display: grid; grid-template-columns: auto 1fr 1fr 1fr; gap: 12px; align-items: center; }
-  .score-main {
-    background: var(--surface); border: 1px solid var(--border2);
-    border-radius: var(--radius-lg); padding: 20px 24px; text-align: center;
-  }
-  .score-num {
-    font-family: var(--font-head); font-size: 48px; font-weight: 800;
-    line-height: 1; margin-bottom: 4px;
-  }
-  .score-num.grade-a { color: var(--green); }
-  .score-num.grade-b { color: #84cc16; }
-  .score-num.grade-c { color: var(--amber); }
-  .score-num.grade-d { color: #f97316; }
-  .score-num.grade-f { color: var(--red); }
-  .score-label { font-size: 10px; color: var(--text3); letter-spacing: 0.1em; text-transform: uppercase; }
-  .score-cat {
-    background: var(--surface); border: 1px solid var(--border);
-    border-radius: var(--radius); padding: 14px 16px;
-  }
-  .score-cat-name { font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text3); margin-bottom: 6px; }
-  .score-cat-val { font-family: var(--font-head); font-size: 22px; font-weight: 700; }
-  .score-bar { height: 3px; background: var(--border); border-radius: 3px; margin-top: 8px; overflow: hidden; }
-  .score-bar-fill { height: 100%; border-radius: 3px; transition: width 0.6s ease; }
+/* SCORECARD */
+.scorecard{display:none;grid-template-columns:auto 1fr 1fr 1fr;gap:10px;margin-bottom:16px;align-items:center}
+.scorecard.on{display:grid}
+.score-main{background:var(--surface);border:1px solid var(--border2);border-radius:var(--rlg);padding:16px;text-align:center}
+.score-num{font-family:var(--head);font-size:36px;font-weight:800;line-height:1}
+.score-num.ga{color:var(--green)} .score-num.gb{color:#84cc16}
+.score-num.gc{color:var(--amber)} .score-num.gd{color:#f97316} .score-num.gf{color:var(--red)}
+.score-lbl{font-size:10px;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;margin-top:4px}
+.score-cat{background:var(--surface);border:1px solid var(--border);border-radius:var(--rlg);padding:14px}
+.score-cat-name{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);margin-bottom:6px}
+.score-cat-val{font-family:var(--head);font-size:22px;font-weight:700}
+.sbar{height:3px;background:var(--border);border-radius:3px;margin-top:8px;overflow:hidden}
+.sbar-fill{height:100%;border-radius:3px;transition:width .6s ease}
 
-  /* ── FINDINGS TABLE ───────────────────────────────── */
-  .findings { display: none; margin-bottom: 20px; }
-  .findings.show { display: block; }
-  .section-header {
-    display: flex; align-items: center; justify-content: space-between;
-    margin-bottom: 12px;
-  }
-  .section-title { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text3); }
-  .findings-table { width: 100%; border-collapse: collapse; }
-  .findings-table th {
-    text-align: left; font-size: 9px; letter-spacing: 0.1em;
-    text-transform: uppercase; color: var(--text3);
-    padding: 8px 12px; border-bottom: 1px solid var(--border);
-  }
-  .findings-table td {
-    padding: 10px 12px; border-bottom: 1px solid var(--border);
-    font-size: 12px; vertical-align: middle;
-  }
-  .findings-table tr:last-child td { border-bottom: none; }
-  .findings-table tr:hover td { background: var(--surface2); }
-  .tag {
-    display: inline-block; font-size: 10px; letter-spacing: 0.06em;
-    padding: 2px 8px; border-radius: 4px; font-weight: 500;
-  }
-  .tag-pass { background: var(--green-dim); color: var(--green); }
-  .tag-fail { background: var(--red-dim); color: var(--red); }
-  .tag-warn { background: var(--amber-dim); color: var(--amber); }
-  .tag-info { background: var(--accent-dim); color: var(--accent2); }
-  .finding-check { color: var(--text); font-weight: 500; }
-  .finding-detail { color: var(--text2); font-size: 11px; margin-top: 2px; }
+/* FINDINGS */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--rlg);padding:0;margin-bottom:16px;display:none}
+.card.on{display:block}
+.card-hdr{padding:14px 20px;border-bottom:1px solid var(--border);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--text3)}
+.ftable{width:100%;border-collapse:collapse}
+.ftable th{padding:10px 14px;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);border-bottom:1px solid var(--border);text-align:left;font-weight:500}
+.ftable td{padding:10px 14px;border-bottom:1px solid var(--border);vertical-align:top;font-size:12px;color:var(--text2)}
+.ftable tr:last-child td{border-bottom:none}
+.tag{font-size:10px;font-weight:600;letter-spacing:.06em;padding:2px 8px;border-radius:4px;text-transform:uppercase}
+.tag-pass{background:var(--green-dim);color:var(--green)}
+.tag-warn{background:var(--amber-dim);color:var(--amber)}
+.tag-fail{background:var(--red-dim);color:var(--red)}
+.tag-info{background:var(--accent-dim);color:var(--accent2)}
 
-  /* ── REMEDIATION ───────────────────────────────────── */
-  .remed { display: none; margin-bottom: 20px; }
-  .remed.show { display: block; }
-  .remed-list { list-style: none; }
-  .remed-item {
-    background: var(--surface); border: 1px solid var(--border);
-    border-radius: var(--radius); padding: 14px 16px; margin-bottom: 8px;
-    display: flex; gap: 14px; align-items: flex-start;
-  }
-  .remed-num {
-    font-family: var(--font-head); font-size: 18px; font-weight: 800;
-    color: var(--accent2); min-width: 28px; opacity: 0.6;
-  }
-  .remed-content { flex: 1; }
-  .remed-title { font-weight: 600; color: var(--text); margin-bottom: 4px; }
-  .remed-desc { color: var(--text2); font-size: 11px; line-height: 1.6; }
-  .remed-code {
-    margin-top: 8px; padding: 8px 12px;
-    background: var(--bg); border: 1px solid var(--border);
-    border-radius: 6px; font-size: 11px; color: var(--green);
-    word-break: break-all; white-space: pre-wrap;
-  }
-  .remed-prio { font-size: 9px; letter-spacing: 0.08em; text-transform: uppercase; }
-  .prio-high { color: var(--red); }
-  .prio-med { color: var(--amber); }
-  .prio-low { color: var(--green); }
+/* REMED */
+.remed-list{list-style:none;padding:0}
+.remed-item{display:flex;gap:14px;padding:14px 20px;border-bottom:1px solid var(--border)}
+.remed-item:last-child{border-bottom:none}
+.remed-num{font-family:var(--head);font-size:22px;font-weight:800;color:var(--accent2);width:28px;flex-shrink:0;line-height:1.2}
+.remed-title{font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px}
+.remed-prio{font-size:10px;font-weight:600;letter-spacing:.06em;margin-left:6px;text-transform:uppercase}
+.prio-high{color:var(--red)} .prio-med{color:var(--amber)} .prio-low{color:var(--green)}
+.remed-desc{font-size:12px;color:var(--text2);line-height:1.6;margin-bottom:6px}
+.remed-code{font-size:11px;color:var(--accent2);background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:8px 10px;white-space:pre-wrap;word-break:break-all;line-height:1.5}
 
-  /* ── ACTION BAR ───────────────────────────────────── */
-  .action-bar {
-    display: none; position: sticky; bottom: 0;
-    background: var(--surface); border-top: 1px solid var(--border2);
-    padding: 14px 24px; z-index: 50;
-    flex-direction: row; gap: 10px; align-items: center;
-    flex-wrap: wrap;
-  }
-  .action-bar.show { display: flex; }
-  .action-bar-domain {
-    flex: 1; font-family: var(--font-head); font-weight: 700;
-    font-size: 14px; color: var(--accent2); min-width: 150px;
-  }
-  .action-bar-domain small { display: block; font-size: 10px; font-weight: 400; color: var(--text3); font-family: var(--font-mono); }
-  .action-group { display: flex; gap: 8px; flex-wrap: wrap; }
-  .btn-action {
-    padding: 9px 16px; border-radius: var(--radius);
-    font-family: var(--font-mono); font-size: 12px; font-weight: 600;
-    cursor: pointer; transition: all 0.2s; letter-spacing: 0.03em;
-    border: 1px solid transparent; white-space: nowrap;
-  }
-  .btn-primary { background: var(--accent); color: #fff; border-color: var(--accent); }
-  .btn-primary:hover { background: var(--accent2); }
-  .btn-secondary { background: transparent; color: var(--accent2); border-color: rgba(37,99,235,0.4); }
-  .btn-secondary:hover { background: var(--accent-dim); }
-  .btn-outline { background: transparent; color: var(--text2); border-color: var(--border2); }
-  .btn-outline:hover { color: var(--text); border-color: var(--text3); }
-  .btn-copy { background: var(--green-dim); color: var(--green); border-color: rgba(16,185,129,0.3); }
-  .btn-copy:hover { background: rgba(16,185,129,0.2); }
+/* REPORTS */
+.reports-hdr{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid var(--border)}
+.reports-label{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--text3)}
+.refresh-btn{background:none;border:1px solid var(--border);border-radius:var(--r);color:var(--text3);font-family:var(--mono);font-size:10px;padding:4px 10px;cursor:pointer;transition:all .15s}
+.refresh-btn:hover{border-color:var(--accent2);color:var(--accent2)}
+.report-section-label{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);padding:10px 20px 6px;border-bottom:1px solid var(--border)}
+.report-item{display:flex;align-items:center;gap:12px;padding:12px 20px;border-bottom:1px solid var(--border);transition:background .15s}
+.report-item:hover{background:var(--surface2)}
+.report-item:last-child{border-bottom:none}
+.report-icon{font-size:16px;flex-shrink:0}
+.report-info{flex:1;min-width:0}
+.report-name{font-size:13px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.report-meta{font-size:11px;color:var(--text3);margin-top:2px}
+.report-score{font-family:var(--head);font-size:18px;font-weight:800;flex-shrink:0}
+.report-actions{display:flex;gap:6px;flex-shrink:0}
+.sbtn{border-radius:var(--r);font-family:var(--mono);font-size:11px;padding:5px 10px;cursor:pointer;border:1px solid;transition:all .15s;text-decoration:none;display:inline-block}
+.sbtn-blue{background:var(--accent-dim);color:var(--accent2);border-color:rgba(59,130,246,.3)}
+.sbtn-blue:hover{background:rgba(59,130,246,.25)}
+.sbtn-green{background:var(--green-dim);color:var(--green);border-color:rgba(16,185,129,.3)}
+.sbtn-green:hover{background:rgba(16,185,129,.2)}
+.empty{padding:28px 20px;text-align:center;color:var(--text3)}
+.empty-icon{font-size:24px;margin-bottom:8px}
+.empty-title{font-size:14px;font-weight:600;color:var(--text2);margin-bottom:4px}
 
-  /* ── TOOLTIP ───────────────────────────────────────── */
-  .toast {
-    position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%);
-    background: var(--surface2); border: 1px solid var(--border2);
-    color: var(--text); font-size: 12px; padding: 8px 16px;
-    border-radius: 20px; z-index: 9999; opacity: 0; pointer-events: none;
-    transition: opacity 0.2s; box-shadow: 0 4px 20px rgba(0,0,0,0.4);
-  }
-  .toast.show { opacity: 1; }
+/* ACTION BAR */
+.action-bar{display:none;position:sticky;bottom:0;background:var(--surface);border-top:1px solid var(--border2);padding:12px 20px;align-items:center;justify-content:space-between;gap:12px}
+.action-bar.on{display:flex}
+.action-domain{flex:1;min-width:0}
+.action-domain small{display:block;font-size:10px;color:var(--text3);letter-spacing:.08em;text-transform:uppercase}
+.action-domain .domain-val{font-size:15px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.action-btns{display:flex;gap:8px;flex-shrink:0}
+.abtn{border-radius:var(--r);font-family:var(--mono);font-size:12px;padding:8px 14px;cursor:pointer;border:1px solid;transition:all .15s;text-decoration:none;white-space:nowrap}
+.abtn-primary{background:var(--accent);border-color:var(--accent);color:#fff} .abtn-primary:hover{background:var(--accent2)}
+.abtn-secondary{background:transparent;border-color:rgba(59,130,246,.4);color:var(--accent2)} .abtn-secondary:hover{background:var(--accent-dim)}
+.abtn-copy{background:var(--green-dim);border-color:rgba(16,185,129,.3);color:var(--green)} .abtn-copy:hover{background:rgba(16,185,129,.2)}
 
-  /* ── PUBLISHED REPORTS ────────────────────────────── */
-  .reports-section { margin-top: 32px; }
-  .reports-list { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
-  .report-item {
-    background: var(--surface); border: 1px solid var(--border);
-    border-radius: var(--radius); padding: 12px 16px;
-    display: flex; align-items: center; gap: 14px;
-  }
-  .report-icon { font-size: 18px; opacity: 0.6; }
-  .report-info { flex: 1; }
-  .report-name { font-weight: 600; color: var(--text); font-size: 12px; }
-  .report-meta { font-size: 10px; color: var(--text3); margin-top: 2px; }
-  .report-score { font-family: var(--font-head); font-size: 20px; font-weight: 800; }
-  .report-actions { display: flex; gap: 6px; }
-  .btn-sm {
-    padding: 5px 10px; border-radius: 5px; font-size: 10px;
-    font-family: var(--font-mono); font-weight: 600; cursor: pointer;
-    border: 1px solid transparent; transition: all 0.15s; letter-spacing: 0.03em;
-  }
-  .btn-sm-blue { background: var(--accent-dim); color: var(--accent2); border-color: rgba(37,99,235,0.3); }
-  .btn-sm-blue:hover { background: rgba(37,99,235,0.25); }
-  .btn-sm-green { background: var(--green-dim); color: var(--green); border-color: rgba(16,185,129,0.3); }
-  .btn-sm-green:hover { background: rgba(16,185,129,0.2); }
-  .btn-sm-gray { background: transparent; color: var(--text3); border-color: var(--border); }
-  .btn-sm-gray:hover { color: var(--text2); border-color: var(--border2); }
+/* TOAST */
+.toast{position:fixed;bottom:72px;left:50%;transform:translateX(-50%) translateY(10px);background:var(--surface2);border:1px solid var(--border2);border-radius:var(--r);padding:8px 16px;font-size:12px;color:var(--green);opacity:0;transition:all .2s;pointer-events:none;white-space:nowrap}
+.toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
 
-  /* ── EMPTY STATE ──────────────────────────────────── */
-  .empty-state {
-    text-align: center; padding: 60px 20px;
-    color: var(--text3); font-size: 12px;
-  }
-  .empty-state-icon { font-size: 36px; margin-bottom: 12px; opacity: 0.3; }
-  .empty-state-title { font-family: var(--font-head); font-size: 16px; font-weight: 700; color: var(--text3); margin-bottom: 6px; }
-
-  /* ── MISC ─────────────────────────────────────────── */
-  .divider { border: none; border-top: 1px solid var(--border); margin: 24px 0; }
-  .hidden { display: none !important; }
+@media(max-width:600px){
+  .scorecard{grid-template-columns:1fr 1fr}
+  .action-btns{flex-wrap:wrap}
+}
 </style>
 </head>
 <body>
 
-<!-- ══════════════════════════════ AUTH GATE ══════════════════════════════ -->
-<div id="authGate">
-  <div class="auth-card">
-    <div class="auth-logo">
-      <div class="auth-logo-icon">🔒</div>
-      <div class="auth-logo-text">Next-Gen <span>IT</span> · Portal</div>
-    </div>
-    <div class="auth-heading">Operator Access</div>
-    <div class="auth-sub">Restricted to authorized Next-Gen IT personnel.</div>
-    <label class="auth-label">Access Code</label>
-    <input type="password" class="auth-input" id="passInput" placeholder="••••••••" autocomplete="off"/>
-    <div class="auth-error" id="authError"></div>
-    <button class="auth-btn" id="authBtn">Authenticate →</button>
-    <div class="auth-footer">Next-Gen IT · Domain Audit System · v2.1</div>
+<!-- AUTH GATE -->
+<div id="gate">
+  <div class="gate-card">
+    <div class="gate-logo">Next-Gen <span>IT</span> · Portal</div>
+    <div class="gate-sub">Operator Access</div>
+    <input type="password" class="gate-input" id="pwInput" placeholder="••••••••" autocomplete="off"/>
+    <div class="gate-err" id="gateErr"></div>
+    <button class="gate-btn" id="gateBtn">Authenticate →</button>
   </div>
 </div>
 
-<!-- ══════════════════════════════ MAIN APP ══════════════════════════════ -->
+<!-- APP -->
 <div id="app">
 
-  <!-- HEADER -->
-  <header class="header">
-    <div class="header-brand">
-      <div class="dot"></div>
-      Next-Gen <span>&nbsp;IT</span> &nbsp;·&nbsp; Domain Audit Portal
-    </div>
-    <div class="header-actions">
-      <span class="badge-operator">Operator</span>
-      <button class="btn-lock" id="lockBtn" title="Lock portal">⚿ Lock</button>
+  <header class="hdr">
+    <div class="hdr-brand">Next-Gen <span>IT</span> · Domain Audit Portal</div>
+    <div class="hdr-right">
+      <span class="badge">Operator</span>
+      <button class="lock-btn" id="lockBtn">⚿ Lock</button>
     </div>
   </header>
 
-  <!-- MAIN -->
-  <main class="main">
+  <main>
 
     <!-- SEARCH -->
-    <div class="search-section">
+    <div class="search-wrap">
       <span class="search-label">→ Run Domain Audit</span>
       <div class="search-row">
         <input type="text" class="search-input" id="domainInput"
           placeholder="exprealty.com  ·  teamlead.realestate  ·  austinrealtygroup.com"
-          autocomplete="off"/>
-        <button class="btn-run" id="runBtn">▶ Run Audit</button>
+          autocomplete="off" spellcheck="false"/>
+        <button class="run-btn" id="runBtn">▶ Run Audit</button>
       </div>
     </div>
 
     <!-- PIPELINE -->
     <div class="pipeline" id="pipeline">
-      <div class="pipeline-header">
+      <div class="pipeline-hdr">
         <span class="pipeline-title">Scanning</span>
-        <span class="pipeline-domain" id="pipelineDomain"></span>
+        <span class="pipeline-domain" id="pDomain"></span>
       </div>
-      <div class="steps" id="steps">
-        <div class="step" id="step-0"><div class="step-icon">⚙️</div><div class="step-label">Registrar</div></div>
-        <div class="step" id="step-1"><div class="step-icon">🌐</div><div class="step-label">DNS</div></div>
-        <div class="step" id="step-2"><div class="step-icon">📧</div><div class="step-label">Email Auth</div></div>
-        <div class="step" id="step-3"><div class="step-icon">🔒</div><div class="step-label">SSL / Site</div></div>
-        <div class="step" id="step-4"><div class="step-icon">📊</div><div class="step-label">Analytics</div></div>
-        <div class="step" id="step-5"><div class="step-icon">🤖</div><div class="step-label">AI Report</div></div>
+      <div class="steps">
+        <div class="step" id="s0">⚙️ Registrar / NS</div>
+        <div class="step" id="s1">🌐 DNS / MX</div>
+        <div class="step" id="s2">📧 Email Auth</div>
+        <div class="step" id="s3">🔒 SSL / Site</div>
+        <div class="step" id="s4">📊 Tech Signals</div>
+        <div class="step" id="s5">🤖 Build Report</div>
       </div>
-      <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+      <div class="progress"><div class="progress-fill" id="pFill"></div></div>
     </div>
 
-    <!-- WIRE FRAUD WARNING -->
-    <div class="fraud-warning" id="fraudWarning">
-      <div class="fraud-title">⚠️ Wire Fraud Risk Detected — DMARC Not Enforced</div>
+    <!-- FRAUD WARNING -->
+    <div class="fraud" id="fraud">
+      <div class="fraud-title">⚠️ Wire Fraud Risk — DMARC Not Enforced</div>
       <div class="fraud-stats">
-        <div class="fraud-stat"><div class="fraud-stat-val">$275M</div><div class="fraud-stat-lbl">Real Estate Fraud (2024)</div></div>
-        <div class="fraud-stat"><div class="fraud-stat-val">12,368</div><div class="fraud-stat-lbl">IC3 Complaints Filed</div></div>
-        <div class="fraud-stat"><div class="fraud-stat-val">$3.04B</div><div class="fraud-stat-lbl">BEC Total Losses</div></div>
+        <div><div class="fraud-stat-val">$275M</div><div class="fraud-stat-lbl">Real Estate Fraud (2024)</div></div>
+        <div><div class="fraud-stat-val">12,368</div><div class="fraud-stat-lbl">IC3 Complaints Filed</div></div>
+        <div><div class="fraud-stat-val">$3.04B</div><div class="fraud-stat-lbl">BEC Total Losses</div></div>
       </div>
-      <div class="fraud-body">This domain's DMARC policy is not enforced (<code>p=none</code> or missing). Attackers can spoof the email address of any agent or escrow officer at this firm — sending fraudulent wire transfer instructions that appear to come from legitimate company addresses. Real estate closings are the #1 wire fraud target in the US. ALTA standards and most cyber insurance carriers now require <code>p=quarantine</code> or <code>p=reject</code>.</div>
+      <div class="fraud-body">DMARC is missing or set to <code>p=none</code>. Attackers can spoof any agent or escrow officer at this firm — sending fraudulent wire instructions that appear legitimate. Real estate closings are the #1 wire fraud target in the US. ALTA standards and most cyber insurance carriers require <code>p=quarantine</code> or <code>p=reject</code>.</div>
     </div>
 
-    <!-- SCORE CARD -->
+    <!-- SCORECARD -->
     <div class="scorecard" id="scorecard">
       <div class="score-main">
         <div class="score-num" id="scoreNum">--</div>
-        <div class="score-label">Total Score</div>
+        <div class="score-lbl">Total Score</div>
       </div>
-      <div class="score-cat" id="catEmail">
+      <div class="score-cat">
         <div class="score-cat-name">Email Auth</div>
         <div class="score-cat-val" id="emailScore">-/10</div>
-        <div class="score-bar"><div class="score-bar-fill" id="emailBar" style="background:var(--accent)"></div></div>
+        <div class="sbar"><div class="sbar-fill" id="emailBar"></div></div>
       </div>
-      <div class="score-cat" id="catWeb">
+      <div class="score-cat">
         <div class="score-cat-name">Website / SEO</div>
         <div class="score-cat-val" id="webScore">-/10</div>
-        <div class="score-bar"><div class="score-bar-fill" id="webBar" style="background:var(--accent)"></div></div>
+        <div class="sbar"><div class="sbar-fill" id="webBar"></div></div>
       </div>
-      <div class="score-cat" id="catTech">
-        <div class="score-cat-name">Marketing / Tech</div>
+      <div class="score-cat">
+        <div class="score-cat-name">Tech Stack</div>
         <div class="score-cat-val" id="techScore">-/10</div>
-        <div class="score-bar"><div class="score-bar-fill" id="techBar" style="background:var(--accent)"></div></div>
+        <div class="sbar"><div class="sbar-fill" id="techBar"></div></div>
       </div>
     </div>
 
     <!-- FINDINGS -->
-    <div class="findings" id="findings">
-      <div class="section-header">
-        <span class="section-title">Findings</span>
-      </div>
-      <table class="findings-table">
+    <div class="card" id="findingsCard">
+      <div class="card-hdr">Findings</div>
+      <table class="ftable">
         <thead><tr>
           <th>Check</th><th>Status</th><th>Value</th><th>Risk</th>
         </tr></thead>
@@ -494,50 +273,34 @@
     </div>
 
     <!-- REMEDIATION -->
-    <div class="remed" id="remed">
-      <div class="section-header">
-        <span class="section-title">Remediation Steps</span>
-      </div>
+    <div class="card" id="remedCard">
+      <div class="card-hdr">Remediation Steps</div>
       <ul class="remed-list" id="remedList"></ul>
     </div>
 
-    <hr class="divider"/>
-
-    <!-- PUBLISHED REPORTS -->
-    <div class="reports-section">
-      <div class="section-header">
-        <span class="section-title">Published Reports</span>
+    <!-- REPORTS -->
+    <div class="card on" id="reportsCard">
+      <div class="reports-hdr">
+        <span class="reports-label">Reports</span>
+        <button class="refresh-btn" id="refreshBtn">↺ Refresh</button>
       </div>
       <div id="reportsList">
-        <div class="empty-state">
-          <div class="empty-state-icon">📂</div>
-          <div class="empty-state-title">No reports yet</div>
-          Run an audit above to generate the first report.
-        </div>
+        <div class="empty"><div class="empty-icon">📂</div><div class="empty-title">No reports yet</div>Run a quick DNS scan above, or trigger a full AI audit via GitHub Actions.</div>
       </div>
     </div>
 
   </main>
 
-  <!-- ACTION BAR (sticky bottom) -->
+  <!-- ACTION BAR -->
   <div class="action-bar" id="actionBar">
-    <div class="action-bar-domain" id="actionDomain">
+    <div class="action-domain">
       <small>AUDIT COMPLETE</small>
-      domain.com
+      <div class="domain-val" id="actionDomain">—</div>
     </div>
-    <div class="action-group">
-      <!-- Operator: view full runbook locally -->
-      <a id="runbookLink" class="btn-action btn-secondary hidden" target="_blank">
-        📋 Open Runbook
-      </a>
-      <!-- Client: share via URL-encoded data -->
-      <a id="shareRunbookLink" class="btn-action btn-primary" target="_blank">
-        🔗 Open Client View
-      </a>
-      <!-- Copy shareable URL to clipboard -->
-      <button id="copyShareBtn" class="btn-action btn-copy">
-        📎 Copy Share Link
-      </button>
+    <div class="action-btns">
+      <a class="abtn abtn-secondary hidden" id="aiReportLink" target="_blank">🤖 AI Report</a>
+      <a class="abtn abtn-primary hidden" id="shareLink" target="_blank">🔗 Client View</a>
+      <button class="abtn abtn-copy" id="copyBtn">📎 Copy Link</button>
     </div>
   </div>
 
@@ -546,207 +309,200 @@
 <div class="toast" id="toast"></div>
 
 <script>
-/* ══════════════════════════════════════════════════
-   CONSTANTS & AUTH
-══════════════════════════════════════════════════ */
-const PORTAL_PASS = 'NGIT2024';  // ← change this
-const SESSION_KEY = 'ngit_auth';
+/* ─────────────────────────────────────────────
+   CONFIG — change password here only
+───────────────────────────────────────────── */
+const PASS        = 'NGIT2024';
+const SESSION_KEY = 'ngit_auth';   // single key, used nowhere else
 const REPORTS_KEY = 'ngit_reports';
+const MANIFEST    = 'https://jeremiah9980.github.io/Next-Gen-IT/reports/manifest.json';
+const RUNBOOK_URL = 'https://jeremiah9980.github.io/Next-Gen-IT/portal/runbook.html';
 
-// Auth gate
-const authGate = document.getElementById('authGate');
-const app       = document.getElementById('app');
-const passInput = document.getElementById('passInput');
-const authBtn   = document.getElementById('authBtn');
-const authError = document.getElementById('authError');
-const lockBtn   = document.getElementById('lockBtn');
+/* ─────────────────────────────────────────────
+   AUTH — single system, no login.html dependency
+───────────────────────────────────────────── */
+const gate   = document.getElementById('gate');
+const app    = document.getElementById('app');
+const pwEl   = document.getElementById('pwInput');
+const gateErr= document.getElementById('gateErr');
 
-function isAuthed() { return sessionStorage.getItem(SESSION_KEY) === '1'; }
-function requireAuth() {
-  if (!isAuthed()) { lockPortal(); return false; }
-  return true;
-}
-
-function unlockPortal() {
+function authed()  { return sessionStorage.getItem(SESSION_KEY) === '1'; }
+function unlock()  {
   sessionStorage.setItem(SESSION_KEY, '1');
-  authGate.style.display = 'none';
-  app.classList.add('visible');
+  gate.classList.add('hidden');
+  app.classList.add('on');
   renderReports();
+  fetchManifest();
 }
-
-function lockPortal() {
+function lock() {
   sessionStorage.removeItem(SESSION_KEY);
-  authGate.style.display = 'flex';
-  app.classList.remove('visible');
-  passInput.value = '';
+  gate.classList.remove('hidden');
+  app.classList.remove('on');
+  pwEl.value = '';
+  gateErr.textContent = '';
 }
 
-// Check session on load
-if (isAuthed()) unlockPortal();
+function authCheck() {
+  if (authed()) { unlock(); return; }
+  // show gate (already visible by default)
+}
 
-authBtn.addEventListener('click', () => {
-  if (passInput.value === PORTAL_PASS) {
-    authError.textContent = '';
-    passInput.classList.remove('error');
-    unlockPortal();
+document.getElementById('gateBtn').addEventListener('click', () => {
+  if (pwEl.value === PASS) {
+    gateErr.textContent = '';
+    pwEl.classList.remove('err');
+    unlock();
   } else {
-    authError.textContent = 'Invalid access code.';
-    passInput.classList.add('error');
-    passInput.value = '';
-    passInput.focus();
+    gateErr.textContent = 'Invalid access code.';
+    pwEl.classList.add('err');
+    pwEl.value = '';
+    pwEl.focus();
   }
 });
-passInput.addEventListener('keydown', e => { if (e.key === 'Enter') authBtn.click(); });
-lockBtn.addEventListener('click', lockPortal);
+pwEl.addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('gateBtn').click(); });
+document.getElementById('lockBtn').addEventListener('click', lock);
 
-/* ══════════════════════════════════════════════════
-   DNS LOOKUP HELPER (Cloudflare DoH — gated by auth)
-══════════════════════════════════════════════════ */
-async function dnsLookup(domain, type) {
-  if (!requireAuth()) throw new Error('Not authenticated');
-  const r = await fetch(`https://cloudflare-dns.com/dns-query?name=${encodeURIComponent(domain)}&type=${type}`, {
-    headers: { Accept: 'application/dns-json' }
-  });
+/* ─────────────────────────────────────────────
+   DNS via Cloudflare DoH (works cross-origin)
+───────────────────────────────────────────── */
+async function doh(name, type) {
+  const r = await fetch(
+    `https://cloudflare-dns.com/dns-query?name=${encodeURIComponent(name)}&type=${type}`,
+    { headers: { Accept: 'application/dns-json' }, signal: AbortSignal.timeout(8000) }
+  );
   if (!r.ok) return [];
-  const data = await r.json();
-  return data.Answer || [];
+  const d = await r.json();
+  return (d.Answer || []).map(a => a.data.replace(/^"|"$/g,'').replace(/" "/g,''));
 }
 
-async function getTXT(domain) {
-  const ans = await dnsLookup(domain, 'TXT');
-  return ans.map(a => a.data.replace(/^"|"$/g,'').replace(/" "/g,''));
-}
-async function getMX(domain) {
-  const ans = await dnsLookup(domain, 'MX');
-  return ans.map(a => a.data);
-}
-async function getA(domain) {
-  const ans = await dnsLookup(domain, 'A');
-  return ans.map(a => a.data);
-}
-async function getNS(domain) {
-  const ans = await dnsLookup(domain, 'NS');
-  return ans.map(a => a.data);
-}
+const getTXT = n => doh(n, 'TXT');
+const getMX  = n => doh(n, 'MX');
+const getNS  = n => doh(n, 'NS');
+const getA   = n => doh(n, 'A');
 
-/* ══════════════════════════════════════════════════
-   SITE PROBE (fetch headers/meta — best-effort CORS)
-══════════════════════════════════════════════════ */
+/* ─────────────────────────────────────────────
+   SITE PROBE — no-cors only (avoids CORS errors)
+───────────────────────────────────────────── */
 async function probeSite(domain) {
-  const result = { ssl: false, hasAnalytics: false, hasCRM: false, hasSitemap: false, techStack: [] };
+  const out = { ssl: false, hasSitemap: false };
+  // SSL: no-cors HEAD succeeds if HTTPS is reachable
   try {
-    const r = await fetch(`https://${domain}`, { method: 'HEAD', mode: 'no-cors', signal: AbortSignal.timeout(5000) });
-    result.ssl = true; // reached via https
+    await fetch(`https://${domain}`, { method:'HEAD', mode:'no-cors', signal:AbortSignal.timeout(6000) });
+    out.ssl = true;
   } catch {}
-  // Try fetching sitemap
+  // Sitemap: also no-cors (we only care if it exists, not its content)
   try {
-    const r = await fetch(`https://${domain}/sitemap.xml`, { signal: AbortSignal.timeout(4000) });
-    if (r.ok) result.hasSitemap = true;
+    await fetch(`https://${domain}/sitemap.xml`, { method:'HEAD', mode:'no-cors', signal:AbortSignal.timeout(5000) });
+    out.hasSitemap = true;
   } catch {}
-  return result;
+  return out;
 }
 
-/* ══════════════════════════════════════════════════
+/* ─────────────────────────────────────────────
    AUDIT ENGINE
-══════════════════════════════════════════════════ */
-let currentAuditData = null;
+───────────────────────────────────────────── */
+let currentData = null;
+
+function step(i, state) {
+  document.getElementById(`s${i}`).className = `step ${state}`;
+  document.getElementById('pFill').style.width = `${Math.round((i+1)/6*100)}%`;
+}
+const wait = ms => new Promise(r => setTimeout(r, ms));
 
 async function runAudit(domain) {
-  if (!requireAuth()) return;
+  if (!authed()) { lock(); return; }
 
-  domain = domain.toLowerCase().replace(/^https?:\/\//,'').replace(/\//,'').trim();
+  domain = domain.toLowerCase()
+    .replace(/^https?:\/\//,'').replace(/^www\./,'').replace(/\/.*/,'').trim();
   if (!domain) return;
 
-  // UI setup
-  const pipeline = document.getElementById('pipeline');
-  const progressFill = document.getElementById('progressFill');
-  document.getElementById('pipelineDomain').textContent = domain;
-  pipeline.classList.add('active');
-  document.getElementById('fraudWarning').classList.remove('show');
-  document.getElementById('scorecard').classList.remove('show');
-  document.getElementById('findings').classList.remove('show');
-  document.getElementById('remed').classList.remove('show');
-  document.getElementById('actionBar').classList.remove('show');
+  // Reset UI
+  document.getElementById('pipeline').classList.add('on');
+  document.getElementById('pDomain').textContent = domain;
+  document.getElementById('pFill').style.width = '0';
+  for (let i=0;i<6;i++) document.getElementById(`s${i}`).className='step';
+  ['fraud','scorecard','findingsCard','remedCard','actionBar'].forEach(id => {
+    document.getElementById(id).classList.remove('on');
+  });
+  document.getElementById('runBtn').disabled = true;
 
-  for (let i = 0; i < 6; i++) {
-    const s = document.getElementById(`step-${i}`);
-    s.className = 'step';
-  }
-
-  const setStep = (i, state) => {
-    document.getElementById(`step-${i}`).className = `step ${state}`;
-    progressFill.style.width = `${Math.round((i + 1) / 6 * 100)}%`;
-  };
-
-  const auditData = {
+  const d = {
     domain, ts: new Date().toISOString(),
-    spf: null, dmarc: null, dkim: null, mx: [], ns: [],
-    ssl: false, hasSitemap: false, hasAnalytics: false, hasCRM: false,
-    findings: [], remediation: [], scores: { email: 0, web: 0, tech: 0 }
+    ns:[], mx:[], spf:null, dmarc:null, dkim:null,
+    ssl:false, hasSitemap:false,
+    hasGoogleWS:false,
+    findings:[], remediation:[], scores:{email:0,web:0,tech:0}
   };
 
   try {
-    // Step 0 – Registrar / NS
-    setStep(0, 'scanning');
-    auditData.ns = await getNS(domain);
-    setStep(0, 'done');
-    await delay(300);
+    // S0: Nameservers
+    step(0,'scanning');
+    d.ns = await getNS(domain);
+    step(0, d.ns.length ? 'done' : 'warn');
+    await wait(200);
 
-    // Step 1 – DNS / MX
-    setStep(1, 'scanning');
-    auditData.mx = await getMX(domain);
-    setStep(1, 'done');
-    await delay(300);
+    // S1: MX
+    step(1,'scanning');
+    d.mx = await getMX(domain);
+    step(1, d.mx.length ? 'done' : 'warn');
+    await wait(200);
 
-    // Step 2 – Email Auth
-    setStep(2, 'scanning');
-    const txtRecords = await getTXT(domain);
-    const dmarcTxt   = await getTXT(`_dmarc.${domain}`);
+    // S2: Email auth (SPF, DMARC, DKIM)
+    step(2,'scanning');
+    const txt   = await getTXT(domain);
+    const dmarc = await getTXT(`_dmarc.${domain}`);
+    d.spf   = txt.find(t => t.startsWith('v=spf1')) || null;
+    d.dmarc = dmarc.find(t => t.startsWith('v=DMARC1')) || null;
+    d.hasGoogleWS = /google-site-verification/i.test(txt.join(' '));
 
-    auditData.spf   = txtRecords.find(t => t.startsWith('v=spf1')) || null;
-    auditData.dmarc = dmarcTxt.find(t => t.startsWith('v=DMARC1')) || null;
-    auditData.dkim  = txtRecords.some(t => t.includes('v=DKIM1')) ? 'detected' : null;
-    setStep(2, auditData.spf && auditData.dmarc ? 'done' : 'warn');
-    await delay(400);
+    // DKIM: check real selectors via DoH
+    const SELECTORS = ['google','selector1','selector2','default','k1','smtp','mail','dkim'];
+    for (const sel of SELECTORS) {
+      try {
+        const recs = await getTXT(`${sel}._domainkey.${domain}`);
+        if (recs.some(r => r.includes('p=') || r.includes('k=rsa') || r.includes('k=ed25519'))) {
+          d.dkim = sel; break;
+        }
+      } catch {}
+    }
+    step(2, (d.spf && d.dmarc) ? 'done' : 'warn');
+    await wait(300);
 
-    // Step 3 – SSL / Site
-    setStep(3, 'scanning');
-    const siteData = await probeSite(domain);
-    Object.assign(auditData, siteData);
-    setStep(3, siteData.ssl ? 'done' : 'warn');
-    await delay(400);
+    // S3: SSL/Site
+    step(3,'scanning');
+    const site = await probeSite(domain);
+    d.ssl = site.ssl;
+    d.hasSitemap = site.hasSitemap;
+    step(3, d.ssl ? 'done' : 'warn');
+    await wait(300);
 
-    // Step 4 – Analytics / CRM detection (NS/TXT heuristics)
-    setStep(4, 'scanning');
-    const allTxt = txtRecords.join(' ');
-    auditData.hasAnalytics = /google-site-verification|ga-|gtm-|UA-|G-[A-Z0-9]/i.test(allTxt);
-    auditData.hasCRM = /zoho|kvcore|followupboss|sierra|chime/i.test(auditData.ns.join(' ') + ' ' + allTxt);
-    setStep(4, 'done');
-    await delay(400);
+    // S4: Tech signals from DNS
+    step(4,'scanning');
+    await wait(400);
+    step(4,'done');
 
-    // Step 5 – Build report
-    setStep(5, 'scanning');
-    buildFindings(auditData);
-    buildRemediation(auditData);
-    computeScores(auditData);
-    await delay(600);
-    setStep(5, 'done');
+    // S5: Build report
+    step(5,'scanning');
+    buildFindings(d);
+    buildRemediation(d);
+    computeScores(d);
+    await wait(500);
+    step(5,'done');
 
   } catch(err) {
-    console.error('Audit error', err);
+    console.error('[NGIT audit error]', err);
   }
 
-  progressFill.style.width = '100%';
-  currentAuditData = auditData;
-  renderResults(auditData);
-  saveReport(auditData);
+  document.getElementById('pFill').style.width = '100%';
+  document.getElementById('runBtn').disabled = false;
+  currentData = d;
+  renderResults(d);
+  saveReport(d);
 }
 
-function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
-
-/* ══════════════════════════════════════════════════
+/* ─────────────────────────────────────────────
    SCORING
-══════════════════════════════════════════════════ */
+───────────────────────────────────────────── */
 function computeScores(d) {
   // Email auth (10 pts)
   let email = 0;
@@ -757,345 +513,339 @@ function computeScores(d) {
   d.scores.email = Math.min(email, 10);
 
   // Website/SEO (10 pts)
-  let web = 4; // base for resolving
-  if (d.ssl) web += 3;
-  if (d.hasSitemap) web += 3;
+  let web = 0;
+  if (d.ns.length)   web += 1; // resolves
+  if (d.ssl)         web += 4; // HTTPS confirmed
+  if (d.hasSitemap)  web += 3; // sitemap
+  if (d.mx.length)   web += 2; // mail infra
   d.scores.web = Math.min(web, 10);
 
-  // Marketing / Tech (10 pts)
-  let tech = 3;
-  if (d.mx.length) tech += 2;
-  if (d.hasAnalytics) tech += 3;
-  if (d.hasCRM) tech += 2;
+  // Tech stack (10 pts) — DNS-detectable only
+  let tech = 0;
+  if (d.hasGoogleWS)                        tech += 3; // Google Workspace
+  if (d.dkim)                               tech += 3; // DKIM active
+  if (d.spf && d.spf.includes('-all'))      tech += 2; // hardened SPF
+  if (d.dmarc && !d.dmarc.includes('p=none')) tech += 2; // DMARC enforced
   d.scores.tech = Math.min(tech, 10);
 }
 
-/* ══════════════════════════════════════════════════
-   FINDINGS
-══════════════════════════════════════════════════ */
-function buildFindings(d) {
-  const F = [];
-
-  F.push({
-    check: 'SPF Record',
-    status: d.spf ? (d.spf.includes('-all') ? 'pass' : 'warn') : 'fail',
-    value: d.spf || 'Not found',
-    risk: d.spf ? (d.spf.includes('-all') ? 'None' : 'Spoofing risk — soft fail') : 'HIGH — email spoofing enabled'
-  });
-
-  F.push({
-    check: 'DMARC Policy',
-    status: d.dmarc ? (d.dmarc.includes('p=reject')||d.dmarc.includes('p=quarantine') ? 'pass' : 'warn') : 'fail',
-    value: d.dmarc || 'Not found',
-    risk: !d.dmarc ? 'CRITICAL — no domain protection' : d.dmarc.includes('p=none') ? 'HIGH — monitoring only, no enforcement' : 'None'
-  });
-
-  F.push({
-    check: 'DKIM',
-    status: d.dkim ? 'pass' : 'warn',
-    value: d.dkim ? 'Detected in TXT records' : 'Not detected via TXT scan',
-    risk: d.dkim ? 'None' : 'May affect deliverability'
-  });
-
-  F.push({
-    check: 'MX Records',
-    status: d.mx.length ? 'pass' : 'fail',
-    value: d.mx.slice(0,2).join(', ') || 'None found',
-    risk: d.mx.length ? 'None' : 'No email infrastructure'
-  });
-
-  F.push({
-    check: 'SSL Certificate',
-    status: d.ssl ? 'pass' : 'warn',
-    value: d.ssl ? 'HTTPS reachable' : 'Could not verify (CORS)',
-    risk: d.ssl ? 'None' : 'Site may lack HTTPS'
-  });
-
-  F.push({
-    check: 'XML Sitemap',
-    status: d.hasSitemap ? 'pass' : 'warn',
-    value: d.hasSitemap ? 'Found at /sitemap.xml' : 'Not found',
-    risk: d.hasSitemap ? 'None' : 'Reduced SEO indexing'
-  });
-
-  F.push({
-    check: 'Analytics',
-    status: d.hasAnalytics ? 'pass' : 'warn',
-    value: d.hasAnalytics ? 'Detected' : 'Not detected',
-    risk: d.hasAnalytics ? 'None' : 'No conversion tracking'
-  });
-
-  F.push({
-    check: 'CRM / IDX',
-    status: d.hasCRM ? 'pass' : 'warn',
-    value: d.hasCRM ? 'CRM signals found' : 'No CRM detected',
-    risk: d.hasCRM ? 'None' : 'Manual lead management'
-  });
-
-  d.findings = F;
+function gradeClass(score, max) {
+  const p = score/max;
+  return p>=.8?'ga': p>=.65?'gb': p>=.5?'gc': p>=.35?'gd': 'gf';
+}
+function barColor(score, max) {
+  const p = score/max;
+  return p>=.7 ? 'var(--green)' : p>=.4 ? 'var(--amber)' : 'var(--red)';
 }
 
-/* ══════════════════════════════════════════════════
-   REMEDIATION STEPS
-══════════════════════════════════════════════════ */
+/* ─────────────────────────────────────────────
+   FINDINGS
+───────────────────────────────────────────── */
+function buildFindings(d) {
+  d.findings = [
+    {
+      check:'SPF Record',
+      status: !d.spf ? 'fail' : d.spf.includes('-all') ? 'pass' : 'warn',
+      value: d.spf || 'Not found',
+      risk: !d.spf ? 'HIGH — email spoofing enabled' : d.spf.includes('-all') ? 'None' : 'Soft fail (~all) — spoofing risk'
+    },
+    {
+      check:'DMARC Policy',
+      status: !d.dmarc ? 'fail' : (d.dmarc.includes('p=reject')||d.dmarc.includes('p=quarantine')) ? 'pass' : 'warn',
+      value: d.dmarc || 'Not found',
+      risk: !d.dmarc ? 'CRITICAL — no domain protection' : d.dmarc.includes('p=none') ? 'HIGH — monitoring only' : 'None'
+    },
+    {
+      check:'DKIM',
+      status: d.dkim ? 'pass' : 'warn',
+      value: d.dkim ? `Selector: ${d.dkim}._domainkey` : 'No common selector found',
+      risk: d.dkim ? 'None' : 'Affects deliverability — signing not confirmed'
+    },
+    {
+      check:'MX Records',
+      status: d.mx.length ? 'pass' : 'fail',
+      value: d.mx.slice(0,2).join(', ') || 'None found',
+      risk: d.mx.length ? 'None' : 'No email infrastructure'
+    },
+    {
+      check:'SSL / HTTPS',
+      status: d.ssl ? 'pass' : 'warn',
+      value: d.ssl ? 'HTTPS reachable' : 'Could not confirm (CORS restricted)',
+      risk: d.ssl ? 'None' : 'Site may lack HTTPS'
+    },
+    {
+      check:'XML Sitemap',
+      status: d.hasSitemap ? 'pass' : 'warn',
+      value: d.hasSitemap ? 'Found at /sitemap.xml' : 'Not found',
+      risk: d.hasSitemap ? 'None' : 'Reduced search indexing'
+    },
+    {
+      check:'Nameservers',
+      status: d.ns.length ? 'pass' : 'fail',
+      value: d.ns.slice(0,2).join(', ') || 'None',
+      risk: d.ns.length ? 'None' : 'Domain not resolving'
+    },
+    {
+      check:'Google Workspace',
+      status: d.hasGoogleWS ? 'pass' : 'info',
+      value: d.hasGoogleWS ? 'Verified via DNS TXT' : 'Not detected in DNS',
+      risk: d.hasGoogleWS ? 'None' : 'Email platform unconfirmed from DNS'
+    },
+    {
+      check:'Analytics / CRM',
+      status: 'info',
+      value: 'Requires full AI audit',
+      risk: 'Trigger via GitHub Actions for tech stack detection'
+    }
+  ];
+}
+
+/* ─────────────────────────────────────────────
+   REMEDIATION
+───────────────────────────────────────────── */
 function buildRemediation(d) {
-  const R = [];
-  let n = 1;
+  const R = []; let n=1;
 
-  if (!d.spf) {
-    R.push({
-      n: n++, priority: 'high', title: 'Publish SPF Record',
-      desc: 'Add an SPF TXT record to your DNS zone to specify which mail servers are authorized to send email for this domain.',
-      code: `v=spf1 include:_spf.google.com ~all\n→ Upgrade to -all once confirmed working`
-    });
-  } else if (!d.spf.includes('-all')) {
-    R.push({
-      n: n++, priority: 'med', title: 'Harden SPF to Hard Fail (-all)',
-      desc: 'Current SPF uses soft fail (~all). Change to hard fail (-all) to reject unauthorized senders.',
-      code: d.spf.replace('~all', '-all').replace('?all', '-all')
-    });
-  }
+  if (!d.spf)
+    R.push({n:n++,p:'high',title:'Publish SPF Record',
+      desc:'Add an SPF TXT record to authorize mail servers for this domain.',
+      code:`v=spf1 include:_spf.google.com ~all\n→ Upgrade to -all once confirmed working`});
+  else if (!d.spf.includes('-all'))
+    R.push({n:n++,p:'med',title:'Harden SPF to Hard Fail (-all)',
+      desc:'Current SPF uses soft fail (~all). Change to -all to reject unauthorized senders.',
+      code:d.spf.replace('~all','-all').replace('?all','-all')});
 
-  if (!d.dmarc) {
-    R.push({
-      n: n++, priority: 'high', title: 'Publish DMARC Record',
-      desc: 'Add a DMARC TXT record at _dmarc.[domain]. Start with p=none to collect reports, then advance to quarantine/reject.',
-      code: `Host: _dmarc.${d.domain}\nValue: v=DMARC1; p=none; rua=mailto:dmarc-reports@${d.domain}; ruf=mailto:dmarc-reports@${d.domain}; fo=1`
-    });
-  } else if (d.dmarc.includes('p=none')) {
-    R.push({
-      n: n++, priority: 'high', title: 'Enforce DMARC Policy',
-      desc: 'DMARC is published but set to p=none (monitoring only). Advance to p=quarantine then p=reject to block spoofed mail.',
-      code: d.dmarc.replace('p=none', 'p=quarantine') + '\n→ After 30 days without issues, change to p=reject'
-    });
-  }
+  if (!d.dmarc)
+    R.push({n:n++,p:'high',title:'Publish DMARC Record',
+      desc:'Add a DMARC TXT record at _dmarc.[domain]. Start with p=none, advance to quarantine/reject.',
+      code:`Host: _dmarc.${d.domain}\nValue: v=DMARC1; p=none; rua=mailto:dmarc@${d.domain}; fo=1`});
+  else if (d.dmarc.includes('p=none'))
+    R.push({n:n++,p:'high',title:'Enforce DMARC Policy',
+      desc:'DMARC is set to p=none (monitoring only). Advance to p=quarantine then p=reject.',
+      code:d.dmarc.replace('p=none','p=quarantine')+'\n→ After 30 days clean, advance to p=reject'});
 
-  if (!d.ssl) {
-    R.push({
-      n: n++, priority: 'high', title: 'Enable SSL / HTTPS',
-      desc: 'The site does not appear to be serving HTTPS. Contact your hosting provider to install a TLS certificate (Let\'s Encrypt is free).',
-      code: 'Most hosts: cPanel → SSL/TLS → Install Certificate\nOr enable AutoSSL / Let\'s Encrypt in your hosting panel.'
-    });
-  }
+  if (!d.dkim)
+    R.push({n:n++,p:'med',title:'Verify DKIM Signing',
+      desc:'No DKIM selector found via DNS scan. Confirm your email provider has DKIM enabled and the DNS record is published.',
+      code:'Google Workspace: Admin → Apps → Gmail → Authenticate Email → Generate\nM365: EAC → Protection → DKIM → Enable'});
 
-  if (!d.hasSitemap) {
-    R.push({
-      n: n++, priority: 'med', title: 'Generate XML Sitemap',
-      desc: 'A sitemap helps Google index all pages of your website. Most website platforms can generate one automatically.',
-      code: 'WordPress: install Yoast SEO → SEO → General → Features → Enable Sitemap\nSquarespace: Settings → Advanced → URL Mappings → Auto-sitemap'
-    });
-  }
+  if (!d.ssl)
+    R.push({n:n++,p:'high',title:'Enable SSL / HTTPS',
+      desc:"Site did not confirm HTTPS. Contact your host to install a TLS certificate (Let's Encrypt is free).",
+      code:'Most hosts: cPanel → SSL/TLS → AutoSSL / Let\'s Encrypt'});
 
-  if (!d.hasAnalytics) {
-    R.push({
-      n: n++, priority: 'med', title: 'Install Analytics Tracking',
-      desc: 'No analytics detected. Install Google Analytics 4 (GA4) to track visitors, leads, and conversion performance.',
-      code: 'https://analytics.google.com/ → Create Property → Get tracking code\nAdd <script> tag to site <head>'
-    });
-  }
+  if (!d.hasSitemap)
+    R.push({n:n++,p:'med',title:'Generate XML Sitemap',
+      desc:'A sitemap helps search engines index all site pages.',
+      code:'WordPress: Yoast SEO → Features → Enable Sitemap\nSquarespace: Settings → Advanced → Sitemap (auto)'});
 
-  if (!d.hasCRM) {
-    R.push({
-      n: n++, priority: 'low', title: 'Integrate CRM / Lead Capture',
-      desc: 'No CRM integration detected. A CRM (kvCORE, Follow Up Boss, Sierra) automates lead routing and follow-up.',
-      code: 'Recommended for small realty teams: kvCORE or Follow Up Boss\nIntegrate IDX feed for live MLS listings + lead capture forms'
-    });
-  }
+  if (!d.hasGoogleWS && !d.mx.some(m => /google/i.test(m)))
+    R.push({n:n++,p:'low',title:'Consider Google Workspace',
+      desc:'No Google Workspace signals detected. Google Workspace provides professional email + strong DKIM/DMARC tooling.',
+      code:'https://workspace.google.com → Business Starter ($6/user/mo)'});
 
   d.remediation = R;
 }
 
-/* ══════════════════════════════════════════════════
+/* ─────────────────────────────────────────────
    RENDER RESULTS
-══════════════════════════════════════════════════ */
+───────────────────────────────────────────── */
+function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
 function renderResults(d) {
   const total = d.scores.email + d.scores.web + d.scores.tech;
 
   // Fraud warning
   const spfBad  = !d.spf || d.spf.includes('~all');
   const dmarcBad = !d.dmarc || d.dmarc.includes('p=none');
-  if (spfBad || dmarcBad) {
-    document.getElementById('fraudWarning').classList.add('show');
-  }
+  document.getElementById('fraud').classList.toggle('on', spfBad || dmarcBad);
 
   // Scores
-  const scorecard = document.getElementById('scorecard');
-  scorecard.classList.add('show');
-  const numEl = document.getElementById('scoreNum');
-  numEl.textContent = `${total}/30`;
-  numEl.className = 'score-num ' + gradeClass(total, 30);
+  const sc = document.getElementById('scorecard');
+  sc.classList.add('on');
+  const sn = document.getElementById('scoreNum');
+  sn.textContent = `${total}/30`;
+  sn.className = `score-num ${gradeClass(total,30)}`;
 
-  document.getElementById('emailScore').textContent = `${d.scores.email}/10`;
-  document.getElementById('emailBar').style.width = `${d.scores.email * 10}%`;
-  document.getElementById('emailBar').style.background = barColor(d.scores.email, 10);
+  [['email',d.scores.email],['web',d.scores.web],['tech',d.scores.tech]].forEach(([k,v])=>{
+    document.getElementById(`${k}Score`).textContent = `${v}/10`;
+    const bar = document.getElementById(`${k}Bar`);
+    bar.style.width = `${v*10}%`;
+    bar.style.background = barColor(v,10);
+  });
 
-  document.getElementById('webScore').textContent = `${d.scores.web}/10`;
-  document.getElementById('webBar').style.width = `${d.scores.web * 10}%`;
-  document.getElementById('webBar').style.background = barColor(d.scores.web, 10);
-
-  document.getElementById('techScore').textContent = `${d.scores.tech}/10`;
-  document.getElementById('techBar').style.width = `${d.scores.tech * 10}%`;
-  document.getElementById('techBar').style.background = barColor(d.scores.tech, 10);
-
-  // Findings table
+  // Findings
   const tbody = document.getElementById('findingsBody');
   tbody.innerHTML = '';
   for (const f of d.findings) {
     const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td><div class="finding-check">${f.check}</div></td>
-      <td><span class="tag tag-${f.status}">${f.status.toUpperCase()}</span></td>
-      <td><div class="finding-detail">${escHtml(f.value)}</div></td>
-      <td><div class="finding-detail">${escHtml(f.risk)}</div></td>`;
+    tr.innerHTML = `<td>${esc(f.check)}</td><td><span class="tag tag-${f.status}">${f.status.toUpperCase()}</span></td><td>${esc(f.value)}</td><td>${esc(f.risk)}</td>`;
     tbody.appendChild(tr);
   }
-  document.getElementById('findings').classList.add('show');
+  document.getElementById('findingsCard').classList.add('on');
 
   // Remediation
-  const list = document.getElementById('remedList');
-  list.innerHTML = '';
-  if (d.remediation.length === 0) {
-    list.innerHTML = '<li style="color:var(--green);padding:12px">✓ No critical remediations required.</li>';
+  const ul = document.getElementById('remedList');
+  ul.innerHTML = '';
+  if (!d.remediation.length) {
+    ul.innerHTML = '<li style="padding:16px 20px;color:var(--green)">✓ No critical remediations required.</li>';
   } else {
     for (const r of d.remediation) {
       const li = document.createElement('li');
       li.className = 'remed-item';
-      li.innerHTML = `
-        <div class="remed-num">${String(r.n).padStart(2,'0')}</div>
-        <div class="remed-content">
-          <div class="remed-title">${escHtml(r.title)} <span class="remed-prio prio-${r.priority}">[${r.priority.toUpperCase()}]</span></div>
-          <div class="remed-desc">${escHtml(r.desc)}</div>
-          ${r.code ? `<div class="remed-code">${escHtml(r.code)}</div>` : ''}
+      li.innerHTML = `<div class="remed-num">${String(r.n).padStart(2,'0')}</div>
+        <div>
+          <div class="remed-title">${esc(r.title)} <span class="remed-prio prio-${r.p}">[${r.p.toUpperCase()}]</span></div>
+          <div class="remed-desc">${esc(r.desc)}</div>
+          ${r.code?`<div class="remed-code">${esc(r.code)}</div>`:''}
         </div>`;
-      list.appendChild(li);
+      ul.appendChild(li);
     }
   }
-  document.getElementById('remed').classList.add('show');
+  document.getElementById('remedCard').classList.add('on');
 
   // Action bar
-  const bar = document.getElementById('actionBar');
-  const adEl = document.getElementById('actionDomain');
-  adEl.innerHTML = `<small>AUDIT COMPLETE — ${new Date().toLocaleDateString()}</small>${d.domain}`;
-  bar.classList.add('show');
-
-  // Wire up runbook links
+  document.getElementById('actionDomain').textContent = d.domain;
   const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(d))));
-  const runbookUrl = `${window.location.origin}${window.location.pathname.replace('index.html','').replace(/\/$/, '')}/runbook.html`;
-  const shareUrl   = `${runbookUrl}#data=${encoded}`;
+  const shareUrl = `${RUNBOOK_URL}#data=${encoded}`;
 
-  const runbookLink = document.getElementById('runbookLink');
-  runbookLink.href = runbookUrl;
-  runbookLink.classList.remove('hidden');
-  sessionStorage.setItem('ngit_audit', JSON.stringify(d)); // operator local view
+  const shareEl = document.getElementById('shareLink');
+  shareEl.href = shareUrl;
+  shareEl.classList.remove('hidden');
 
-  const shareLink = document.getElementById('shareRunbookLink');
-  shareLink.href = shareUrl;
-
-  document.getElementById('copyShareBtn').onclick = () => {
-    navigator.clipboard.writeText(shareUrl).then(() => showToast('✓ Share link copied!')).catch(() => {
-      // fallback
-      const ta = document.createElement('textarea');
-      ta.value = shareUrl; document.body.appendChild(ta); ta.select();
-      document.execCommand('copy'); document.body.removeChild(ta);
-      showToast('✓ Link copied!');
+  document.getElementById('copyBtn').onclick = () => {
+    navigator.clipboard.writeText(shareUrl).then(()=>toast('✓ Share link copied!')).catch(()=>{
+      const ta=document.createElement('textarea');ta.value=shareUrl;
+      document.body.appendChild(ta);ta.select();document.execCommand('copy');
+      document.body.removeChild(ta);toast('✓ Link copied!');
     });
   };
+
+  // AI report link (from manifest)
+  const aiEl = document.getElementById('aiReportLink');
+  const match = manifestReports.find(r => r.domain === d.domain);
+  if (match) {
+    aiEl.href = match.url;
+    aiEl.textContent = `🤖 AI Report (${match.grade} · ${match.total_score}/30)`;
+    aiEl.classList.remove('hidden');
+  } else {
+    aiEl.classList.add('hidden');
+  }
+
+  document.getElementById('actionBar').classList.add('on');
 }
 
-/* ══════════════════════════════════════════════════
+/* ─────────────────────────────────────────────
+   MANIFEST (AI reports from GitHub Actions)
+───────────────────────────────────────────── */
+let manifestReports = [];
+
+async function fetchManifest() {
+  try {
+    const r = await fetch(MANIFEST + '?t=' + Date.now(), { cache:'no-cache' });
+    if (!r.ok) return;
+    const data = await r.json();
+    manifestReports = data.reports || [];
+    renderReports();
+  } catch(e) { console.warn('[NGIT] manifest fetch failed', e); }
+}
+
+/* ─────────────────────────────────────────────
    REPORTS STORAGE
-══════════════════════════════════════════════════ */
+───────────────────────────────────────────── */
 function saveReport(d) {
-  const reports = loadReports();
-  const existing = reports.findIndex(r => r.domain === d.domain);
-  if (existing >= 0) reports.splice(existing, 1);
+  let reports;
+  try { reports = JSON.parse(localStorage.getItem(REPORTS_KEY)) || []; } catch { reports=[]; }
+  const idx = reports.findIndex(r => r.domain===d.domain);
+  if (idx>=0) reports.splice(idx,1);
   reports.unshift(d);
-  if (reports.length > 20) reports.pop();
+  if (reports.length>20) reports.pop();
   localStorage.setItem(REPORTS_KEY, JSON.stringify(reports));
   renderReports();
 }
 
-function loadReports() {
-  try { return JSON.parse(localStorage.getItem(REPORTS_KEY)) || []; } catch { return []; }
-}
-
 function renderReports() {
-  const reports = loadReports();
+  const local = (() => { try { return JSON.parse(localStorage.getItem(REPORTS_KEY))||[]; } catch { return []; } })();
   const container = document.getElementById('reportsList');
-  if (!reports.length) {
-    container.innerHTML = `<div class="empty-state"><div class="empty-state-icon">📂</div><div class="empty-state-title">No reports yet</div>Run an audit above to generate the first report.</div>`;
+  let html = '';
+
+  if (manifestReports.length) {
+    html += `<div class="report-section-label">🤖 AI-Generated Reports (GitHub Actions)</div>`;
+    for (const r of manifestReports) {
+      html += `<div class="report-item">
+        <div class="report-icon">🤖</div>
+        <div class="report-info">
+          <div class="report-name">${esc(r.domain)}</div>
+          <div class="report-meta">${esc(r.scan_date)} · Full AI audit</div>
+        </div>
+        <div class="report-score ${gradeClass(r.total_score,30)}">${r.total_score}/30</div>
+        <div class="report-actions">
+          <a class="sbtn sbtn-green" href="${esc(r.url)}" target="_blank">View</a>
+          <button class="sbtn sbtn-blue" onclick="rerun(${JSON.stringify(esc(r.domain))})">Re-scan</button>
+        </div>
+      </div>`;
+    }
+  }
+
+  if (local.length) {
+    html += `<div class="report-section-label">⚡ Quick DNS Scans (local)</div>`;
+    for (const r of local) {
+      const total = r.scores.email + r.scores.web + r.scores.tech;
+      const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(r))));
+      const shareUrl = `${RUNBOOK_URL}#data=${encoded}`;
+      html += `<div class="report-item">
+        <div class="report-icon">🏠</div>
+        <div class="report-info">
+          <div class="report-name">${esc(r.domain)}</div>
+          <div class="report-meta">${new Date(r.ts).toLocaleString()} · DNS-only scan</div>
+        </div>
+        <div class="report-score ${gradeClass(total,30)}">${total}/30</div>
+        <div class="report-actions">
+          <button class="sbtn sbtn-blue" onclick="rerun(${JSON.stringify(esc(r.domain))})">Re-run</button>
+          <a class="sbtn sbtn-blue" href="${esc(shareUrl)}" target="_blank">Runbook</a>
+        </div>
+      </div>`;
+    }
+  }
+
+  if (!html) {
+    container.innerHTML = `<div class="empty"><div class="empty-icon">📂</div><div class="empty-title">No reports yet</div>Run a quick DNS scan, or trigger a full AI audit via GitHub Actions.</div>`;
     return;
   }
-  container.innerHTML = '';
-  for (const r of reports) {
-    const total = r.scores.email + r.scores.web + r.scores.tech;
-    const div = document.createElement('div');
-    div.className = 'report-item';
-    const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(r))));
-    const runbookUrl = `${window.location.origin}${window.location.pathname.replace('index.html','').replace(/\/$/, '')}/runbook.html`;
-    const shareUrl   = `${runbookUrl}#data=${encoded}`;
-    div.innerHTML = `
-      <div class="report-icon">🏠</div>
-      <div class="report-info">
-        <div class="report-name">${escHtml(r.domain)}</div>
-        <div class="report-meta">${new Date(r.ts).toLocaleString()} · Email ${r.scores.email}/10 · Web ${r.scores.web}/10 · Tech ${r.scores.tech}/10</div>
-      </div>
-      <div class="report-score ${gradeClass(total, 30)}">${total}/30</div>
-      <div class="report-actions">
-        <button class="btn-sm btn-sm-blue" onclick="loadAuditFromHistory('${r.domain}')">Re-run</button>
-        <a class="btn-sm btn-sm-blue" href="${shareUrl}" target="_blank">Runbook</a>
-        <button class="btn-sm btn-sm-green" onclick="copyShareFromHistory('${escHtml(shareUrl).replace(/'/g,"\\'")}')">Copy Link</button>
-      </div>`;
-    container.appendChild(div);
-  }
+  container.innerHTML = html;
 }
 
-function loadAuditFromHistory(domain) {
+function rerun(domain) {
   document.getElementById('domainInput').value = domain;
   runAudit(domain);
 }
 
-function copyShareFromHistory(url) {
-  navigator.clipboard.writeText(url).then(() => showToast('✓ Link copied!'));
-}
-
-/* ══════════════════════════════════════════════════
-   HELPERS
-══════════════════════════════════════════════════ */
-function gradeClass(score, max) {
-  const pct = score / max;
-  if (pct >= 0.8) return 'grade-a';
-  if (pct >= 0.65) return 'grade-b';
-  if (pct >= 0.5) return 'grade-c';
-  if (pct >= 0.35) return 'grade-d';
-  return 'grade-f';
-}
-function barColor(score, max) {
-  const pct = score / max;
-  if (pct >= 0.7) return 'var(--green)';
-  if (pct >= 0.4) return 'var(--amber)';
-  return 'var(--red)';
-}
-function escHtml(s) {
-  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
-function showToast(msg) {
+/* ─────────────────────────────────────────────
+   TOAST
+───────────────────────────────────────────── */
+function toast(msg) {
   const t = document.getElementById('toast');
-  t.textContent = msg; t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 2200);
+  t.textContent = msg; t.classList.add('on');
+  setTimeout(()=>t.classList.remove('on'), 2200);
 }
 
-/* ══════════════════════════════════════════════════
-   WIRE UP RUN BUTTON
-══════════════════════════════════════════════════ */
+/* ─────────────────────────────────────────────
+   WIRE UP
+───────────────────────────────────────────── */
 document.getElementById('runBtn').addEventListener('click', () => {
-  if (!requireAuth()) return;
   const domain = document.getElementById('domainInput').value.trim();
   if (domain) runAudit(domain);
 });
 document.getElementById('domainInput').addEventListener('keydown', e => {
-  if (e.key === 'Enter') document.getElementById('runBtn').click();
+  if (e.key==='Enter') document.getElementById('runBtn').click();
 });
+document.getElementById('refreshBtn').addEventListener('click', () => {
+  fetchManifest();
+  toast('↺ Refreshing reports…');
+});
+
+// Boot
+authCheck();
 </script>
 </body>
 </html>
