@@ -991,13 +991,7 @@ function renderResults(d) {
       .catch(() => { const t=document.createElement('textarea');t.value=runbookUrl;document.body.appendChild(t);t.select();document.execCommand('copy');document.body.removeChild(t);toast('🔗 Runbook link copied!'); });
   };
 
-  document.getElementById('copyBtn').onclick = () => {
-    navigator.clipboard.writeText(shareUrl).then(()=>toast('✓ Share link copied!')).catch(()=>{
-      const ta=document.createElement('textarea');ta.value=shareUrl;
-      document.body.appendChild(ta);ta.select();document.execCommand('copy');
-      document.body.removeChild(ta);toast('✓ Link copied!');
-    });
-  };
+
 
   // AI report link (from manifest)
   const aiEl = document.getElementById('aiReportLink');
