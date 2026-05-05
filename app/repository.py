@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import json
 import uuid
 from datetime import datetime, timezone
 from pathlib import Path
@@ -184,6 +183,31 @@ def get_notes(audit_id: str) -> list[dict[str, Any]]:
             FROM notes
             WHERE audit_id = ?
             ORDER BY id DESC
+            ''',
+            (audit_id,),
+        )
+        return [dict(row) for row in cur.fetchall()]
+
+
+def add_chat_message(audit_id: str, role: str, content: str) -> None:
+    with db_cursor() as cur:
+        cur.execute(
+            '''
+            INSERT INTO chat_messages (audit_id, role, content, created_at)
+            VALUES (?, ?, ?, ?)
+            ''',
+            (audit_id, role, content, utc_now()),
+        )
+
+
+def get_chat_history(audit_id: str) -> list[dict[str, Any]]:
+    with db_cursor() as cur:
+        cur.execute(
+            '''
+            SELECT role, content, created_at
+            FROM chat_messages
+            WHERE audit_id = ?
+            ORDER BY id ASC
             ''',
             (audit_id,),
         )

@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import json
 import uuid
 from datetime import datetime, timezone
 from pathlib import Path
@@ -61,15 +60,21 @@ def set_audit_status(audit_id: str, status: str, error: str | None = None) -> No
             )
 
 
-def save_audit_outcome(audit_id: str, summary: str, score: int, report_path: Path) -> None:
+def save_audit_outcome(
+    audit_id: str,
+    summary: str,
+    score: int,
+    report_path: Path,
+    runbook_path: Path,
+) -> None:
     with db_cursor() as cur:
         cur.execute(
             '''
             UPDATE audits
-            SET summary = ?, score = ?, report_path = ?, updated_at = ?
+            SET summary = ?, score = ?, report_path = ?, runbook_path = ?, updated_at = ?
             WHERE id = ?
             ''',
-            (summary, score, str(report_path), utc_now(), audit_id),
+            (summary, score, str(report_path), str(runbook_path), utc_now(), audit_id),
         )
 
 

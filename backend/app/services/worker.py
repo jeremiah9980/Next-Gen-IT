@@ -11,7 +11,7 @@ from ..repository import (
     set_audit_status,
 )
 from .dns_audit import scan_domain
-from .reporting import generate_report
+from .reporting import generate_report, generate_runbook
 from .scoring import score_findings
 
 
@@ -47,9 +47,17 @@ def run_audit_job(audit_id: str) -> None:
             findings=findings,
             score=score,
         )
-        save_audit_outcome(audit_id, summary, score, report_path)
+        runbook_path = generate_runbook(
+            audit_id=audit_id,
+            domain=audit["domain"],
+            company_name=audit.get("company_name"),
+            scan=scan_result.raw,
+            findings=findings,
+            score=score,
+        )
+        save_audit_outcome(audit_id, summary, score, report_path, runbook_path)
         set_audit_status(audit_id, "completed")
-    except Exception as exc:  # pragma: no cover - defensive path
+    except Exception as exc:
         error_text = f"{exc}\n\n{traceback.format_exc()}"
         set_audit_status(audit_id, "failed", error_text)
 

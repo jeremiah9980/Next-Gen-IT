@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import sqlite3
 from contextlib import contextmanager
-from pathlib import Path
 
 from .config import settings
 
@@ -82,6 +81,18 @@ def init_db() -> None:
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 audit_id TEXT NOT NULL,
                 source TEXT NOT NULL,
+                content TEXT NOT NULL,
+                created_at TEXT NOT NULL,
+                FOREIGN KEY(audit_id) REFERENCES audits(id)
+            )
+            '''
+        )
+        cur.execute(
+            '''
+            CREATE TABLE IF NOT EXISTS chat_messages (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                audit_id TEXT NOT NULL,
+                role TEXT NOT NULL,
                 content TEXT NOT NULL,
                 created_at TEXT NOT NULL,
                 FOREIGN KEY(audit_id) REFERENCES audits(id)

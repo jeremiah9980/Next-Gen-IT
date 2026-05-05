@@ -1,0 +1,66 @@
+name: Domain Health Audit
+
+on:
+  workflow_dispatch:
+    inputs:
+      domain:
+        description: 'Domain to audit (e.g. starskyowen.com)'
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  audit:
+    name: Audit ${{ github.event.inputs.domain }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y whois dnsutils curl openssl 2>/dev/null || true
+
+      - name: Install Python dependencies
+        run: |
+          pip install anthropic requests --quiet
+
+      - name: Make audit script executable
+        run: |
+          chmod +x skills/domain-health-audit/scripts/domain_audit.sh 2>/dev/null || true
+          chmod +x scripts/domain_audit.sh 2>/dev/null || true
+
+      - name: Run domain audit
+        id: audit
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          AUDIT_DOMAIN: ${{ github.event.inputs.domain }}
+        run: |
+          python scripts/run_audit.py "$AUDIT_DOMAIN" reports/
+          # Capture the metadata for later steps
+          if [ -f reports/_latest_meta.json ]; then
+            echo "meta=$(cat reports/_latest_meta.json | tr -d '\n')" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Update reports manifest
+        run: python scripts/update_manifest.py
+
+      - name: Commit and push report
+        run: |
+          git config user.name  "Next-Gen IT Audit Bot"
+          git config user.email "audit-bot@next-gen-it.dev"
+          git add reports/
+          git diff --staged --quiet || git commit -m "audit: ${{ github.event.inputs.domain }} [$(date -u '+%Y-%m-%d %H:%M UTC')]"
+          git push

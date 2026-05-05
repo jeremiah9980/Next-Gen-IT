@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Domain Health Runbook · Next-Gen IT</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --bg: #f8f9fc;
+    --white: #ffffff;
+    --border: #e2e5ed;
+    --border2: #cdd2de;
+    --accent: #1d4ed8;
+    --accent2: #2563eb;
+    --accent-dim: rgba(29,78,216,0.07);
+    --green: #059669;
+    --green-dim: rgba(5,150,105,0.08);
+    --amber: #b45309;
+    --amber-dim: rgba(180,83,9,0.08);
+    --red: #dc2626;
+    --red-dim: rgba(220,38,38,0.07);
+    --text: #0f172a;
+    --text2: #475569;
+    --text3: #94a3b8;
+    --font-head: 'Syne', sans-serif;
+    --font-body: 'DM Sans', sans-serif;
+    --font-mono: 'IBM Plex Mono', monospace;
+    --radius: 8px;
+    --shadow: 0 1px 4px rgba(0,0,0,0.07), 0 4px 16px rgba(0,0,0,0.04);
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: var(--font-body); font-size: 14px; line-height: 1.6; }
+
+  /* ── TOPBAR ─────────────────────────────────────── */
+  .topbar {
+    background: var(--white); border-bottom: 1px solid var(--border);
+    padding: 0 32px; height: 56px; display: flex;
+    align-items: center; justify-content: space-between;
+    position: sticky; top: 0; z-index: 100;
+    box-shadow: 0 1px 0 var(--border);
+  }
+  .topbar-brand {
+    display: flex; align-items: center; gap: 10px;
+    font-family: var(--font-head); font-weight: 700; font-size: 15px; color: var(--text);
+  }
+  .topbar-brand .tag-ngit {
+    background: var(--accent-dim); color: var(--accent2);
+    border: 1px solid rgba(29,78,216,0.2);
+    font-size: 10px; padding: 2px 8px; border-radius: 4px;
+    letter-spacing: 0.08em; font-family: var(--font-mono);
+  }
+  .topbar-actions { display: flex; gap: 8px; align-items: center; }
+  .btn { border: none; cursor: pointer; font-family: var(--font-body); font-weight: 500; border-radius: var(--radius); transition: all 0.15s; }
+  .btn-pdf {
+    background: var(--text); color: #fff; font-size: 13px;
+    padding: 8px 16px;
+  }
+  .btn-pdf:hover { background: #1e293b; }
+  .btn-copy-link {
+    background: var(--accent-dim); color: var(--accent2);
+    border: 1px solid rgba(29,78,216,0.2); font-size: 13px;
+    padding: 8px 16px;
+  }
+  .btn-copy-link:hover { background: rgba(29,78,216,0.12); }
+  .btn-back {
+    background: transparent; color: var(--text2);
+    border: 1px solid var(--border2); font-size: 12px;
+    padding: 7px 14px; font-family: var(--font-mono);
+  }
+  .btn-back:hover { border-color: var(--accent); color: var(--accent2); }
+
+  /* ── LAYOUT ─────────────────────────────────────── */
+  .page { max-width: 820px; margin: 0 auto; padding: 36px 24px 80px; }
+
+  /* ── HEADER BLOCK ────────────────────────────────── */
+  .doc-header {
+    background: var(--white); border: 1px solid var(--border);
+    border-radius: 12px; padding: 32px 36px; margin-bottom: 24px;
+    box-shadow: var(--shadow);
+  }
+  .doc-header-top {
+    display: flex; align-items: flex-start; justify-content: space-between;
+    margin-bottom: 20px; gap: 16px;
+  }
+  .doc-type {
+    font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--accent2);
+    background: var(--accent-dim); padding: 3px 10px; border-radius: 4px;
+    display: inline-block; margin-bottom: 10px;
+  }
+  .doc-domain {
+    font-family: var(--font-head); font-size: 32px; font-weight: 800;
+    color: var(--text); letter-spacing: -0.03em; line-height: 1.1;
+  }
+  .doc-meta { color: var(--text2); font-size: 13px; margin-top: 8px; }
+  .doc-meta span { color: var(--text3); }
+  .score-badge {
+    text-align: center; min-width: 90px;
+    background: var(--bg); border: 1px solid var(--border);
+    border-radius: 10px; padding: 16px 20px;
+  }
+  .score-badge-num {
+    font-family: var(--font-head); font-size: 36px; font-weight: 800; line-height: 1;
+  }
+  .score-badge-label { font-size: 10px; color: var(--text3); letter-spacing: 0.08em; margin-top: 4px; text-transform: uppercase; }
+  .score-a { color: #059669; }
+  .score-b { color: #65a30d; }
+  .score-c { color: #b45309; }
+  .score-d { color: #ea580c; }
+  .score-f { color: #dc2626; }
+
+  .cat-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+  .cat-chip {
+    background: var(--bg); border: 1px solid var(--border);
+    border-radius: 8px; padding: 12px 14px;
+  }
+  .cat-chip-name { font-size: 10px; color: var(--text3); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 4px; font-family: var(--font-mono); }
+  .cat-chip-val { font-family: var(--font-head); font-size: 20px; font-weight: 700; }
+  .score-bar { height: 4px; background: #e2e5ed; border-radius: 4px; margin-top: 8px; overflow: hidden; }
+  .score-bar-fill { height: 100%; border-radius: 4px; }
+
+  /* ── FRAUD BLOCK ──────────────────────────────────── */
+  .fraud-block {
+    background: #fef2f2; border: 1px solid #fca5a5;
+    border-left: 5px solid var(--red);
+    border-radius: var(--radius); padding: 20px 22px; margin-bottom: 24px;
+  }
+  .fraud-block-title {
+    font-family: var(--font-head); font-weight: 700; color: var(--red);
+    font-size: 15px; margin-bottom: 10px;
+  }
+  .fraud-stats { display: flex; gap: 24px; margin-bottom: 12px; flex-wrap: wrap; }
+  .fraud-stat-val { font-family: var(--font-head); font-size: 22px; font-weight: 800; color: var(--red); }
+  .fraud-stat-lbl { font-size: 10px; color: #9ca3af; letter-spacing: 0.06em; text-transform: uppercase; }
+  .fraud-body { font-size: 13px; color: #374151; line-height: 1.7; }
+
+  /* ── SECTION ──────────────────────────────────────── */
+  .section { margin-bottom: 24px; }
+  .section-title {
+    font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--text3);
+    padding-bottom: 8px; border-bottom: 1px solid var(--border);
+    margin-bottom: 14px;
+  }
+
+  /* ── FINDINGS TABLE ───────────────────────────────── */
+  .findings-table { width: 100%; border-collapse: collapse; }
+  .findings-table th {
+    text-align: left; font-family: var(--font-mono); font-size: 9px;
+    letter-spacing: 0.1em; text-transform: uppercase; color: var(--text3);
+    padding: 8px 12px; border-bottom: 2px solid var(--border);
+    background: var(--white);
+  }
+  .findings-table td {
+    padding: 10px 12px; border-bottom: 1px solid var(--border);
+    font-size: 13px; background: var(--white); vertical-align: top;
+  }
+  .findings-table tr:hover td { background: var(--bg); }
+  .tag {
+    display: inline-block; font-family: var(--font-mono);
+    font-size: 10px; letter-spacing: 0.06em; font-weight: 500;
+    padding: 2px 8px; border-radius: 4px;
+  }
+  .tag-pass { background: var(--green-dim); color: var(--green); }
+  .tag-fail { background: var(--red-dim); color: var(--red); }
+  .tag-warn { background: var(--amber-dim); color: var(--amber); }
+  .check-name { font-weight: 500; color: var(--text); }
+  .check-value { font-family: var(--font-mono); font-size: 11px; color: var(--text2); word-break: break-all; }
+  .check-risk { font-size: 12px; color: var(--text2); }
+
+  /* ── REMEDIATION STEPS ────────────────────────────── */
+  .remed-list { list-style: none; }
+  .remed-item {
+    background: var(--white); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 16px 20px;
+    margin-bottom: 10px; display: flex; gap: 16px;
+    box-shadow: var(--shadow);
+  }
+  .remed-num {
+    font-family: var(--font-head); font-size: 22px; font-weight: 800;
+    color: var(--accent2); opacity: 0.4; min-width: 30px; line-height: 1;
+    padding-top: 2px;
+  }
+  .remed-body { flex: 1; }
+  .remed-title {
+    font-family: var(--font-head); font-weight: 700; font-size: 14px;
+    color: var(--text); margin-bottom: 4px;
+  }
+  .remed-prio {
+    display: inline-block; font-family: var(--font-mono); font-size: 9px;
+    letter-spacing: 0.08em; padding: 1px 6px; border-radius: 3px; margin-left: 8px;
+    vertical-align: middle;
+  }
+  .prio-high { background: var(--red-dim); color: var(--red); }
+  .prio-med  { background: var(--amber-dim); color: var(--amber); }
+  .prio-low  { background: var(--green-dim); color: var(--green); }
+  .remed-desc { font-size: 13px; color: var(--text2); line-height: 1.6; }
+  .remed-code {
+    margin-top: 10px; padding: 10px 14px;
+    background: #0f172a; color: #a5f3fc;
+    border-radius: 6px; font-family: var(--font-mono);
+    font-size: 11px; white-space: pre-wrap; word-break: break-all;
+    line-height: 1.7;
+  }
+
+  /* ── FOOTER ───────────────────────────────────────── */
+  .doc-footer {
+    background: var(--white); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 20px 24px;
+    display: flex; align-items: center; justify-content: space-between;
+    font-size: 12px; color: var(--text3); margin-top: 32px;
+    box-shadow: var(--shadow);
+  }
+  .doc-footer-brand { font-family: var(--font-head); font-weight: 700; font-size: 14px; color: var(--text); }
+  .doc-footer-brand span { color: var(--accent2); }
+
+  /* ── TOAST ────────────────────────────────────────── */
+  .toast {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+    background: var(--text); color: #fff; font-size: 12px;
+    padding: 10px 20px; border-radius: 20px; z-index: 999;
+    opacity: 0; pointer-events: none; transition: opacity 0.2s;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+  }
+  .toast.show { opacity: 1; }
+
+  /* ── ERROR STATE ──────────────────────────────────── */
+  .error-state { text-align: center; padding: 80px 20px; color: var(--text2); }
+  .error-state-icon { font-size: 48px; margin-bottom: 16px; }
+  .error-state-title { font-family: var(--font-head); font-size: 22px; font-weight: 700; color: var(--text); margin-bottom: 8px; }
+  .error-state-sub { font-size: 13px; color: var(--text3); }
+
+  /* ── PRINT STYLES ─────────────────────────────────── */
+  @media print {
+    .topbar, .topbar-actions { display: none !important; }
+    body { background: #fff; }
+    .doc-header, .remed-item, .findings-table { box-shadow: none !important; }
+    .page { padding: 0; max-width: 100%; }
+    .fraud-block { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+    .remed-code { background: #f1f5f9 !important; color: #0f172a !important; }
+    @page { margin: 20mm; }
+    .section { break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar" id="topbar">
+  <div class="topbar-brand">
+    Next-Gen <span style="color:var(--accent2)">&nbsp;IT</span>
+    <span class="tag-ngit">RUNBOOK</span>
+  </div>
+  <div class="topbar-actions">
+    <button class="btn btn-back" id="backBtn">← Portal</button>
+    <button class="btn btn-copy-link" id="copyLinkBtn">📎 Copy Link</button>
+    <button class="btn btn-pdf" id="pdfBtn">⬇ Export PDF</button>
+  </div>
+</div>
+
+<!-- PAGE -->
+<div class="page" id="page">
+  <div class="error-state" id="errorState" style="display:none">
+    <div class="error-state-icon">🔍</div>
+    <div class="error-state-title">No audit data found</div>
+    <div class="error-state-sub">Run an audit in the portal, then click "Open Runbook" or share a link to generate this report.</div>
+  </div>
+  <div id="reportContent" style="display:none">
+
+    <!-- HEADER -->
+    <div class="doc-header">
+      <div class="doc-header-top">
+        <div>
+          <div class="doc-type">Domain Health Runbook</div>
+          <div class="doc-domain" id="rDomain">domain.com</div>
+          <div class="doc-meta" id="rMeta">Generated <span id="rDate">--</span> · Next-Gen IT</div>
+        </div>
+        <div class="score-badge">
+          <div class="score-badge-num" id="rScore">--</div>
+          <div class="score-badge-label">/ 30 pts</div>
+        </div>
+      </div>
+      <div class="cat-row">
+        <div class="cat-chip">
+          <div class="cat-chip-name">Email Auth</div>
+          <div class="cat-chip-val" id="rEmailScore">-</div>
+          <div class="score-bar"><div class="score-bar-fill" id="rEmailBar"></div></div>
+        </div>
+        <div class="cat-chip">
+          <div class="cat-chip-name">Website / SEO</div>
+          <div class="cat-chip-val" id="rWebScore">-</div>
+          <div class="score-bar"><div class="score-bar-fill" id="rWebBar"></div></div>
+        </div>
+        <div class="cat-chip">
+          <div class="cat-chip-name">Marketing / Tech</div>
+          <div class="cat-chip-val" id="rTechScore">-</div>
+          <div class="score-bar"><div class="score-bar-fill" id="rTechBar"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FRAUD WARNING -->
+    <div class="fraud-block" id="rFraud" style="display:none">
+      <div class="fraud-block-title">⚠️ Wire Fraud Risk — Email Spoofing Possible</div>
+      <div class="fraud-stats">
+        <div><div class="fraud-stat-val">$275M</div><div class="fraud-stat-lbl">Real Estate Wire Fraud (FBI IC3 2024)</div></div>
+        <div><div class="fraud-stat-val">12,368</div><div class="fraud-stat-lbl">Complaints Filed</div></div>
+        <div><div class="fraud-stat-val">$3.04B</div><div class="fraud-stat-lbl">Total BEC Losses</div></div>
+      </div>
+      <div class="fraud-body">This domain does not have enforced DMARC protection. An attacker can send emails that appear to come from any address at this domain — including executives and escrow officers — without detection. Real estate transactions are the #1 wire fraud target in the United States. Correcting this vulnerability eliminates the most common attack vector and is now an ALTA baseline requirement.</div>
+    </div>
+
+    <!-- FINDINGS -->
+    <div class="section">
+      <div class="section-title">Domain Health Findings</div>
+      <table class="findings-table">
+        <thead><tr>
+          <th>Check</th><th>Status</th><th>Value Found</th><th>Risk</th>
+        </tr></thead>
+        <tbody id="rFindingsBody"></tbody>
+      </table>
+    </div>
+
+    <!-- REMEDIATION -->
+    <div class="section">
+      <div class="section-title">Remediation Runbook</div>
+      <ul class="remed-list" id="rRemedList"></ul>
+    </div>
+
+    <!-- FOOTER -->
+    <div class="doc-footer">
+      <div>
+        <div class="doc-footer-brand">Next-Gen <span>IT</span></div>
+        Realty Team Infrastructure · Austin, TX
+      </div>
+      <div id="rFooterMeta"></div>
+    </div>
+
+  </div><!-- #reportContent -->
+</div><!-- .page -->
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ══════════════════════════════════════════════════
+   LOAD AUDIT DATA
+   Priority: 1) URL hash #data=base64  2) sessionStorage
+══════════════════════════════════════════════════ */
+function loadData() {
+  // 1. URL hash
+  const hash = window.location.hash;
+  if (hash.startsWith('#data=')) {
+    try {
+      const raw = hash.slice(6);
+      return JSON.parse(decodeURIComponent(escape(atob(raw))));
+    } catch(e) {}
+  }
+  // 2. sessionStorage (operator local view)
+  try {
+    const s = sessionStorage.getItem('ngit_audit');
+    if (s) return JSON.parse(s);
+  } catch(e) {}
+  return null;
+}
+
+const data = loadData();
+
+if (!data) {
+  document.getElementById('errorState').style.display = 'block';
+} else {
+  document.getElementById('reportContent').style.display = 'block';
+  renderRunbook(data);
+}
+
+/* ══════════════════════════════════════════════════
+   RENDER
+══════════════════════════════════════════════════ */
+function renderRunbook(d) {
+  const total = d.scores.email + d.scores.web + d.scores.tech;
+
+  // Title
+  document.title = `Runbook — ${d.domain} · Next-Gen IT`;
+  document.getElementById('rDomain').textContent = d.domain;
+  document.getElementById('rDate').textContent = new Date(d.ts).toLocaleDateString('en-US', {year:'numeric',month:'long',day:'numeric'});
+
+  // Score
+  const scoreEl = document.getElementById('rScore');
+  scoreEl.textContent = total;
+  scoreEl.className = 'score-badge-num ' + scoreClass(total);
+
+  // Category scores
+  setCat('rEmailScore','rEmailBar', d.scores.email, 10);
+  setCat('rWebScore',  'rWebBar',   d.scores.web,   10);
+  setCat('rTechScore', 'rTechBar',  d.scores.tech,  10);
+
+  document.getElementById('rFooterMeta').textContent = `Audit date: ${new Date(d.ts).toLocaleDateString()} · Score: ${total}/30`;
+
+  // Fraud warning
+  const spfBad  = !d.spf || d.spf.includes('~all');
+  const dmarcBad = !d.dmarc || d.dmarc.includes('p=none');
+  if (spfBad || dmarcBad) {
+    document.getElementById('rFraud').style.display = 'block';
+  }
+
+  // Findings
+  const tbody = document.getElementById('rFindingsBody');
+  tbody.innerHTML = '';
+  for (const f of (d.findings || [])) {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td><div class="check-name">${esc(f.check)}</div></td>
+      <td><span class="tag tag-${f.status}">${f.status.toUpperCase()}</span></td>
+      <td><div class="check-value">${esc(f.value)}</div></td>
+      <td><div class="check-risk">${esc(f.risk)}</div></td>`;
+    tbody.appendChild(tr);
+  }
+
+  // Remediation
+  const list = document.getElementById('rRemedList');
+  list.innerHTML = '';
+  if (!d.remediation || !d.remediation.length) {
+    list.innerHTML = '<li style="color:var(--green);padding:14px;font-weight:500">✓ No critical remediations required. Domain health is strong.</li>';
+  } else {
+    for (const r of d.remediation) {
+      const li = document.createElement('li');
+      li.className = 'remed-item';
+      li.innerHTML = `
+        <div class="remed-num">${String(r.n).padStart(2,'0')}</div>
+        <div class="remed-body">
+          <div class="remed-title">
+            ${esc(r.title)}
+            <span class="remed-prio prio-${r.priority}">${r.priority.toUpperCase()}</span>
+          </div>
+          <div class="remed-desc">${esc(r.desc)}</div>
+          ${r.code ? `<div class="remed-code">${esc(r.code)}</div>` : ''}
+        </div>`;
+      list.appendChild(li);
+    }
+  }
+}
+
+function setCat(valId, barId, score, max) {
+  document.getElementById(valId).textContent = `${score}/${max}`;
+  const bar = document.getElementById(barId);
+  bar.style.width = `${score / max * 100}%`;
+  const pct = score / max;
+  bar.style.background = pct >= 0.7 ? '#059669' : pct >= 0.4 ? '#b45309' : '#dc2626';
+}
+
+function scoreClass(score) {
+  const pct = score / 30;
+  if (pct >= 0.8) return 'score-a';
+  if (pct >= 0.65) return 'score-b';
+  if (pct >= 0.5) return 'score-c';
+  if (pct >= 0.35) return 'score-d';
+  return 'score-f';
+}
+
+function esc(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+/* ══════════════════════════════════════════════════
+   BUTTONS
+══════════════════════════════════════════════════ */
+// PDF export
+document.getElementById('pdfBtn').addEventListener('click', () => {
+  if (data) {
+    document.title = `Domain-Health-Runbook_${data.domain}_${new Date(data.ts).toISOString().slice(0,10)}.pdf`;
+  }
+  window.print();
+});
+
+// Copy shareable link (this page's full URL)
+document.getElementById('copyLinkBtn').addEventListener('click', () => {
+  const url = window.location.href;
+  navigator.clipboard.writeText(url)
+    .then(() => showToast('✓ Link copied — share with client'))
+    .catch(() => {
+      const ta = document.createElement('textarea');
+      ta.value = url; document.body.appendChild(ta); ta.select();
+      document.execCommand('copy'); document.body.removeChild(ta);
+      showToast('✓ Copied!');
+    });
+});
+
+// Back to portal
+document.getElementById('backBtn').addEventListener('click', () => {
+  const portalUrl = window.location.href.replace('runbook.html', 'index.html').split('#')[0];
+  window.location.href = portalUrl;
+});
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+</script>
+</body>
+</html>

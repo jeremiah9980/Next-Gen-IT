@@ -83,6 +83,31 @@
         <h2>Audit History</h2>
         <div id="history" class="history empty">No audits loaded.</div>
       </section>
+
+      <section class="card full" id="chatSection">
+        <div class="chat-header">
+          <div>
+            <h2>AI IT Advisor</h2>
+            <p class="subhead" style="margin-top:4px;">Ask questions about your audit findings, get fix steps, or request an action plan.</p>
+          </div>
+          <div class="chat-status-badge" id="chatStatusBadge">⚡ Ready</div>
+        </div>
+        <div class="chat-suggestions" id="chatSuggestions">
+          <button class="chip" data-msg="What should I fix first?">What should I fix first?</button>
+          <button class="chip" data-msg="Give me an action plan">Give me an action plan</button>
+          <button class="chip" data-msg="Explain my DMARC issue">Explain my DMARC issue</button>
+          <button class="chip" data-msg="How is my security score calculated?">How is my score calculated?</button>
+          <button class="chip" data-msg="What evidence should I upload?">What evidence to upload?</button>
+        </div>
+        <div id="chatMessages" class="chat-messages">
+          <div class="chat-empty">Run or load an audit, then ask me anything about your IT security.</div>
+        </div>
+        <div class="chat-input-row">
+          <textarea id="chatInput" rows="2" placeholder="Ask about your findings, request fix steps, or say 'action plan'…" maxlength="2000"></textarea>
+          <button id="chatSendBtn" class="chat-send-btn" disabled>Send</button>
+        </div>
+        <p class="meta" style="margin-top:8px;">Powered by Next-Gen-IT AI · <span id="aiModelLabel">Smart fallback mode</span></p>
+      </section>
     </main>
   </div>
 

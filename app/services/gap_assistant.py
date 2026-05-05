@@ -2,8 +2,10 @@ from __future__ import annotations
 
 from typing import Any
 
+from .ai_agent import generate_ai_follow_up_questions
 
-def generate_follow_up_questions(
+
+def _rule_based_questions(
     audit: dict[str, Any],
     findings: list[dict[str, Any]],
     evidence_items: list[dict[str, Any]],
@@ -44,3 +46,16 @@ def generate_follow_up_questions(
         )
 
     return questions[:5]
+
+
+def generate_follow_up_questions(
+    audit: dict[str, Any],
+    findings: list[dict[str, Any]],
+    evidence_items: list[dict[str, Any]],
+    notes: list[dict[str, Any]],
+) -> list[str]:
+    """Return AI-generated follow-up questions when OpenAI is configured, else rule-based."""
+    ai_questions = generate_ai_follow_up_questions(audit, findings, evidence_items, notes)
+    if ai_questions:
+        return ai_questions
+    return _rule_based_questions(audit, findings, evidence_items, notes)

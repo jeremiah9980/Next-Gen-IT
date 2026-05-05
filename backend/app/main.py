@@ -3,7 +3,7 @@ from __future__ import annotations
 import shutil
 from pathlib import Path
 
-from fastapi import FastAPI, File, HTTPException, UploadFile
+from fastapi import Depends, FastAPI, File, Header, HTTPException, UploadFile, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 
@@ -31,7 +31,6 @@ from .services.worker import start_audit_thread
 
 app = FastAPI(title=settings.app_name)
 
-
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.cors_origins if settings.cors_origins else ["*"],
@@ -39,6 +38,20 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+def require_api_key(x_api_key: str | None = Header(default=None)) -> None:
+    """Protect internal API routes while keeping public /share links open."""
+    if not settings.portal_api_key:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="API key protection is not configured.",
+        )
+    if x_api_key != settings.portal_api_key:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid or missing API key.",
+        )
 
 
 @app.on_event("startup")
@@ -51,7 +64,7 @@ def health() -> dict[str, str]:
     return {"status": "ok"}
 
 
-@app.post("/api/audits", response_model=AuditCreateResponse)
+@app.post("/api/audits", response_model=AuditCreateResponse, dependencies=[Depends(require_api_key)])
 def create_audit_endpoint(payload: AuditCreateRequest) -> AuditCreateResponse:
     domain = payload.domain.strip().lower()
     if "." not in domain:
@@ -61,12 +74,12 @@ def create_audit_endpoint(payload: AuditCreateRequest) -> AuditCreateResponse:
     return AuditCreateResponse(audit_id=audit_id, status="queued")
 
 
-@app.get("/api/audits", response_model=list[AuditSummaryResponse])
+@app.get("/api/audits", response_model=list[AuditSummaryResponse], dependencies=[Depends(require_api_key)])
 def list_audits_endpoint() -> list[AuditSummaryResponse]:
     return [AuditSummaryResponse(**row) for row in list_audits()]
 
 
-@app.get("/api/audits/{audit_id}", response_model=AuditDetailResponse)
+@app.get("/api/audits/{audit_id}", response_model=AuditDetailResponse, dependencies=[Depends(require_api_key)])
 def get_audit_endpoint(audit_id: str) -> AuditDetailResponse:
     audit = get_audit(audit_id)
     if not audit:
@@ -79,7 +92,7 @@ def get_audit_endpoint(audit_id: str) -> AuditDetailResponse:
     )
 
 
-@app.post("/api/audits/{audit_id}/evidence")
+@app.post("/api/audits/{audit_id}/evidence", dependencies=[Depends(require_api_key)])
 async def upload_evidence(audit_id: str, file: UploadFile = File(...)) -> dict[str, str]:
     audit = get_audit(audit_id)
     if not audit:
@@ -99,7 +112,7 @@ async def upload_evidence(audit_id: str, file: UploadFile = File(...)) -> dict[s
     return {"message": "Evidence uploaded."}
 
 
-@app.post("/api/audits/{audit_id}/notes")
+@app.post("/api/audits/{audit_id}/notes", dependencies=[Depends(require_api_key)])
 def create_note(audit_id: str, payload: NoteCreateRequest) -> dict[str, str]:
     audit = get_audit(audit_id)
     if not audit:
@@ -108,7 +121,7 @@ def create_note(audit_id: str, payload: NoteCreateRequest) -> dict[str, str]:
     return {"message": "Note saved."}
 
 
-@app.get("/api/audits/{audit_id}/gaps")
+@app.get("/api/audits/{audit_id}/gaps", dependencies=[Depends(require_api_key)])
 def get_gap_questions(audit_id: str) -> dict[str, list[str]]:
     audit = get_audit(audit_id)
     if not audit:
@@ -120,7 +133,7 @@ def get_gap_questions(audit_id: str) -> dict[str, list[str]]:
     return {"questions": questions}
 
 
-@app.get("/api/audits/{audit_id}/report")
+@app.get("/api/audits/{audit_id}/report", dependencies=[Depends(require_api_key)])
 def download_report(audit_id: str) -> FileResponse:
     audit = get_audit(audit_id)
     if not audit:
@@ -133,3 +146,29 @@ def download_report(audit_id: str) -> FileResponse:
         media_type="text/markdown",
         filename=f"{audit['domain']}-next-gen-it-report.md",
     )
+
+
+@app.get("/api/audits/{audit_id}/runbook", dependencies=[Depends(require_api_key)])
+def download_runbook(audit_id: str) -> FileResponse:
+    audit = get_audit(audit_id)
+    if not audit:
+        raise HTTPException(status_code=404, detail="Audit not found.")
+    runbook_path = audit.get("runbook_path")
+    if not runbook_path or not Path(runbook_path).exists():
+        raise HTTPException(status_code=404, detail="Runbook not generated yet.")
+    return FileResponse(
+        runbook_path,
+        media_type="text/html",
+        filename=f"{audit['domain']}-runbook.html",
+    )
+
+
+@app.get("/share/{audit_id}/runbook")
+def share_runbook(audit_id: str) -> FileResponse:
+    audit = get_audit(audit_id)
+    if not audit:
+        raise HTTPException(status_code=404, detail="Not found")
+    runbook_path = audit.get("runbook_path")
+    if not runbook_path or not Path(runbook_path).exists():
+        raise HTTPException(status_code=404, detail="Runbook not available")
+    return FileResponse(runbook_path, media_type="text/html")

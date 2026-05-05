@@ -52,3 +52,18 @@ class NoteCreateRequest(BaseModel):
 class AuditCreateResponse(BaseModel):
     audit_id: str
     status: AuditStatus
+
+
+class ChatMessageRequest(BaseModel):
+    message: str = Field(min_length=1, max_length=2000)
+
+
+class ChatMessageModel(BaseModel):
+    role: str
+    content: str
+    created_at: str
+
+
+class ChatResponse(BaseModel):
+    reply: str
+    history: list[ChatMessageModel]

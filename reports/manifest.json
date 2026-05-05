@@ -1,0 +1,94 @@
+{
+  "reports": [
+    {
+      "domain": "teleotitle.com",
+      "filename": "teleotitle-com-20260501-231100.html",
+      "scan_date": "2026-05-01 23:11 UTC",
+      "timestamp": "20260501-231100",
+      "grade": "F",
+      "total_score": 7,
+      "url": "https://jeremiah9980.github.io/Next-Gen-IT/reports/teleotitle-com-20260501-231100.html"
+    },
+    {
+      "domain": "teleotitle.com",
+      "filename": "teleotitle-com-20260501-165015.html",
+      "scan_date": "2026-05-01 16:50 UTC",
+      "timestamp": "20260501-165015",
+      "grade": "F",
+      "total_score": 7,
+      "url": "https://jeremiah9980.github.io/Next-Gen-IT/reports/teleotitle-com-20260501-165015.html"
+    },
+    {
+      "domain": "exprealty.com",
+      "filename": "exprealty-com-20260426-171309.html",
+      "scan_date": "2026-04-26 17:13 UTC",
+      "timestamp": "20260426-171309",
+      "grade": "D",
+      "total_score": 11,
+      "url": "https://jeremiah9980.github.io/Next-Gen-IT/reports/exprealty-com-20260426-171309.html"
+    },
+    {
+      "domain": "riverfrontit.com",
+      "filename": "riverfrontit-com-20260426-053908.html",
+      "scan_date": "2026-04-26 05:39 UTC",
+      "timestamp": "20260426-053908",
+      "grade": "F",
+      "total_score": 4,
+      "url": "https://jeremiah9980.github.io/Next-Gen-IT/reports/riverfrontit-com-20260426-053908.html"
+    },
+    {
+      "domain": "abodelabs.io",
+      "filename": "abodelabs-io-20260425-233225.html",
+      "scan_date": "2026-04-25 23:32 UTC",
+      "timestamp": "20260425-233225",
+      "grade": "F",
+      "total_score": 0,
+      "url": "https://jeremiah9980.github.io/Next-Gen-IT/reports/abodelabs-io-20260425-233225.html"
+    },
+    {
+      "domain": "teleotitle.com",
+      "filename": "teleotitle-com-20260425-232132.html",
+      "scan_date": "2026-04-25 23:21 UTC",
+      "timestamp": "20260425-232132",
+      "grade": "F",
+      "total_score": 6,
+      "url": "https://jeremiah9980.github.io/Next-Gen-IT/reports/teleotitle-com-20260425-232132.html"
+    },
+    {
+      "domain": "teifkerealestate.com",
+      "filename": "teifkerealestate-com-20260425-213512.html",
+      "scan_date": "2026-04-25 21:35 UTC",
+      "timestamp": "20260425-213512",
+      "grade": "C",
+      "total_score": 19,
+      "url": "https://jeremiah9980.github.io/Next-Gen-IT/reports/teifkerealestate-com-20260425-213512.html"
+    },
+    {
+      "domain": "newhoperealtygroup.com",
+      "filename": "newhoperealtygroup-com-20260425-213134.html",
+      "scan_date": "2026-04-25 21:31 UTC",
+      "timestamp": "20260425-213134",
+      "grade": "D",
+      "total_score": 8,
+      "url": "https://jeremiah9980.github.io/Next-Gen-IT/reports/newhoperealtygroup-com-20260425-213134.html"
+    },
+    {
+      "domain": "robertjfischer.com",
+      "filename": "robertjfischer-com-20260425-211132.html",
+      "scan_date": "2026-04-25 21:11 UTC",
+      "timestamp": "20260425-211132",
+      "grade": "D",
+      "total_score": 10,
+      "url": "https://jeremiah9980.github.io/Next-Gen-IT/reports/robertjfischer-com-20260425-211132.html"
+    },
+    {
+      "domain": "tkerrrealestate.com",
+      "filename": "tkerrrealestate-com-20260425-205343.html",
+      "scan_date": "2026-04-25 20:53 UTC",
+      "timestamp": "20260425-205343",
+      "grade": "D",
+      "total_score": 8,
+      "url": "https://jeremiah9980.github.io/Next-Gen-IT/reports/tkerrrealestate-com-20260425-205343.html"
+    }
+  ]
+}
