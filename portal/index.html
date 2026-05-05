@@ -366,13 +366,16 @@ document.getElementById('lockBtn').addEventListener('click', lock);
    DNS via Cloudflare DoH (works cross-origin)
 ───────────────────────────────────────────── */
 async function doh(name, type) {
+  console.log('[NGIT DoH]', type, name);
   const r = await fetch(
     `https://cloudflare-dns.com/dns-query?name=${encodeURIComponent(name)}&type=${type}`,
     { headers: { Accept: 'application/dns-json' }, signal: AbortSignal.timeout(8000) }
   );
   if (!r.ok) return [];
   const d = await r.json();
-  return (d.Answer || []).map(a => a.data.replace(/^"|"$/g,'').replace(/" "/g,''));
+  const ans = (d.Answer || []).map(a => a.data.replace(/^"|"$/g,'').replace(/" "/g,''));
+  console.log('[NGIT DoH result]', type, name, '->', ans.length, 'records', ans.slice(0,2));
+  return ans;
 }
 
 const getTXT = n => doh(n, 'TXT');
@@ -490,7 +493,9 @@ async function runAudit(domain) {
     step(5,'done');
 
   } catch(err) {
-    console.error('[NGIT audit error]', err);
+    console.error('[NGIT] Audit failed at step:', err.message || err);
+    console.error('[NGIT] Full error:', err);
+    step(0,'fail'); // visually mark where it died
   }
 
   document.getElementById('pFill').style.width = '100%';
