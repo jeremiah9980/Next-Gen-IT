@@ -250,7 +250,7 @@ main{flex:1;padding:20px;max-width:900px;width:100%;margin:0 auto}
         <div class="sbar"><div class="sbar-fill" id="emailBar"></div></div>
       </div>
       <div class="score-cat">
-        <div class="score-cat-name">Website / SEO</div>
+        <div class="score-cat-name">Website / SEO <span style="font-size:9px;color:var(--text3)">(DNS: 6pt max)</span></div>
         <div class="score-cat-val" id="webScore">-/10</div>
         <div class="sbar"><div class="sbar-fill" id="webBar"></div></div>
       </div>
@@ -534,12 +534,17 @@ function computeScores(d) {
   d.scores.email = Math.min(email, 10);
 
   // Website/SEO (10 pts)
+  // DNS/probe-detectable: 6 pts max (4 checks)
+  // HTML-required items (IDX, contact form, local keywords, blog,
+  //   Google Business, analytics, schema): 4 pts — always 0 in DNS-only mode
   let web = 0;
-  if (d.ns.length)   web += 1; // resolves
-  if (d.ssl)         web += 4; // HTTPS confirmed
-  if (d.hasSitemap)  web += 3; // sitemap
-  if (d.mx.length)   web += 2; // mail infra
+  if (d.ns.length)    web += 1;  // domain resolves
+  if (d.ssl)          web += 2;  // HTTPS confirmed
+  if (d.hasSitemap)   web += 2;  // sitemap present
+  if (d.mx.length)    web += 1;  // mail infrastructure exists
+  // +4 pts available only via full AI audit (HTML inspection)
   d.scores.web = Math.min(web, 10);
+  d.scores.webMaxDns = 6; // flag for UI to show "N/A" on unchecked items
 
   // Tech stack (10 pts) — DNS-detectable only
   let tech = 0;
@@ -599,6 +604,30 @@ function buildFindings(d) {
       status: d.hasSitemap ? 'pass' : 'warn',
       value: d.hasSitemap ? 'Found at /sitemap.xml' : 'Not found',
       risk: d.hasSitemap ? 'None' : 'Reduced search indexing'
+    },
+    {
+      check:'Local SEO Keywords',
+      status: 'info',
+      value: 'Requires HTML scan',
+      risk: 'Run full AI audit — checks geo keywords in <title> & meta description'
+    },
+    {
+      check:'Schema Markup',
+      status: 'info',
+      value: 'Requires HTML scan',
+      risk: 'Run full AI audit — checks LocalBusiness / RealEstateAgent JSON-LD'
+    },
+    {
+      check:'Analytics Tag',
+      status: 'info',
+      value: 'Requires HTML scan',
+      risk: 'Run full AI audit — checks GA4/GTM (JS-rendered, not visible via DNS)'
+    },
+    {
+      check:'Contact / Lead Form',
+      status: 'info',
+      value: 'Requires HTML scan',
+      risk: 'Run full AI audit — checks for <form> with contact/inquiry intent'
     },
     {
       check:'Nameservers',
