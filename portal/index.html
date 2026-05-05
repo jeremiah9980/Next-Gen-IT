@@ -180,7 +180,8 @@ main{flex:1;padding:20px;max-width:900px;width:100%;margin:0 auto}
   <div class="gate-card">
     <div class="gate-logo">Next-Gen <span>IT</span> · Portal</div>
     <div class="gate-sub">Operator Access</div>
-    <input type="password" class="gate-input" id="pwInput" placeholder="••••••••" autocomplete="off"/>
+    <input type="password" class="gate-input" id="pwInput" placeholder="Access code" autocomplete="off"/>
+    <input type="password" class="gate-input" id="apiInput" placeholder="Anthropic API key  (sk-ant-...)" autocomplete="off" style="margin-top:6px;letter-spacing:.03em;text-align:left"/>
     <div class="gate-err" id="gateErr"></div>
     <button class="gate-btn" id="gateBtn">Authenticate →</button>
   </div>
@@ -217,12 +218,12 @@ main{flex:1;padding:20px;max-width:900px;width:100%;margin:0 auto}
         <span class="pipeline-domain" id="pDomain"></span>
       </div>
       <div class="steps">
-        <div class="step" id="s0">⚙️ Registrar / NS</div>
-        <div class="step" id="s1">🌐 DNS / MX</div>
-        <div class="step" id="s2">📧 Email Auth</div>
-        <div class="step" id="s3">🔒 SSL / Site</div>
-        <div class="step" id="s4">📊 Tech Signals</div>
-        <div class="step" id="s5">🤖 Build Report</div>
+        <div class="step" id="s0">⚙️ NS / MX</div>
+        <div class="step" id="s1">📧 SPF / DMARC</div>
+        <div class="step" id="s2">🔒 SSL / Sitemap</div>
+        <div class="step" id="s3">🌐 Fetch HTML</div>
+        <div class="step" id="s4">🤖 Claude Analysis</div>
+        <div class="step" id="s5">📋 Build Report</div>
       </div>
       <div class="progress"><div class="progress-fill" id="pFill"></div></div>
     </div>
@@ -250,7 +251,7 @@ main{flex:1;padding:20px;max-width:900px;width:100%;margin:0 auto}
         <div class="sbar"><div class="sbar-fill" id="emailBar"></div></div>
       </div>
       <div class="score-cat">
-        <div class="score-cat-name">Website / SEO <span style="font-size:9px;color:var(--text3)">(DNS: 6pt max)</span></div>
+        <div class="score-cat-name" id="webLabel">Website / SEO</div>
         <div class="score-cat-val" id="webScore">-/10</div>
         <div class="sbar"><div class="sbar-fill" id="webBar"></div></div>
       </div>
@@ -276,6 +277,12 @@ main{flex:1;padding:20px;max-width:900px;width:100%;margin:0 auto}
     <div class="card" id="remedCard">
       <div class="card-hdr">Remediation Steps</div>
       <ul class="remed-list" id="remedList"></ul>
+    </div>
+
+    <!-- PITCH ANGLE -->
+    <div class="card" id="pitchCard" style="display:none">
+      <div class="card-hdr">💬 Pitch Angle</div>
+      <div style="padding:16px 20px;font-size:13px;color:var(--text2);line-height:1.7" id="pitchText"></div>
     </div>
 
     <!-- REPORTS -->
@@ -317,6 +324,8 @@ const SESSION_KEY = 'ngit_auth';   // single key, used nowhere else
 const REPORTS_KEY = 'ngit_reports';
 const MANIFEST    = 'https://jeremiah9980.github.io/Next-Gen-IT/reports/manifest.json';
 const RUNBOOK_URL = 'https://jeremiah9980.github.io/Next-Gen-IT/portal/runbook.html';
+const APIKEY_KEY  = 'ngit_apikey';
+const getApiKey   = () => sessionStorage.getItem(APIKEY_KEY);
 
 /* ─────────────────────────────────────────────
    AUTH — single system, no login.html dependency
@@ -329,6 +338,8 @@ const gateErr= document.getElementById('gateErr');
 function authed()  { return sessionStorage.getItem(SESSION_KEY) === '1'; }
 function unlock()  {
   sessionStorage.setItem(SESSION_KEY, '1');
+  const ak = document.getElementById('apiInput').value.trim();
+  if (ak) sessionStorage.setItem(APIKEY_KEY, ak);
   gate.classList.add('hidden');
   app.classList.add('on');
   renderReports();
@@ -336,6 +347,7 @@ function unlock()  {
 }
 function lock() {
   sessionStorage.removeItem(SESSION_KEY);
+  sessionStorage.removeItem(APIKEY_KEY);
   gate.classList.remove('hidden');
   app.classList.remove('on');
   pwEl.value = '';
@@ -415,6 +427,151 @@ async function probeSite(domain) {
 }
 
 /* ─────────────────────────────────────────────
+   HTML FETCH via CORS proxy
+───────────────────────────────────────────── */
+async function fetchSiteHtml(domain) {
+  const proxies = [
+    `https://corsproxy.io/?url=${encodeURIComponent('https://'+domain)}`,
+    `https://api.allorigins.win/raw?url=${encodeURIComponent('https://'+domain)}`,
+  ];
+  for (const proxy of proxies) {
+    try {
+      const r = await fetchWithTimeout(proxy, {}, 14000);
+      if (!r.ok) continue;
+      const t = await r.text();
+      if (t && t.length > 200) return t.slice(0, 22000); // head+body enough for analysis
+    } catch(e) { console.warn('[NGIT HTML]', proxy, e.message); }
+  }
+  return null;
+}
+
+/* ─────────────────────────────────────────────
+   CLAUDE AUDIT PROMPT
+───────────────────────────────────────────── */
+function buildAuditPrompt(domain, dns, html) {
+  const dnsBlock = JSON.stringify(dns, null, 2);
+  const htmlBlock = html
+    ? `LIVE HTML (first 22,000 chars):
+${html}`
+    : 'HTML: unavailable (CORS proxy failed — score HTML items conservatively)';
+
+  return `You are a domain health auditor for Next-Gen IT, a consulting firm serving small real estate teams in Austin/Central Texas.
+
+Audit domain: ${domain}
+
+DNS DATA:
+${dnsBlock}
+
+${htmlBlock}
+
+Score this domain across 30 items (3 categories × 10 items) using PASS=1 / FAIL=0. Return ONLY valid JSON — no markdown, no preamble.
+
+CATEGORY 1 — Email Auth (items 1-10):
+1. MX records exist
+2. SPF record present
+3. SPF uses hard fail (-all)
+4. DMARC record present
+5. DMARC policy is quarantine or reject (not p=none)
+6. DMARC has rua= reporting address
+7. DKIM selector found
+8. Email provider identified (MX resolves to known provider)
+9. No SPF +all (permissive) risk
+10. SPF includes correct provider mechanisms
+
+CATEGORY 2 — Website & SEO (items 11-20):
+11. Site loads and HTTPS confirmed
+12. Mobile responsive (viewport meta tag)
+13. IDX/MLS search present (scripts: idxbroker, ihf-key, wolfnet, dsidxpress, showcase)
+14. Contact or lead capture form present
+15. Google Business Profile linked (maps.google.com or place_id embed)
+16. Local geo keywords in <title> or <meta description> (city, state, region)
+17. Active blog or market updates section present
+18. XML sitemap accessible
+19. Analytics tag present (GA4 G-, GTM-, UA-)
+20. Schema markup / structured data (application/ld+json, LocalBusiness, RealEstateAgent)
+
+CATEGORY 3 — Tech Stack & CRM (items 21-30):
+21. CRM identified (followupboss, kvcore, lofty, chime, boomtown, ylopo, liondesk, sierra)
+22. Live chat or chatbot widget (intercom, drift, tidio, livechat)
+23. Online scheduling tool (calendly, showingtime, acuity)
+24. Facebook Pixel installed (fbq(, facebook.com/tr)
+25. Google Tag Manager present
+26. Heatmap/session recording (hotjar, clarity.ms, fullstory)
+27. Video content embedded (youtube, vimeo, <video>)
+28. Social media profiles linked (facebook, instagram, linkedin, youtube)
+29. Client testimonials or reviews section
+30. HTTPS redirect enforced (http redirects to https)
+
+PROVIDER IDENTIFICATION from DNS + HTML:
+- registrar: from WHOIS NS patterns
+- dns_host: from NS records
+- web_host: from HTTP headers or NS
+- cms: from HTML meta generator or URL patterns
+- email_provider: from MX records
+
+PITCH ANGLE: 2-sentence outreach hook using the most critical gaps found.
+
+Return this exact JSON structure:
+{
+  "scores": { "email": <0-10>, "web": <0-10>, "tech": <0-10> },
+  "items": [<30 booleans, 1=pass 0=fail, index 0-29>],
+  "providers": {
+    "dns_host": "<string>",
+    "web_host": "<string>",
+    "cms": "<string>",
+    "email_provider": "<string>"
+  },
+  "findings": [
+    { "check": "<name>", "status": "<pass|warn|fail|info>", "value": "<string>", "risk": "<string>" }
+  ],
+  "remediation": [
+    { "n": <1-5>, "p": "<high|med|low>", "title": "<string>", "desc": "<string>", "code": "<string or null>" }
+  ],
+  "pitchAngle": "<string>",
+  "wireRisk": <true|false>
+}
+
+findings should cover: SPF, DMARC, DKIM, MX, SSL, sitemap, schema markup, analytics, local SEO keywords, IDX/CRM status.
+remediation: top 1-5 items only, priority ordered.
+wireRisk: true if DMARC is missing or p=none.`;
+}
+
+/* ─────────────────────────────────────────────
+   CLAUDE API CALL
+───────────────────────────────────────────── */
+async function callClaude(domain, dns, htmlContent) {
+  const apiKey = getApiKey();
+  if (!apiKey) throw new Error('no_api_key');
+
+  const prompt = buildAuditPrompt(domain, dns, htmlContent);
+
+  const r = await fetchWithTimeout('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': apiKey,
+      'anthropic-version': '2023-06-01',
+      'anthropic-dangerous-direct-browser-access': 'true',
+    },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 2000,
+      messages: [{ role: 'user', content: prompt }]
+    })
+  }, 45000);
+
+  if (!r.ok) {
+    const err = await r.text();
+    throw new Error(`Claude API ${r.status}: ${err.slice(0,200)}`);
+  }
+
+  const data = await r.json();
+  const text = data.content.find(b => b.type === 'text')?.text || '';
+  const clean = text.replace(/```json|```/g, '').trim();
+  return JSON.parse(clean);
+}
+
+/* ─────────────────────────────────────────────
    AUDIT ENGINE
 ───────────────────────────────────────────── */
 let currentData = null;
@@ -451,27 +608,18 @@ async function runAudit(domain) {
   };
 
   try {
-    // S0: Nameservers
+    // S0: NS + MX
     step(0,'scanning');
-    d.ns = await getNS(domain);
+    [d.ns, d.mx] = await Promise.all([getNS(domain), getMX(domain)]);
     step(0, d.ns.length ? 'done' : 'warn');
-    await wait(200);
 
-    // S1: MX
+    // S1: SPF / DMARC / DKIM
     step(1,'scanning');
-    d.mx = await getMX(domain);
-    step(1, d.mx.length ? 'done' : 'warn');
-    await wait(200);
-
-    // S2: Email auth (SPF, DMARC, DKIM)
-    step(2,'scanning');
     const txt   = await getTXT(domain);
     const dmarc = await getTXT(`_dmarc.${domain}`);
     d.spf   = txt.find(t => t.startsWith('v=spf1')) || null;
     d.dmarc = dmarc.find(t => t.startsWith('v=DMARC1')) || null;
     d.hasGoogleWS = /google-site-verification/i.test(txt.join(' '));
-
-    // DKIM: check real selectors via DoH
     const SELECTORS = ['google','selector1','selector2','default','k1','smtp','mail','dkim'];
     for (const sel of SELECTORS) {
       try {
@@ -481,36 +629,66 @@ async function runAudit(domain) {
         }
       } catch {}
     }
-    step(2, (d.spf && d.dmarc) ? 'done' : 'warn');
-    await wait(300);
+    step(1, (d.spf && d.dmarc) ? 'done' : 'warn');
 
-    // S3: SSL/Site
-    step(3,'scanning');
+    // S2: SSL + Sitemap probe
+    step(2,'scanning');
     const site = await probeSite(domain);
     d.ssl = site.ssl;
     d.hasSitemap = site.hasSitemap;
-    step(3, d.ssl ? 'done' : 'warn');
-    await wait(300);
+    step(2, d.ssl ? 'done' : 'warn');
 
-    // S4: Tech signals from DNS
+    // S3: Fetch live HTML via CORS proxy
+    step(3,'scanning');
+    d.siteHtml = await fetchSiteHtml(domain);
+    step(3, d.siteHtml ? 'done' : 'warn');
+
+    // S4: Claude analysis
     step(4,'scanning');
-    await wait(400);
-    step(4,'done');
+    const apiKey = getApiKey();
+    if (apiKey) {
+      const aiResult = await callClaude(domain, {
+        ns: d.ns, mx: d.mx, spf: d.spf, dmarc: d.dmarc,
+        dkim: d.dkim, ssl: d.ssl, hasSitemap: d.hasSitemap,
+        hasGoogleWS: d.hasGoogleWS
+      }, d.siteHtml);
+      // Merge AI results into d
+      d.scores    = aiResult.scores;
+      d.findings  = aiResult.findings || [];
+      d.remediation = aiResult.remediation || [];
+      d.pitchAngle  = aiResult.pitchAngle || '';
+      d.providers   = aiResult.providers || {};
+      d.wireRisk    = aiResult.wireRisk ?? (!d.dmarc || (d.dmarc && d.dmarc.includes('p=none')));
+      d.aiScored    = true;
+      step(4,'done');
+    } else {
+      // No API key — fall back to DNS-only scoring
+      d.wireRisk = !d.dmarc || (d.dmarc && d.dmarc.includes('p=none'));
+      d.aiScored = false;
+      buildFindings(d);
+      buildRemediation(d);
+      computeScores(d);
+      step(4,'warn');
+    }
 
-    // S5: Build report
+    // S5: Render
     step(5,'scanning');
-    buildFindings(d);
-    buildRemediation(d);
-    computeScores(d);
-    await wait(500);
+    await wait(300);
     step(5,'done');
 
   } catch(err) {
-    console.error('[NGIT] Audit error:', err.message || err, err);
-    // Mark any still-scanning steps as warn
+    console.error('[NGIT] Audit error:', err.message, err);
+    if (err.message === 'no_api_key') {
+      // shouldn't reach here — handled above
+    } else if (err.message?.includes('Claude API')) {
+      // API error — show toast and fall back to DNS scoring
+      toast('⚠️ Claude API error — showing DNS-only results');
+      d.wireRisk = !d.dmarc || (d.dmarc && d.dmarc.includes('p=none'));
+      buildFindings(d); buildRemediation(d); computeScores(d);
+    }
     for (let i=0;i<6;i++) {
       const el = document.getElementById(`s${i}`);
-      if (el && el.className === 'step scanning') el.className = 'step warn';
+      if (el && el.className.includes('scanning')) el.className = 'step warn';
     }
   }
 
@@ -705,10 +883,15 @@ function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').rep
 function renderResults(d) {
   const total = d.scores.email + d.scores.web + d.scores.tech;
 
-  // Fraud warning
-  const spfBad  = !d.spf || d.spf.includes('~all');
-  const dmarcBad = !d.dmarc || d.dmarc.includes('p=none');
-  document.getElementById('fraud').classList.toggle('on', spfBad || dmarcBad);
+  // Fraud warning — use AI result if available
+  const showFraud = d.wireRisk ?? (!d.dmarc || (d.dmarc && d.dmarc.includes('p=none')));
+  document.getElementById('fraud').classList.toggle('on', showFraud);
+
+  // AI mode badge
+  const pipelineTitle = document.querySelector('.pipeline-title');
+  if (pipelineTitle) {
+    pipelineTitle.textContent = d.aiScored ? '🤖 AI Audit Complete' : '⚡ DNS Scan Complete';
+  }
 
   // Scores
   const sc = document.getElementById('scorecard');
@@ -717,6 +900,8 @@ function renderResults(d) {
   sn.textContent = `${total}/30`;
   sn.className = `score-num ${gradeClass(total,30)}`;
 
+  document.getElementById('webLabel').textContent =
+    d.aiScored ? 'Website / SEO' : 'Website / SEO (DNS only)';
   [['email',d.scores.email],['web',d.scores.web],['tech',d.scores.tech]].forEach(([k,v])=>{
     document.getElementById(`${k}Score`).textContent = `${v}/10`;
     const bar = document.getElementById(`${k}Bar`);
@@ -753,6 +938,14 @@ function renderResults(d) {
     }
   }
   document.getElementById('remedCard').classList.add('on');
+
+  // Pitch angle (AI only)
+  if (d.pitchAngle) {
+    document.getElementById('pitchText').textContent = d.pitchAngle;
+    document.getElementById('pitchCard').style.display = 'block';
+  } else {
+    document.getElementById('pitchCard').style.display = 'none';
+  }
 
   // Action bar
   document.getElementById('actionDomain').textContent = d.domain;
