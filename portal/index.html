@@ -951,12 +951,6 @@ function renderResults(d) {
 
   // Action bar
   document.getElementById('actionDomain').textContent = d.domain;
-  const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(d))));
-  const shareUrl = `${RUNBOOK_URL}#data=${encoded}`;
-
-  const shareEl = document.getElementById('shareLink');
-  shareEl.href = shareUrl;
-  shareEl.classList.remove('hidden');
 
   // Exec Report + Runbook buttons
   const execBtn = document.getElementById('execReportBtn');
