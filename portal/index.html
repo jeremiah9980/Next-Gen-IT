@@ -365,17 +365,36 @@ document.getElementById('lockBtn').addEventListener('click', lock);
 /* ─────────────────────────────────────────────
    DNS via Cloudflare DoH (works cross-origin)
 ───────────────────────────────────────────── */
+// Fetch with manual timeout (AbortController — broad browser compat)
+function fetchWithTimeout(url, opts={}, ms=8000) {
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), ms);
+  return fetch(url, { ...opts, signal: ctrl.signal })
+    .finally(() => clearTimeout(timer));
+}
+
+// DoH — tries Google first, falls back to Cloudflare
 async function doh(name, type) {
-  console.log('[NGIT DoH]', type, name);
-  const r = await fetch(
-    `https://cloudflare-dns.com/dns-query?name=${encodeURIComponent(name)}&type=${type}`,
-    { headers: { Accept: 'application/dns-json' }, signal: AbortSignal.timeout(8000) }
-  );
-  if (!r.ok) return [];
-  const d = await r.json();
-  const ans = (d.Answer || []).map(a => a.data.replace(/^"|"$/g,'').replace(/" "/g,''));
-  console.log('[NGIT DoH result]', type, name, '->', ans.length, 'records', ans.slice(0,2));
-  return ans;
+  const providers = [
+    { url: `https://dns.google/resolve?name=${encodeURIComponent(name)}&type=${type}`, headers: {} },
+    { url: `https://cloudflare-dns.com/dns-query?name=${encodeURIComponent(name)}&type=${type}`, headers: { Accept: 'application/dns-json' } },
+    { url: `https://1.1.1.1/dns-query?name=${encodeURIComponent(name)}&type=${type}`, headers: { Accept: 'application/dns-json' } },
+  ];
+  for (const p of providers) {
+    try {
+      const r = await fetchWithTimeout(p.url, { headers: p.headers }, 7000);
+      if (!r.ok) continue;
+      const d = await r.json();
+      const ans = (d.Answer || []).map(a =>
+        String(a.data).replace(/^"|"$/g,'').replace(/" "/g,''));
+      console.log('[NGIT DoH]', type, name, '->', ans.length, 'records (via', new URL(p.url).hostname, ')');
+      return ans;
+    } catch(e) {
+      console.warn('[NGIT DoH] provider failed:', new URL(p.url).hostname, e.message);
+    }
+  }
+  console.error('[NGIT DoH] all providers failed for', type, name);
+  return [];
 }
 
 const getTXT = n => doh(n, 'TXT');
@@ -390,12 +409,12 @@ async function probeSite(domain) {
   const out = { ssl: false, hasSitemap: false };
   // SSL: no-cors HEAD succeeds if HTTPS is reachable
   try {
-    await fetch(`https://${domain}`, { method:'HEAD', mode:'no-cors', signal:AbortSignal.timeout(6000) });
+    await fetchWithTimeout(`https://${domain}`, { method:'HEAD', mode:'no-cors' }, 6000);
     out.ssl = true;
   } catch {}
   // Sitemap: also no-cors (we only care if it exists, not its content)
   try {
-    await fetch(`https://${domain}/sitemap.xml`, { method:'HEAD', mode:'no-cors', signal:AbortSignal.timeout(5000) });
+    await fetchWithTimeout(`https://${domain}/sitemap.xml`, { method:'HEAD', mode:'no-cors' }, 5000);
     out.hasSitemap = true;
   } catch {}
   return out;
@@ -493,9 +512,12 @@ async function runAudit(domain) {
     step(5,'done');
 
   } catch(err) {
-    console.error('[NGIT] Audit failed at step:', err.message || err);
-    console.error('[NGIT] Full error:', err);
-    step(0,'fail'); // visually mark where it died
+    console.error('[NGIT] Audit error:', err.message || err, err);
+    // Mark any still-scanning steps as warn
+    for (let i=0;i<6;i++) {
+      const el = document.getElementById(`s${i}`);
+      if (el && el.className === 'step scanning') el.className = 'step warn';
+    }
   }
 
   document.getElementById('pFill').style.width = '100%';
