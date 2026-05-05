@@ -307,8 +307,9 @@ main{flex:1;padding:20px;max-width:900px;width:100%;margin:0 auto}
     <div class="action-btns">
       <a class="abtn abtn-secondary hidden" id="aiReportLink" target="_blank">🤖 AI Report</a>
       <button class="abtn abtn-primary hidden" id="execReportBtn">📊 Exec Report</button>
+      <button class="abtn hidden" id="execShareBtn" style="background:rgba(37,99,235,.15);border:1px solid rgba(59,130,246,.3);color:var(--accent2)">🔗 Share Report</button>
       <button class="abtn abtn-copy hidden" id="runbookBtn">📋 Runbook</button>
-      <button class="abtn" style="background:var(--surface2);border:1px solid var(--border2);color:var(--text2)" id="copyBtn">📎 Copy Link</button>
+      <button class="abtn hidden" id="runbookShareBtn" style="background:var(--green-dim);border:1px solid rgba(16,185,129,.3);color:var(--green)">🔗 Share Runbook</button>
     </div>
   </div>
 
@@ -960,10 +961,41 @@ function renderResults(d) {
   // Exec Report + Runbook buttons
   const execBtn = document.getElementById('execReportBtn');
   const rbBtn   = document.getElementById('runbookBtn');
+  const execShareBtn = document.getElementById('execShareBtn');
+  const rbShareBtn   = document.getElementById('runbookShareBtn');
+
   execBtn.classList.toggle('hidden', !d.aiScored);
   rbBtn.classList.toggle('hidden', !d.aiScored);
-  execBtn.onclick = () => openDoc(generateExecReport(d));
-  rbBtn.onclick   = () => openDoc(generateRunbook(d));
+  execShareBtn.classList.toggle('hidden', !d.aiScored);
+  rbShareBtn.classList.toggle('hidden', !d.aiScored);
+
+  // Encode audit data (strip siteHtml to keep URL manageable)
+  function encodeAudit(data) {
+    const clean = Object.assign({}, data);
+    delete clean.siteHtml;
+    return btoa(unescape(encodeURIComponent(JSON.stringify(clean))));
+  }
+
+  const base = 'https://jeremiah9980.github.io/Next-Gen-IT/portal/';
+  const encoded = encodeAudit(d);
+  const reportUrl  = base + 'report.html#data=' + encoded;
+  const runbookUrl = base + 'runbook.html#data=' + encoded;
+
+  // Open buttons — open renderer pages directly
+  execBtn.onclick = () => window.open(reportUrl, '_blank');
+  rbBtn.onclick   = () => window.open(runbookUrl, '_blank');
+
+  // Share buttons — copy URL to clipboard + toast
+  execShareBtn.onclick = () => {
+    navigator.clipboard.writeText(reportUrl)
+      .then(() => toast('🔗 Exec report link copied!'))
+      .catch(() => { const t=document.createElement('textarea');t.value=reportUrl;document.body.appendChild(t);t.select();document.execCommand('copy');document.body.removeChild(t);toast('🔗 Report link copied!'); });
+  };
+  rbShareBtn.onclick = () => {
+    navigator.clipboard.writeText(runbookUrl)
+      .then(() => toast('🔗 Runbook link copied!'))
+      .catch(() => { const t=document.createElement('textarea');t.value=runbookUrl;document.body.appendChild(t);t.select();document.execCommand('copy');document.body.removeChild(t);toast('🔗 Runbook link copied!'); });
+  };
 
   document.getElementById('copyBtn').onclick = () => {
     navigator.clipboard.writeText(shareUrl).then(()=>toast('✓ Share link copied!')).catch(()=>{

@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Domain Audit Report · Next-Gen IT</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#050a14;color:#e8f0fe;font-family:'IBM Plex Mono',monospace,sans-serif;font-size:13px;line-height:1.5}
+.page{max-width:900px;margin:0 auto;padding:32px 24px}
+
+/* LOADING */
+.loading{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:60vh;gap:16px}
+.spin{width:40px;height:40px;border:3px solid rgba(0,180,255,.15);border-top-color:#00b4ff;border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-text{font-size:12px;color:#4d6080;letter-spacing:.1em;text-transform:uppercase}
+.error-box{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.3);border-radius:14px;padding:24px;text-align:center;margin:60px auto;max-width:480px}
+.error-box h2{color:#ef4444;margin-bottom:8px}
+.error-box p{color:#8da0b8;font-size:12px}
+
+/* REPORT */
+.hero{background:linear-gradient(135deg,#0b1821,#0d1f30);border:1px solid rgba(0,180,255,.15);border-radius:16px;padding:28px 32px;margin-bottom:20px}
+.eyebrow{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#00b4ff;margin-bottom:10px;display:block}
+.hero h1{font-size:clamp(20px,3vw,28px);font-weight:800;color:#fff;font-family:sans-serif;margin-bottom:6px}
+.hero h1 em{color:#00b4ff;font-style:normal}
+.hmeta{display:flex;gap:16px;flex-wrap:wrap;margin-top:14px;font-size:11px;color:#4d6080}
+.hactions{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap}
+.hbtn{border-radius:8px;font-family:'IBM Plex Mono',monospace;font-size:11px;padding:7px 14px;cursor:pointer;border:1px solid;text-decoration:none;transition:all .15s}
+.hbtn-primary{background:#2563eb;border-color:#2563eb;color:#fff}
+.hbtn-primary:hover{background:#3b82f6}
+.hbtn-ghost{background:rgba(0,180,255,.08);border-color:rgba(0,180,255,.25);color:#00b4ff}
+.hbtn-ghost:hover{background:rgba(0,180,255,.15)}
+
+.sgrid{display:grid;grid-template-columns:auto 1fr 1fr 1fr;gap:12px;margin-bottom:20px}
+.smain{background:#0b1821;border:1px solid rgba(0,180,255,.15);border-radius:14px;padding:20px;text-align:center}
+.sbig{font-family:sans-serif;font-size:40px;font-weight:900;line-height:1}
+.slbl{font-size:10px;color:#4d6080;letter-spacing:.08em;text-transform:uppercase;margin-top:4px}
+.scat{background:#0b1821;border:1px solid rgba(255,255,255,.06);border-radius:14px;padding:16px}
+.scn{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:#4d6080;margin-bottom:6px}
+.scv{font-family:sans-serif;font-size:24px;font-weight:700}
+.sbar{height:3px;background:#1e2330;border-radius:3px;margin-top:8px;overflow:hidden}
+.sbar-f{height:100%;border-radius:3px}
+
+.card{background:#0b1821;border:1px solid rgba(255,255,255,.06);border-radius:14px;margin-bottom:16px;overflow:hidden}
+.chdr{padding:13px 20px;border-bottom:1px solid rgba(255,255,255,.06);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:#4d6080}
+table{width:100%;border-collapse:collapse}
+th{padding:10px 14px;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:#4d6080;border-bottom:1px solid rgba(255,255,255,.06);text-align:left;font-weight:500}
+td{padding:10px 14px;border-bottom:1px solid rgba(255,255,255,.04);font-size:12px;color:#8da0b8;vertical-align:top}
+tr:last-child td{border-bottom:none}
+.tag{font-size:10px;font-weight:700;letter-spacing:.06em;padding:2px 8px;border-radius:4px;text-transform:uppercase}
+.tag-pass{background:rgba(16,185,129,.12);color:#10b981}
+.tag-warn{background:rgba(245,158,11,.12);color:#f59e0b}
+.tag-fail{background:rgba(239,68,68,.12);color:#ef4444}
+.tag-info{background:rgba(37,99,235,.15);color:#60a5fa}
+.pk{color:#00b4ff;font-size:11px;text-transform:capitalize}
+
+.ri{display:flex;gap:14px;padding:14px 20px;border-bottom:1px solid rgba(255,255,255,.04)}
+.ri:last-child{border-bottom:none}
+.rn{font-family:sans-serif;font-size:22px;font-weight:900;color:#00b4ff;width:28px;flex-shrink:0;line-height:1.2}
+.rt{font-size:13px;font-weight:600;color:#e8f0fe;margin-bottom:4px}
+.prio{font-size:10px;font-weight:600;margin-left:6px;text-transform:uppercase}
+.prio-high{color:#ef4444}.prio-med{color:#f59e0b}.prio-low{color:#10b981}
+.rd{font-size:12px;color:#8da0b8;margin-bottom:6px;line-height:1.6}
+.rc{font-size:11px;color:#00b4ff;background:rgba(0,180,255,.06);border:1px solid rgba(0,180,255,.15);border-left:3px solid #00b4ff;border-radius:0 6px 6px 0;padding:10px 12px;white-space:pre-wrap;word-break:break-all;margin-top:6px}
+
+.fraud{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.3);border-radius:14px;padding:20px 24px;margin-bottom:16px}
+.ftitle{color:#ef4444;font-weight:700;font-size:14px;margin-bottom:12px}
+.fstats{display:flex;gap:24px;margin-bottom:12px;flex-wrap:wrap}
+.fv{font-family:sans-serif;font-size:22px;font-weight:900;color:#ef4444}
+.fl{font-size:10px;color:#4d6080;letter-spacing:.06em}
+.fraud p{font-size:12px;color:#8da0b8;line-height:1.6}
+code{color:#f59e0b;background:rgba(245,158,11,.1);border-radius:4px;padding:1px 5px}
+
+.pitch{background:rgba(37,99,235,.08);border:1px solid rgba(37,99,235,.2);border-radius:14px;padding:18px 22px;margin-bottom:16px}
+.plbl{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:#60a5fa;margin-bottom:8px}
+.pitch p{font-size:13px;color:#c8d8f0;line-height:1.7}
+
+.footer{text-align:center;padding:24px;font-size:11px;color:#4d6080;border-top:1px solid rgba(255,255,255,.06);margin-top:24px}
+.footer a{color:#00b4ff;text-decoration:none}
+
+/* TOAST */
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(10px);background:#111318;border:1px solid rgba(0,180,255,.3);border-radius:8px;padding:8px 16px;font-size:12px;color:#10b981;opacity:0;transition:all .2s;pointer-events:none;white-space:nowrap}
+.toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+
+@media(max-width:600px){.sgrid{grid-template-columns:1fr 1fr}}
+@media print{.hactions{display:none}}
+</style>
+</head>
+<body>
+
+<div id="root">
+  <div class="loading" id="loading">
+    <div class="spin"></div>
+    <div class="loading-text">Loading audit report…</div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function gradeColor(t,m){const p=t/m;return p>=.8?'#10b981':p>=.65?'#84cc16':p>=.5?'#f59e0b':p>=.35?'#f97316':'#ef4444';}
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('on');setTimeout(()=>t.classList.remove('on'),2200);}
+function copyLink(){navigator.clipboard.writeText(location.href).then(()=>toast('🔗 Link copied!')).catch(()=>{const ta=document.createElement('textarea');ta.value=location.href;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);toast('🔗 Copied!');});}
+
+function render(d) {
+  const total=((d.scores||{}).email||0)+((d.scores||{}).web||0)+((d.scores||{}).tech||0);
+  const gc=gradeColor(total,30);
+  const scanDate=d.ts?new Date(d.ts).toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'}):new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'});
+
+  const findings=(d.findings||[]).map(f=>`<tr><td>${esc(f.check)}</td><td><span class="tag tag-${f.status}">${(f.status||'').toUpperCase()}</span></td><td style="font-family:monospace;font-size:11px">${esc(f.value)}</td><td>${esc(f.risk)}</td></tr>`).join('');
+  const remed=(d.remediation||[]).map(r=>`<div class="ri"><div class="rn">${String(r.n||'').padStart(2,'0')}</div><div style="flex:1"><div class="rt">${esc(r.title)}<span class="prio prio-${r.p}">[${(r.p||'').toUpperCase()}]</span></div><div class="rd">${esc(r.desc)}</div>${r.code?`<pre class="rc">${esc(r.code)}</pre>`:''}</div></div>`).join('');
+  const provRows=d.providers?Object.entries(d.providers).filter(([,v])=>v).map(([k,v])=>`<tr><td class="pk">${esc(k.replace(/_/g,' '))}</td><td>${esc(v)}</td></tr>`).join(''):'';
+  const wireBlock=d.wireRisk?`<div class="fraud"><div class="ftitle">⚠️ Wire Fraud Risk — DMARC Not Enforced</div><div class="fstats"><div><div class="fv">$275M</div><div class="fl">RE Fraud 2024</div></div><div><div class="fv">12,368</div><div class="fl">IC3 Complaints</div></div><div><div class="fv">$3.04B</div><div class="fl">BEC Losses</div></div></div><p>DMARC is missing or not enforced on <strong>${esc(d.domain)}</strong>. Attackers can spoof any email address at this domain — sending fraudulent wire instructions that appear legitimate. ALTA standards and most cyber insurance carriers require <code>p=quarantine</code> or <code>p=reject</code>.</p></div>`:'';
+  const pitchBlock=d.pitchAngle?`<div class="pitch"><div class="plbl">💬 Pitch Angle</div><p>${esc(d.pitchAngle)}</p></div>`:'';
+
+  document.title = `Domain Audit — ${d.domain} · Next-Gen IT`;
+
+  document.getElementById('root').innerHTML = `
+  <div class="page">
+    <div class="hero">
+      <span class="eyebrow">Next-Gen IT · Domain Health Audit</span>
+      <h1>${esc(d.domain)} <em>domain audit</em> report.</h1>
+      <div class="hmeta">
+        <span>Prepared by Next-Gen IT</span>
+        <span>Scan date: ${scanDate}</span>
+        <span>AI-powered · 30-point analysis</span>
+      </div>
+      <div class="hactions">
+        <button class="hbtn hbtn-primary" onclick="window.print()">🖨️ Print / Save PDF</button>
+        <button class="hbtn hbtn-ghost" onclick="copyLink()">🔗 Copy Link</button>
+        <a class="hbtn hbtn-ghost" href="${location.href.replace('report.html','runbook.html')}" target="_blank">📋 View Runbook</a>
+      </div>
+    </div>
+
+    ${wireBlock}
+
+    <div class="sgrid">
+      <div class="smain"><div class="sbig" style="color:${gc}">${total}/30</div><div class="slbl">Total Score</div></div>
+      <div class="scat"><div class="scn">Email Auth</div><div class="scv">${(d.scores||{}).email||0}/10</div><div class="sbar"><div class="sbar-f" style="width:${((d.scores||{}).email||0)*10}%;background:${gradeColor((d.scores||{}).email||0,10)}"></div></div></div>
+      <div class="scat"><div class="scn">Website / SEO</div><div class="scv">${(d.scores||{}).web||0}/10</div><div class="sbar"><div class="sbar-f" style="width:${((d.scores||{}).web||0)*10}%;background:${gradeColor((d.scores||{}).web||0,10)}"></div></div></div>
+      <div class="scat"><div class="scn">Tech Stack</div><div class="scv">${(d.scores||{}).tech||0}/10</div><div class="sbar"><div class="sbar-f" style="width:${((d.scores||{}).tech||0)*10}%;background:${gradeColor((d.scores||{}).tech||0,10)}"></div></div></div>
+    </div>
+
+    ${provRows?`<div class="card"><div class="chdr">Identified Stack</div><table><tbody>${provRows}</tbody></table></div>`:''}
+
+    <div class="card">
+      <div class="chdr">Findings</div>
+      <table><thead><tr><th>Check</th><th>Status</th><th>Value</th><th>Risk</th></tr></thead>
+      <tbody>${findings}</tbody></table>
+    </div>
+
+    <div class="card"><div class="chdr">Remediation Steps</div>${remed||'<div style="padding:16px 20px;color:#10b981">✓ No critical remediations required.</div>'}</div>
+
+    ${pitchBlock}
+
+    <div class="footer">Generated by <a href="https://jeremiah9980.github.io/Next-Gen-IT/portal/">Next-Gen IT</a> · ${esc(d.domain)} · ${scanDate}</div>
+  </div>`;
+}
+
+// Decode from URL hash
+(function init() {
+  const hash = location.hash;
+  if (!hash || !hash.startsWith('#data=')) {
+    document.getElementById('root').innerHTML = `<div class="page"><div class="error-box"><h2>No report data</h2><p>This link is missing audit data. Generate a report from the <a href="./index.html" style="color:#00b4ff">Next-Gen IT Portal</a> and use the Share Report button.</p></div></div>`;
+    return;
+  }
+  try {
+    const json = decodeURIComponent(escape(atob(hash.slice(6))));
+    const d = JSON.parse(json);
+    render(d);
+  } catch(e) {
+    document.getElementById('root').innerHTML = `<div class="page"><div class="error-box"><h2>Invalid report data</h2><p>The report data in this URL could not be decoded. Try regenerating from the portal.</p><p style="margin-top:8px;font-family:monospace;font-size:10px;color:#4d6080">${e.message}</p></div></div>`;
+  }
+})();
+</script>
+</body>
+</html>

@@ -1,503 +1,241 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Domain Health Runbook · Next-Gen IT</title>
-<link rel="preconnect" href="https://fonts.googleapis.com"/>
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Corrective Action Runbook · Next-Gen IT</title>
 <style>
-  :root {
-    --bg: #f8f9fc;
-    --white: #ffffff;
-    --border: #e2e5ed;
-    --border2: #cdd2de;
-    --accent: #1d4ed8;
-    --accent2: #2563eb;
-    --accent-dim: rgba(29,78,216,0.07);
-    --green: #059669;
-    --green-dim: rgba(5,150,105,0.08);
-    --amber: #b45309;
-    --amber-dim: rgba(180,83,9,0.08);
-    --red: #dc2626;
-    --red-dim: rgba(220,38,38,0.07);
-    --text: #0f172a;
-    --text2: #475569;
-    --text3: #94a3b8;
-    --font-head: 'Syne', sans-serif;
-    --font-body: 'DM Sans', sans-serif;
-    --font-mono: 'IBM Plex Mono', monospace;
-    --radius: 8px;
-    --shadow: 0 1px 4px rgba(0,0,0,0.07), 0 4px 16px rgba(0,0,0,0.04);
-  }
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  body { background: var(--bg); color: var(--text); font-family: var(--font-body); font-size: 14px; line-height: 1.6; }
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#f8fafc;color:#334155;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:14px;line-height:1.5}
 
-  /* ── TOPBAR ─────────────────────────────────────── */
-  .topbar {
-    background: var(--white); border-bottom: 1px solid var(--border);
-    padding: 0 32px; height: 56px; display: flex;
-    align-items: center; justify-content: space-between;
-    position: sticky; top: 0; z-index: 100;
-    box-shadow: 0 1px 0 var(--border);
-  }
-  .topbar-brand {
-    display: flex; align-items: center; gap: 10px;
-    font-family: var(--font-head); font-weight: 700; font-size: 15px; color: var(--text);
-  }
-  .topbar-brand .tag-ngit {
-    background: var(--accent-dim); color: var(--accent2);
-    border: 1px solid rgba(29,78,216,0.2);
-    font-size: 10px; padding: 2px 8px; border-radius: 4px;
-    letter-spacing: 0.08em; font-family: var(--font-mono);
-  }
-  .topbar-actions { display: flex; gap: 8px; align-items: center; }
-  .btn { border: none; cursor: pointer; font-family: var(--font-body); font-weight: 500; border-radius: var(--radius); transition: all 0.15s; }
-  .btn-pdf {
-    background: var(--text); color: #fff; font-size: 13px;
-    padding: 8px 16px;
-  }
-  .btn-pdf:hover { background: #1e293b; }
-  .btn-copy-link {
-    background: var(--accent-dim); color: var(--accent2);
-    border: 1px solid rgba(29,78,216,0.2); font-size: 13px;
-    padding: 8px 16px;
-  }
-  .btn-copy-link:hover { background: rgba(29,78,216,0.12); }
-  .btn-back {
-    background: transparent; color: var(--text2);
-    border: 1px solid var(--border2); font-size: 12px;
-    padding: 7px 14px; font-family: var(--font-mono);
-  }
-  .btn-back:hover { border-color: var(--accent); color: var(--accent2); }
+/* LOADING */
+.loading{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:60vh;gap:16px}
+.spin{width:40px;height:40px;border:3px solid #e2e8f0;border-top-color:#e55b4d;border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-text{font-size:12px;color:#94a3b8;letter-spacing:.1em;text-transform:uppercase;font-family:monospace}
+.error-box{background:#fff;border:1px solid #fecaca;border-radius:16px;padding:32px;text-align:center;margin:60px auto;max-width:480px}
+.error-box h2{color:#dc2626;margin-bottom:10px;font-size:18px}
+.error-box p{color:#64748b;font-size:13px;line-height:1.6}
 
-  /* ── LAYOUT ─────────────────────────────────────── */
-  .page { max-width: 820px; margin: 0 auto; padding: 36px 24px 80px; }
+/* LAYOUT */
+.wrap{max-width:1100px;margin:0 auto;padding:28px 20px}
+.hdr{background:#fff;border:1px solid #e2e8f0;border-radius:16px;padding:28px 32px;margin-bottom:24px}
+.ey{font-family:monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#e55b4d;display:block;margin-bottom:8px}
+.hdr h1{font-size:clamp(20px,3vw,26px);font-weight:800;color:#0f172a;margin-bottom:6px}
+.hdr h1 em{color:#e55b4d;font-style:normal}
+.hdr p{color:#64748b;margin-top:8px;line-height:1.6}
+.hmeta{display:flex;gap:20px;flex-wrap:wrap;margin-top:12px;font-size:12px;color:#94a3b8}
+.hactions{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap}
+.hbtn{border-radius:8px;font-family:monospace;font-size:11px;padding:7px 14px;cursor:pointer;border:1px solid;text-decoration:none;transition:all .15s;display:inline-block}
+.hbtn-primary{background:#e55b4d;border-color:#e55b4d;color:#fff}.hbtn-primary:hover{background:#c94035}
+.hbtn-ghost{background:transparent;border-color:#e55b4d;color:#e55b4d}.hbtn-ghost:hover{background:#fef2f2}
+.hbtn-blue{background:transparent;border-color:#3b82f6;color:#3b82f6}.hbtn-blue:hover{background:#eff6ff}
 
-  /* ── HEADER BLOCK ────────────────────────────────── */
-  .doc-header {
-    background: var(--white); border: 1px solid var(--border);
-    border-radius: 12px; padding: 32px 36px; margin-bottom: 24px;
-    box-shadow: var(--shadow);
-  }
-  .doc-header-top {
-    display: flex; align-items: flex-start; justify-content: space-between;
-    margin-bottom: 20px; gap: 16px;
-  }
-  .doc-type {
-    font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.12em;
-    text-transform: uppercase; color: var(--accent2);
-    background: var(--accent-dim); padding: 3px 10px; border-radius: 4px;
-    display: inline-block; margin-bottom: 10px;
-  }
-  .doc-domain {
-    font-family: var(--font-head); font-size: 32px; font-weight: 800;
-    color: var(--text); letter-spacing: -0.03em; line-height: 1.1;
-  }
-  .doc-meta { color: var(--text2); font-size: 13px; margin-top: 8px; }
-  .doc-meta span { color: var(--text3); }
-  .score-badge {
-    text-align: center; min-width: 90px;
-    background: var(--bg); border: 1px solid var(--border);
-    border-radius: 10px; padding: 16px 20px;
-  }
-  .score-badge-num {
-    font-family: var(--font-head); font-size: 36px; font-weight: 800; line-height: 1;
-  }
-  .score-badge-label { font-size: 10px; color: var(--text3); letter-spacing: 0.08em; margin-top: 4px; text-transform: uppercase; }
-  .score-a { color: #059669; }
-  .score-b { color: #65a30d; }
-  .score-c { color: #b45309; }
-  .score-d { color: #ea580c; }
-  .score-f { color: #dc2626; }
+.srow{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px}
+.stat{background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:14px 16px}
+.sv{font-size:26px;font-weight:800;color:#0f172a;font-family:monospace}
+.sl{font-size:11px;color:#94a3b8;letter-spacing:.06em;text-transform:uppercase;margin-top:3px}
 
-  .cat-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
-  .cat-chip {
-    background: var(--bg); border: 1px solid var(--border);
-    border-radius: 8px; padding: 12px 14px;
-  }
-  .cat-chip-name { font-size: 10px; color: var(--text3); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 4px; font-family: var(--font-mono); }
-  .cat-chip-val { font-family: var(--font-head); font-size: 20px; font-weight: 700; }
-  .score-bar { height: 4px; background: #e2e5ed; border-radius: 4px; margin-top: 8px; overflow: hidden; }
-  .score-bar-fill { height: 100%; border-radius: 4px; }
+.layout{display:grid;grid-template-columns:260px 1fr;gap:20px;align-items:start}
+.toc{position:sticky;top:20px;background:#fff;border:1px solid #e2e8f0;border-radius:16px;padding:16px}
+.toc-lbl{font-family:monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#e55b4d;margin-bottom:12px;display:block}
+.toc a{display:block;padding:8px 12px;border-radius:10px;color:#334155;font-size:13px;text-decoration:none;transition:background .15s}
+.toc a:hover{background:#f1f5f9;color:#e55b4d}
+.toc-section{margin-top:12px;padding-top:12px;border-top:1px solid #e2e8f0}
+.toc-section-lbl{font-family:monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:#94a3b8;padding:0 12px;margin-bottom:6px;display:block}
 
-  /* ── FRAUD BLOCK ──────────────────────────────────── */
-  .fraud-block {
-    background: #fef2f2; border: 1px solid #fca5a5;
-    border-left: 5px solid var(--red);
-    border-radius: var(--radius); padding: 20px 22px; margin-bottom: 24px;
-  }
-  .fraud-block-title {
-    font-family: var(--font-head); font-weight: 700; color: var(--red);
-    font-size: 15px; margin-bottom: 10px;
-  }
-  .fraud-stats { display: flex; gap: 24px; margin-bottom: 12px; flex-wrap: wrap; }
-  .fraud-stat-val { font-family: var(--font-head); font-size: 22px; font-weight: 800; color: var(--red); }
-  .fraud-stat-lbl { font-size: 10px; color: #9ca3af; letter-spacing: 0.06em; text-transform: uppercase; }
-  .fraud-body { font-size: 13px; color: #374151; line-height: 1.7; }
+.wire-box{background:#fef2f2;border:1px solid #fecaca;border-radius:14px;padding:20px 24px;margin-bottom:20px}
+.wt{color:#dc2626;font-weight:700;font-size:15px;margin-bottom:10px}
+.wstats{display:flex;gap:24px;margin-bottom:12px;flex-wrap:wrap}
+.wv{font-size:22px;font-weight:900;color:#dc2626;font-family:monospace}
+.wl{font-size:10px;color:#94a3b8;letter-spacing:.06em}
+.wire-box p{font-size:13px;color:#64748b;line-height:1.6}
+.wire-box code{background:#fee2e2;color:#dc2626;border-radius:4px;padding:1px 6px;font-family:monospace;font-size:12px}
 
-  /* ── SECTION ──────────────────────────────────────── */
-  .section { margin-bottom: 24px; }
-  .section-title {
-    font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.12em;
-    text-transform: uppercase; color: var(--text3);
-    padding-bottom: 8px; border-bottom: 1px solid var(--border);
-    margin-bottom: 14px;
-  }
+.sec{background:#fff;border:1px solid #e2e8f0;border-radius:16px;margin-bottom:20px;overflow:hidden}
+.sec-hdr{padding:14px 22px;border-bottom:1px solid #f1f5f9;font-family:monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#94a3b8}
+table{width:100%;border-collapse:collapse}
+th{padding:10px 14px;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#94a3b8;border-bottom:1px solid #f1f5f9;text-align:left;font-weight:500}
+td{padding:10px 14px;border-bottom:1px solid #f8fafc;font-size:12px;color:#475569;vertical-align:top}
+tr:last-child td{border-bottom:none}
 
-  /* ── FINDINGS TABLE ───────────────────────────────── */
-  .findings-table { width: 100%; border-collapse: collapse; }
-  .findings-table th {
-    text-align: left; font-family: var(--font-mono); font-size: 9px;
-    letter-spacing: 0.1em; text-transform: uppercase; color: var(--text3);
-    padding: 8px 12px; border-bottom: 2px solid var(--border);
-    background: var(--white);
-  }
-  .findings-table td {
-    padding: 10px 12px; border-bottom: 1px solid var(--border);
-    font-size: 13px; background: var(--white); vertical-align: top;
-  }
-  .findings-table tr:hover td { background: var(--bg); }
-  .tag {
-    display: inline-block; font-family: var(--font-mono);
-    font-size: 10px; letter-spacing: 0.06em; font-weight: 500;
-    padding: 2px 8px; border-radius: 4px;
-  }
-  .tag-pass { background: var(--green-dim); color: var(--green); }
-  .tag-fail { background: var(--red-dim); color: var(--red); }
-  .tag-warn { background: var(--amber-dim); color: var(--amber); }
-  .check-name { font-weight: 500; color: var(--text); }
-  .check-value { font-family: var(--font-mono); font-size: 11px; color: var(--text2); word-break: break-all; }
-  .check-risk { font-size: 12px; color: var(--text2); }
+/* STEP CARDS */
+.step-card{border:1px solid #e2e8f0;border-radius:20px;background:#fff;margin-bottom:20px;overflow:hidden;scroll-margin-top:24px}
+.step-hdr{background:#f8fafc;border-bottom:1px solid #e2e8f0;padding:16px 22px;display:flex;align-items:center;gap:14px}
+.step-num{width:38px;height:38px;border-radius:12px;background:linear-gradient(135deg,#e55b4d,#c94035);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:15px;color:#fff;flex-shrink:0}
+.step-title-wrap{flex:1}
+.step-title{font-size:16px;font-weight:700;color:#0f172a}
+.step-prio{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-top:3px}
+.prio-high{color:#dc2626}.prio-med{color:#d97706}.prio-low{color:#16a34a}
+.step-body{padding:20px 22px}
+.step-body p{color:#475569;line-height:1.7;margin-bottom:14px}
+.code-lbl{font-family:monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:#64748b;margin-bottom:6px;display:block}
+.step-code{background:#f8fafc;border:1px solid #e2e8f0;border-left:3px solid #e55b4d;border-radius:0 10px 10px 0;padding:14px 16px;overflow-x:auto;font-family:monospace;font-size:12px;color:#334155;line-height:1.6;white-space:pre-wrap;word-break:break-all;margin-bottom:14px}
+.check-wrap{border:1px solid #e2e8f0;border-radius:12px;padding:12px 16px;background:#f8fafc}
+.check-wrap label{display:flex;align-items:flex-start;gap:12px;cursor:pointer;color:#475569;font-size:13px}
+.check-wrap input[type=checkbox]{margin-top:2px;accent-color:#e55b4d;width:16px;height:16px;flex-shrink:0}
 
-  /* ── REMEDIATION STEPS ────────────────────────────── */
-  .remed-list { list-style: none; }
-  .remed-item {
-    background: var(--white); border: 1px solid var(--border);
-    border-radius: var(--radius); padding: 16px 20px;
-    margin-bottom: 10px; display: flex; gap: 16px;
-    box-shadow: var(--shadow);
-  }
-  .remed-num {
-    font-family: var(--font-head); font-size: 22px; font-weight: 800;
-    color: var(--accent2); opacity: 0.4; min-width: 30px; line-height: 1;
-    padding-top: 2px;
-  }
-  .remed-body { flex: 1; }
-  .remed-title {
-    font-family: var(--font-head); font-weight: 700; font-size: 14px;
-    color: var(--text); margin-bottom: 4px;
-  }
-  .remed-prio {
-    display: inline-block; font-family: var(--font-mono); font-size: 9px;
-    letter-spacing: 0.08em; padding: 1px 6px; border-radius: 3px; margin-left: 8px;
-    vertical-align: middle;
-  }
-  .prio-high { background: var(--red-dim); color: var(--red); }
-  .prio-med  { background: var(--amber-dim); color: var(--amber); }
-  .prio-low  { background: var(--green-dim); color: var(--green); }
-  .remed-desc { font-size: 13px; color: var(--text2); line-height: 1.6; }
-  .remed-code {
-    margin-top: 10px; padding: 10px 14px;
-    background: #0f172a; color: #a5f3fc;
-    border-radius: 6px; font-family: var(--font-mono);
-    font-size: 11px; white-space: pre-wrap; word-break: break-all;
-    line-height: 1.7;
-  }
+.footer{text-align:center;padding:24px;font-size:12px;color:#94a3b8;border-top:1px solid #e2e8f0;margin-top:24px}
+.footer a{color:#e55b4d;text-decoration:none}
 
-  /* ── FOOTER ───────────────────────────────────────── */
-  .doc-footer {
-    background: var(--white); border: 1px solid var(--border);
-    border-radius: var(--radius); padding: 20px 24px;
-    display: flex; align-items: center; justify-content: space-between;
-    font-size: 12px; color: var(--text3); margin-top: 32px;
-    box-shadow: var(--shadow);
-  }
-  .doc-footer-brand { font-family: var(--font-head); font-weight: 700; font-size: 14px; color: var(--text); }
-  .doc-footer-brand span { color: var(--accent2); }
+/* TOAST */
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(10px);background:#0f172a;border:1px solid rgba(229,91,77,.4);border-radius:8px;padding:8px 16px;font-size:12px;color:#10b981;opacity:0;transition:all .2s;pointer-events:none;white-space:nowrap}
+.toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
 
-  /* ── TOAST ────────────────────────────────────────── */
-  .toast {
-    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
-    background: var(--text); color: #fff; font-size: 12px;
-    padding: 10px 20px; border-radius: 20px; z-index: 999;
-    opacity: 0; pointer-events: none; transition: opacity 0.2s;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
-  }
-  .toast.show { opacity: 1; }
-
-  /* ── ERROR STATE ──────────────────────────────────── */
-  .error-state { text-align: center; padding: 80px 20px; color: var(--text2); }
-  .error-state-icon { font-size: 48px; margin-bottom: 16px; }
-  .error-state-title { font-family: var(--font-head); font-size: 22px; font-weight: 700; color: var(--text); margin-bottom: 8px; }
-  .error-state-sub { font-size: 13px; color: var(--text3); }
-
-  /* ── PRINT STYLES ─────────────────────────────────── */
-  @media print {
-    .topbar, .topbar-actions { display: none !important; }
-    body { background: #fff; }
-    .doc-header, .remed-item, .findings-table { box-shadow: none !important; }
-    .page { padding: 0; max-width: 100%; }
-    .fraud-block { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
-    .remed-code { background: #f1f5f9 !important; color: #0f172a !important; }
-    @page { margin: 20mm; }
-    .section { break-inside: avoid; }
-  }
+@media print{.toc,.hactions{display:none!important}.layout{grid-template-columns:1fr!important}}
+@media(max-width:800px){.layout{grid-template-columns:1fr}.toc{position:static}.srow{grid-template-columns:1fr 1fr}}
 </style>
 </head>
 <body>
 
-<!-- TOPBAR -->
-<div class="topbar" id="topbar">
-  <div class="topbar-brand">
-    Next-Gen <span style="color:var(--accent2)">&nbsp;IT</span>
-    <span class="tag-ngit">RUNBOOK</span>
-  </div>
-  <div class="topbar-actions">
-    <button class="btn btn-back" id="backBtn">← Portal</button>
-    <button class="btn btn-copy-link" id="copyLinkBtn">📎 Copy Link</button>
-    <button class="btn btn-pdf" id="pdfBtn">⬇ Export PDF</button>
+<div id="root">
+  <div class="loading">
+    <div class="spin"></div>
+    <div class="loading-text">Loading runbook…</div>
   </div>
 </div>
-
-<!-- PAGE -->
-<div class="page" id="page">
-  <div class="error-state" id="errorState" style="display:none">
-    <div class="error-state-icon">🔍</div>
-    <div class="error-state-title">No audit data found</div>
-    <div class="error-state-sub">Run an audit in the portal, then click "Open Runbook" or share a link to generate this report.</div>
-  </div>
-  <div id="reportContent" style="display:none">
-
-    <!-- HEADER -->
-    <div class="doc-header">
-      <div class="doc-header-top">
-        <div>
-          <div class="doc-type">Domain Health Runbook</div>
-          <div class="doc-domain" id="rDomain">domain.com</div>
-          <div class="doc-meta" id="rMeta">Generated <span id="rDate">--</span> · Next-Gen IT</div>
-        </div>
-        <div class="score-badge">
-          <div class="score-badge-num" id="rScore">--</div>
-          <div class="score-badge-label">/ 30 pts</div>
-        </div>
-      </div>
-      <div class="cat-row">
-        <div class="cat-chip">
-          <div class="cat-chip-name">Email Auth</div>
-          <div class="cat-chip-val" id="rEmailScore">-</div>
-          <div class="score-bar"><div class="score-bar-fill" id="rEmailBar"></div></div>
-        </div>
-        <div class="cat-chip">
-          <div class="cat-chip-name">Website / SEO</div>
-          <div class="cat-chip-val" id="rWebScore">-</div>
-          <div class="score-bar"><div class="score-bar-fill" id="rWebBar"></div></div>
-        </div>
-        <div class="cat-chip">
-          <div class="cat-chip-name">Marketing / Tech</div>
-          <div class="cat-chip-val" id="rTechScore">-</div>
-          <div class="score-bar"><div class="score-bar-fill" id="rTechBar"></div></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- FRAUD WARNING -->
-    <div class="fraud-block" id="rFraud" style="display:none">
-      <div class="fraud-block-title">⚠️ Wire Fraud Risk — Email Spoofing Possible</div>
-      <div class="fraud-stats">
-        <div><div class="fraud-stat-val">$275M</div><div class="fraud-stat-lbl">Real Estate Wire Fraud (FBI IC3 2024)</div></div>
-        <div><div class="fraud-stat-val">12,368</div><div class="fraud-stat-lbl">Complaints Filed</div></div>
-        <div><div class="fraud-stat-val">$3.04B</div><div class="fraud-stat-lbl">Total BEC Losses</div></div>
-      </div>
-      <div class="fraud-body">This domain does not have enforced DMARC protection. An attacker can send emails that appear to come from any address at this domain — including executives and escrow officers — without detection. Real estate transactions are the #1 wire fraud target in the United States. Correcting this vulnerability eliminates the most common attack vector and is now an ALTA baseline requirement.</div>
-    </div>
-
-    <!-- FINDINGS -->
-    <div class="section">
-      <div class="section-title">Domain Health Findings</div>
-      <table class="findings-table">
-        <thead><tr>
-          <th>Check</th><th>Status</th><th>Value Found</th><th>Risk</th>
-        </tr></thead>
-        <tbody id="rFindingsBody"></tbody>
-      </table>
-    </div>
-
-    <!-- REMEDIATION -->
-    <div class="section">
-      <div class="section-title">Remediation Runbook</div>
-      <ul class="remed-list" id="rRemedList"></ul>
-    </div>
-
-    <!-- FOOTER -->
-    <div class="doc-footer">
-      <div>
-        <div class="doc-footer-brand">Next-Gen <span>IT</span></div>
-        Realty Team Infrastructure · Austin, TX
-      </div>
-      <div id="rFooterMeta"></div>
-    </div>
-
-  </div><!-- #reportContent -->
-</div><!-- .page -->
 
 <div class="toast" id="toast"></div>
 
 <script>
-/* ══════════════════════════════════════════════════
-   LOAD AUDIT DATA
-   Priority: 1) URL hash #data=base64  2) sessionStorage
-══════════════════════════════════════════════════ */
-function loadData() {
-  // 1. URL hash
-  const hash = window.location.hash;
-  if (hash.startsWith('#data=')) {
-    try {
-      const raw = hash.slice(6);
-      return JSON.parse(decodeURIComponent(escape(atob(raw))));
-    } catch(e) {}
-  }
-  // 2. sessionStorage (operator local view)
-  try {
-    const s = sessionStorage.getItem('ngit_audit');
-    if (s) return JSON.parse(s);
-  } catch(e) {}
-  return null;
-}
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function gradeColor(t,m){const p=t/m;return p>=.8?'#16a34a':p>=.65?'#65a30d':p>=.5?'#d97706':p>=.35?'#ea580c':'#dc2626';}
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('on');setTimeout(()=>t.classList.remove('on'),2200);}
+function copyLink(){navigator.clipboard.writeText(location.href).then(()=>toast('🔗 Link copied!')).catch(()=>{const ta=document.createElement('textarea');ta.value=location.href;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);toast('🔗 Copied!');});}
 
-const data = loadData();
+function render(d) {
+  const scanDate = d.ts ? new Date(d.ts).toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'}) : new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'});
+  const failed = (d.findings||[]).filter(f => f.status === 'fail' || f.status === 'warn');
+  const remed  = (d.remediation||[]);
 
-if (!data) {
-  document.getElementById('errorState').style.display = 'block';
-} else {
-  document.getElementById('reportContent').style.display = 'block';
-  renderRunbook(data);
-}
-
-/* ══════════════════════════════════════════════════
-   RENDER
-══════════════════════════════════════════════════ */
-function renderRunbook(d) {
-  const total = d.scores.email + d.scores.web + d.scores.tech;
-
-  // Title
   document.title = `Runbook — ${d.domain} · Next-Gen IT`;
-  document.getElementById('rDomain').textContent = d.domain;
-  document.getElementById('rDate').textContent = new Date(d.ts).toLocaleDateString('en-US', {year:'numeric',month:'long',day:'numeric'});
 
-  // Score
-  const scoreEl = document.getElementById('rScore');
-  scoreEl.textContent = total;
-  scoreEl.className = 'score-badge-num ' + scoreClass(total);
+  // TOC
+  const toc = remed.map(r =>
+    `<a href="#step-${r.n}">${r.n}. ${esc(r.title)}</a>`
+  ).join('');
 
-  // Category scores
-  setCat('rEmailScore','rEmailBar', d.scores.email, 10);
-  setCat('rWebScore',  'rWebBar',   d.scores.web,   10);
-  setCat('rTechScore', 'rTechBar',  d.scores.tech,  10);
+  // Step cards
+  const steps = remed.map(r => {
+    const pc = r.p==='high'?'prio-high':r.p==='med'?'prio-med':'prio-low';
+    const pt = r.p==='high'?'HIGH PRIORITY':r.p==='med'?'MEDIUM PRIORITY':'LOW PRIORITY';
+    return `
+    <div class="step-card" id="step-${r.n}">
+      <div class="step-hdr">
+        <div class="step-num">${r.n}</div>
+        <div class="step-title-wrap">
+          <div class="step-title">${esc(r.title)}</div>
+          <div class="step-prio ${pc}">${pt}</div>
+        </div>
+      </div>
+      <div class="step-body">
+        <p>${esc(r.desc)}</p>
+        ${r.code ? `<span class="code-lbl">→ DNS Record / Command</span><pre class="step-code">${esc(r.code)}</pre>` : ''}
+        <div class="check-wrap">
+          <label>
+            <input type="checkbox">
+            <span>Mark complete — verify change is live in DNS / browser before moving to next step</span>
+          </label>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
 
-  document.getElementById('rFooterMeta').textContent = `Audit date: ${new Date(d.ts).toLocaleDateString()} · Score: ${total}/30`;
+  // Failed table
+  const failRows = failed.map(f => {
+    const c = f.status==='fail'?'#dc2626':'#d97706';
+    const bg = f.status==='fail'?'#fef2f2':'#fffbeb';
+    return `<tr>
+      <td style="font-weight:600;color:#0f172a">${esc(f.check)}</td>
+      <td><span style="font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:3px 8px;border-radius:4px;background:${bg};color:${c}">${(f.status||'').toUpperCase()}</span></td>
+      <td style="font-family:monospace;font-size:11px">${esc(f.value)}</td>
+      <td>${esc(f.risk)}</td>
+    </tr>`;
+  }).join('');
 
-  // Fraud warning
-  const spfBad  = !d.spf || d.spf.includes('~all');
-  const dmarcBad = !d.dmarc || d.dmarc.includes('p=none');
-  if (spfBad || dmarcBad) {
-    document.getElementById('rFraud').style.display = 'block';
+  document.getElementById('root').innerHTML = `
+  <div class="wrap">
+
+    <div class="hdr">
+      <span class="ey">Next-Gen IT · Corrective Action Runbook</span>
+      <h1><em>${esc(d.domain)}</em> — fix the audit findings.</h1>
+      <p>Step-by-step instructions for every failed or at-risk item from the domain health audit. Work through each step in order — HIGH priority items first.</p>
+      <div class="hmeta">
+        <span>📅 Scan date: ${scanDate}</span>
+        <span>🏢 ${esc(d.domain)}</span>
+        <span>⚠️ ${remed.length} item${remed.length!==1?'s':''} to fix</span>
+      </div>
+      <div class="hactions">
+        <button class="hbtn hbtn-primary" onclick="window.print()">🖨️ Print / Save PDF</button>
+        <button class="hbtn hbtn-ghost" onclick="copyLink()">🔗 Copy Link</button>
+        <a class="hbtn hbtn-blue" href="${location.href.replace('runbook.html','report.html')}" target="_blank">📊 View Exec Report</a>
+      </div>
+    </div>
+
+    <div class="srow">
+      <div class="stat"><div class="sv" style="color:${gradeColor((d.scores||{}).email||0,10)}">${(d.scores||{}).email||0}/10</div><div class="sl">Email Auth</div></div>
+      <div class="stat"><div class="sv" style="color:${gradeColor((d.scores||{}).web||0,10)}">${(d.scores||{}).web||0}/10</div><div class="sl">Website / SEO</div></div>
+      <div class="stat"><div class="sv" style="color:${gradeColor((d.scores||{}).tech||0,10)}">${(d.scores||{}).tech||0}/10</div><div class="sl">Tech Stack</div></div>
+    </div>
+
+    ${d.wireRisk ? `
+    <div class="wire-box">
+      <div class="wt">⚠️ Wire Fraud Risk — Fix DMARC Before Anything Else</div>
+      <div class="wstats">
+        <div><div class="wv">$275M</div><div class="wl">RE Fraud (2024)</div></div>
+        <div><div class="wv">12,368</div><div class="wl">IC3 Complaints</div></div>
+        <div><div class="wv">$3.04B</div><div class="wl">BEC Losses</div></div>
+      </div>
+      <p>DMARC is missing or set to <code>p=none</code> on <strong>${esc(d.domain)}</strong>. Until DMARC and SPF are hardened, this domain can be spoofed to send fraudulent wire instructions. Start with the SPF and DMARC steps below.</p>
+    </div>` : ''}
+
+    <div class="layout">
+
+      <div class="toc">
+        <span class="toc-lbl">Steps in this runbook</span>
+        ${toc || '<p style="color:#94a3b8;font-size:13px;padding:4px 12px">No corrective actions needed.</p>'}
+        ${failed.length ? `<div class="toc-section"><span class="toc-section-lbl">Quick links</span><a href="#findings-table">Failed items table</a></div>` : ''}
+      </div>
+
+      <div>
+        ${remed.length ? steps : '<div style="background:#fff;border:1px solid #e2e8f0;border-radius:16px;padding:32px;text-align:center;color:#16a34a;font-weight:600">✓ All checks passed — no corrective actions required.</div>'}
+
+        ${failed.length ? `
+        <div class="sec" id="findings-table">
+          <div class="sec-hdr">All Failed / At-Risk Findings</div>
+          <table>
+            <thead><tr>
+              <th>Check</th><th>Status</th><th>Value</th><th>Risk</th>
+            </tr></thead>
+            <tbody>${failRows}</tbody>
+          </table>
+        </div>` : ''}
+      </div>
+
+    </div>
+
+    <div class="footer">
+      Generated by <a href="https://jeremiah9980.github.io/Next-Gen-IT/portal/">Next-Gen IT</a> · ${esc(d.domain)} · ${scanDate}
+    </div>
+
+  </div>`;
+}
+
+// Decode from URL hash
+(function init() {
+  const hash = location.hash;
+  if (!hash || !hash.startsWith('#data=')) {
+    document.getElementById('root').innerHTML = `<div class="wrap"><div class="error-box"><h2>No runbook data</h2><p>This link is missing audit data. Generate a report from the <a href="./index.html" style="color:#e55b4d">Next-Gen IT Portal</a> and use the Share Runbook button.</p></div></div>`;
+    return;
   }
-
-  // Findings
-  const tbody = document.getElementById('rFindingsBody');
-  tbody.innerHTML = '';
-  for (const f of (d.findings || [])) {
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td><div class="check-name">${esc(f.check)}</div></td>
-      <td><span class="tag tag-${f.status}">${f.status.toUpperCase()}</span></td>
-      <td><div class="check-value">${esc(f.value)}</div></td>
-      <td><div class="check-risk">${esc(f.risk)}</div></td>`;
-    tbody.appendChild(tr);
+  try {
+    const json = decodeURIComponent(escape(atob(hash.slice(6))));
+    const d = JSON.parse(json);
+    render(d);
+  } catch(e) {
+    document.getElementById('root').innerHTML = `<div class="wrap"><div class="error-box"><h2>Invalid runbook data</h2><p>The runbook data in this URL could not be decoded. Try regenerating from the portal.</p><p style="margin-top:8px;font-family:monospace;font-size:10px;color:#94a3b8">${e.message}</p></div></div>`;
   }
-
-  // Remediation
-  const list = document.getElementById('rRemedList');
-  list.innerHTML = '';
-  if (!d.remediation || !d.remediation.length) {
-    list.innerHTML = '<li style="color:var(--green);padding:14px;font-weight:500">✓ No critical remediations required. Domain health is strong.</li>';
-  } else {
-    for (const r of d.remediation) {
-      const li = document.createElement('li');
-      li.className = 'remed-item';
-      li.innerHTML = `
-        <div class="remed-num">${String(r.n).padStart(2,'0')}</div>
-        <div class="remed-body">
-          <div class="remed-title">
-            ${esc(r.title)}
-            <span class="remed-prio prio-${r.priority}">${r.priority.toUpperCase()}</span>
-          </div>
-          <div class="remed-desc">${esc(r.desc)}</div>
-          ${r.code ? `<div class="remed-code">${esc(r.code)}</div>` : ''}
-        </div>`;
-      list.appendChild(li);
-    }
-  }
-}
-
-function setCat(valId, barId, score, max) {
-  document.getElementById(valId).textContent = `${score}/${max}`;
-  const bar = document.getElementById(barId);
-  bar.style.width = `${score / max * 100}%`;
-  const pct = score / max;
-  bar.style.background = pct >= 0.7 ? '#059669' : pct >= 0.4 ? '#b45309' : '#dc2626';
-}
-
-function scoreClass(score) {
-  const pct = score / 30;
-  if (pct >= 0.8) return 'score-a';
-  if (pct >= 0.65) return 'score-b';
-  if (pct >= 0.5) return 'score-c';
-  if (pct >= 0.35) return 'score-d';
-  return 'score-f';
-}
-
-function esc(s) {
-  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
-
-/* ══════════════════════════════════════════════════
-   BUTTONS
-══════════════════════════════════════════════════ */
-// PDF export
-document.getElementById('pdfBtn').addEventListener('click', () => {
-  if (data) {
-    document.title = `Domain-Health-Runbook_${data.domain}_${new Date(data.ts).toISOString().slice(0,10)}.pdf`;
-  }
-  window.print();
-});
-
-// Copy shareable link (this page's full URL)
-document.getElementById('copyLinkBtn').addEventListener('click', () => {
-  const url = window.location.href;
-  navigator.clipboard.writeText(url)
-    .then(() => showToast('✓ Link copied — share with client'))
-    .catch(() => {
-      const ta = document.createElement('textarea');
-      ta.value = url; document.body.appendChild(ta); ta.select();
-      document.execCommand('copy'); document.body.removeChild(ta);
-      showToast('✓ Copied!');
-    });
-});
-
-// Back to portal
-document.getElementById('backBtn').addEventListener('click', () => {
-  const portalUrl = window.location.href.replace('runbook.html', 'index.html').split('#')[0];
-  window.location.href = portalUrl;
-});
-
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg; t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 2500);
-}
+})();
 </script>
 </body>
 </html>
