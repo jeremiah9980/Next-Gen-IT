@@ -18,7 +18,7 @@ Automated domain auditing pipeline for small realty teams in the Round Rock / Ge
 
 ## Repo Structure
 
-```
+```text
 Next-Gen-IT/
 ├── portal/
 │   └── index.html              # Audit portal UI — domain input, progress, reports list
@@ -108,6 +108,7 @@ The portal needs a token to trigger the workflow via the GitHub API.
 ## Report Output
 
 Each audit produces:
+
 - A fully styled HTML report at `reports/{domain}-{timestamp}.html`
 - Published to GitHub Pages at `https://jeremiah9980.github.io/Next-Gen-IT/reports/{filename}`
 - Includes: infrastructure summary, email health, 30-point scorecard, top 5 recommendations, and a sales pitch angle
