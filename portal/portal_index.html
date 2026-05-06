@@ -1,0 +1,1658 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Next-Gen IT · Domain Audit Portal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT@0,9..144,200..900,0..100;1,9..144,200..900,0..100&family=IBM+Plex+Mono:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet"/>
+<style>
+/* ── Design tokens — jeremiah9980.2 ── */
+:root {
+  --paper:        #071A32;
+  --paper-deep:   #0A2342;
+  --paper-edge:   #041326;
+  --panel:        rgba(10, 35, 66, 0.82);
+  --panel-strong: rgba(13, 43, 79, 0.94);
+
+  --ink:          #FFFFFF;
+  --ink-soft:     #D7E2F0;
+  --ink-muted:    #91A6C3;
+
+  --rule:         rgba(145, 166, 195, 0.22);
+  --rule-soft:    rgba(145, 166, 195, 0.12);
+
+  --coral:        #FF6B5F;
+  --coral-deep:   #E4473A;
+  --coral-soft:   rgba(255, 107, 95, 0.14);
+  --coral-glow:   rgba(255, 107, 95, 0.38);
+
+  --sky:          #8FD7FF;
+  --sky-soft:     rgba(143, 215, 255, 0.14);
+  --sky-glow:     rgba(143, 215, 255, 0.28);
+
+  --ok:           #22C55E;
+  --ok-soft:      rgba(34, 197, 94, 0.12);
+  --warn:         #F59E0B;
+  --warn-soft:    rgba(245, 158, 11, 0.12);
+  --danger:       #EF4444;
+  --danger-soft:  rgba(239, 68, 68, 0.12);
+
+  /* Legacy aliases used by inline JS styles */
+  --bg:      var(--paper);
+  --surface: rgba(10, 35, 66, 0.74);
+  --surface2:rgba(4, 19, 38, 0.78);
+  --border:  var(--rule);
+  --accent:  var(--coral);
+  --accent2: #FF8F85;
+  --accent-dim: var(--coral-soft);
+  --green:   var(--ok);
+  --green-dim:var(--ok-soft);
+  --amber:   var(--warn);
+  --amber-dim:var(--warn-soft);
+  --red:     var(--danger);
+  --red-dim: var(--danger-soft);
+  --text:    var(--ink);
+  --text2:   var(--ink-soft);
+  --text3:   var(--ink-muted);
+
+  --display: 'Fraunces', 'Playfair Display', Georgia, serif;
+  --body:    'IBM Plex Sans', -apple-system, Helvetica, Arial, sans-serif;
+  --mono:    'IBM Plex Mono', 'SF Mono', Menlo, monospace;
+
+  --r:    10px;
+  --rlg:  18px;
+  --shadow: 0 22px 70px rgba(0,0,0,.34);
+}
+
+*,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  height: 100%;
+  color: var(--ink);
+  font-family: var(--body);
+  font-size: 13px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  background:
+    radial-gradient(circle at 82% 12%, var(--coral-glow) 0%, transparent 28%),
+    radial-gradient(circle at 14% 22%, var(--sky-glow)   0%, transparent 32%),
+    linear-gradient(135deg, var(--paper-edge) 0%, var(--paper) 46%, #0B274D 100%);
+  background-attachment: fixed;
+}
+
+body::before {
+  content: "";
+  position: fixed; inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(255,255,255,.03) 1px, transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.02) 1px,transparent 1px);
+  background-size: 64px 64px;
+  mask-image: linear-gradient(to bottom,rgba(0,0,0,.5),transparent 70%);
+  z-index: 0;
+}
+
+a { color: var(--sky); text-decoration: none; }
+a:hover { color: var(--coral); }
+
+/* ── AUTH GATE ─────────────────────────────────── */
+#gate {
+  position: fixed; inset: 0; z-index: 9999;
+  background:
+    radial-gradient(ellipse 60% 50% at 85% 10%, var(--coral-soft) 0%, transparent 55%),
+    radial-gradient(ellipse 50% 80% at 10% 90%, var(--sky-soft)   0%, transparent 50%),
+    var(--paper);
+  display: flex; align-items: center; justify-content: center;
+}
+#gate.hidden { display: none; }
+
+.gate-card {
+  width: 100%; max-width: 420px;
+  animation: fadeUp .42s cubic-bezier(.22,1,.36,1) both;
+}
+
+.gate-logo {
+  font-family: var(--display);
+  font-size: clamp(2rem, 5vw, 2.9rem);
+  font-weight: 800; line-height: 1.05;
+  letter-spacing: -.03em; color: var(--ink);
+  margin-bottom: 8px;
+}
+.gate-logo span { color: var(--coral); font-style: italic; }
+
+.gate-sub {
+  font-family: var(--mono);
+  font-size: .7rem; letter-spacing: .18em;
+  text-transform: uppercase; color: var(--ink-muted);
+  margin-bottom: 32px;
+  display: flex; align-items: center; gap: 10px;
+}
+.gate-sub::before {
+  content: "";
+  display: block; width: 28px; height: 1.5px;
+  background: linear-gradient(90deg, var(--coral), var(--sky));
+  border-radius: 99px; flex-shrink: 0;
+}
+
+.gate-input {
+  width: 100%; padding: 12px 16px;
+  background: rgba(4, 19, 38, 0.78);
+  border: 1px solid var(--rule);
+  border-radius: var(--r);
+  font-family: var(--mono); font-size: 14px;
+  letter-spacing: .08em; color: var(--ink);
+  outline: none; margin-bottom: 8px;
+  transition: border-color .18s, box-shadow .18s;
+  text-align: center;
+}
+.gate-input:focus {
+  border-color: rgba(255,107,95,.55);
+  box-shadow: 0 0 0 3px var(--coral-soft);
+}
+.gate-input.err { border-color: rgba(239,68,68,.55); }
+.gate-input::placeholder { color: var(--ink-muted); opacity: .65; }
+
+.gate-err {
+  font-family: var(--mono); font-size: 12px;
+  color: var(--danger); min-height: 18px;
+  margin-bottom: 10px; letter-spacing: .02em;
+}
+
+.gate-btn {
+  width: 100%; padding: 14px 20px;
+  background: linear-gradient(135deg, var(--coral), var(--coral-deep));
+  color: #fff; border: none; border-radius: 999px;
+  font-family: var(--body); font-size: .88rem; font-weight: 700;
+  cursor: pointer; letter-spacing: .02em;
+  box-shadow: 0 12px 30px rgba(228,71,58,.22);
+  transition: filter .16s, transform .14s;
+}
+.gate-btn:hover   { filter: brightness(1.06); transform: translateY(-1px); }
+.gate-btn:active  { opacity: .85; transform: none; }
+.gate-btn:disabled { opacity: .4; cursor: not-allowed; transform: none; }
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── APP ─────────────────────────────────────── */
+#app { display: none; flex-direction: column; min-height: 100vh; position: relative; z-index: 1; }
+#app.on { display: flex; }
+
+/* ── HEADER ──────────────────────────────────── */
+.hdr {
+  position: sticky; top: 0; z-index: 100;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 clamp(1rem, 3vw, 2rem); height: 58px;
+  background: rgba(4, 19, 38, 0.82);
+  border-bottom: 1px solid var(--rule);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+
+.hdr-brand {
+  font-family: var(--display);
+  font-size: clamp(1.15rem, 2.2vw, 1.45rem);
+  color: var(--ink); font-weight: 700;
+  display: flex; align-items: center; gap: 6px;
+}
+.hdr-brand span { color: var(--coral); font-style: italic; }
+.hdr-brand::before {
+  content: "";
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--ok);
+  box-shadow: 0 0 8px var(--ok);
+  flex-shrink: 0;
+  animation: pulse 2s infinite;
+}
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+
+.hdr-right { display: flex; align-items: center; gap: 10px; }
+
+.badge {
+  font-family: var(--mono); font-size: .66rem;
+  letter-spacing: .1em; text-transform: uppercase;
+  padding: 4px 10px; border-radius: 999px;
+  background: var(--coral-soft); color: var(--coral);
+  border: 1px solid rgba(255,107,95,.35);
+}
+
+.lock-btn {
+  background: transparent; border: 1px solid var(--rule);
+  color: var(--ink-muted); font-family: var(--mono); font-size: .7rem;
+  letter-spacing: .06em; padding: 5px 14px; border-radius: 999px;
+  cursor: pointer; transition: border-color .2s, color .2s;
+}
+.lock-btn:hover { border-color: var(--danger); color: var(--danger); }
+
+/* ── MAIN ────────────────────────────────────── */
+main {
+  flex: 1;
+  padding: clamp(1.5rem, 4vw, 2.5rem) clamp(1rem, 3vw, 2rem);
+  max-width: 980px; margin: 0 auto; width: 100%;
+}
+
+/* ── SEARCH ──────────────────────────────────── */
+.search-wrap { margin-bottom: 28px; }
+
+.search-label {
+  display: block; font-family: var(--mono); font-size: .7rem;
+  letter-spacing: .12em; text-transform: uppercase;
+  color: var(--ink-muted); margin-bottom: 10px;
+}
+
+.search-row { display: flex; gap: 10px; }
+
+.search-input {
+  flex: 1; padding: 12px 16px;
+  background: rgba(4,19,38,.78);
+  border: 1px solid var(--rule); border-radius: var(--r);
+  color: var(--ink); font-family: var(--body); font-size: 14px;
+  outline: none; transition: border-color .2s, box-shadow .2s;
+}
+.search-input:focus {
+  border-color: rgba(255,107,95,.55);
+  box-shadow: 0 0 0 3px var(--coral-soft);
+}
+.search-input::placeholder { color: var(--ink-muted); opacity: .65; }
+
+.run-btn {
+  padding: 12px 24px;
+  background: linear-gradient(135deg, var(--coral), var(--coral-deep));
+  border: none; border-radius: 999px;
+  color: #fff; font-family: var(--body); font-size: .88rem; font-weight: 700;
+  cursor: pointer; white-space: nowrap;
+  box-shadow: 0 10px 26px rgba(228,71,58,.22);
+  transition: filter .2s, transform .14s; letter-spacing: .02em;
+}
+.run-btn:hover    { filter: brightness(1.06); transform: translateY(-1px); }
+.run-btn:disabled { opacity: .4; cursor: not-allowed; transform: none; filter: none; }
+
+/* ── PIPELINE ────────────────────────────────── */
+.pipeline { display: none; margin-bottom: 24px; }
+.pipeline.on { display: block; }
+
+.pipeline-hdr {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 12px;
+}
+.pipeline-title {
+  font-family: var(--mono); font-size: .7rem;
+  letter-spacing: .12em; text-transform: uppercase; color: var(--ink-muted);
+}
+.pipeline-domain {
+  font-family: var(--display); font-size: 14px;
+  font-weight: 700; color: var(--coral);
+}
+
+.steps { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; }
+
+.step {
+  background: rgba(10,35,66,.74);
+  border: 1px solid var(--rule);
+  border-radius: var(--r); padding: 10px 8px;
+  text-align: center; font-family: var(--mono); font-size: 10px;
+  color: var(--ink-muted); letter-spacing: .04em;
+  transition: all .25s;
+}
+.step.scanning {
+  border-color: rgba(255,107,95,.55);
+  background: var(--coral-soft); color: var(--coral);
+}
+.step.done {
+  border-color: rgba(34,197,94,.45);
+  background: var(--ok-soft); color: var(--ok);
+}
+.step.warn {
+  border-color: rgba(245,158,11,.45);
+  background: var(--warn-soft); color: var(--warn);
+}
+
+.progress {
+  height: 2px; background: var(--rule-soft);
+  border-radius: 2px; margin-top: 12px; overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--coral), var(--sky));
+  border-radius: 2px; transition: width .4s ease; width: 0%;
+}
+
+/* ── FRAUD ───────────────────────────────────── */
+.fraud {
+  display: none; margin-bottom: 20px;
+  background: rgba(239,68,68,.08);
+  border: 1px solid rgba(239,68,68,.38);
+  border-left: 4px solid var(--danger);
+  border-radius: var(--r); padding: 16px 18px;
+}
+.fraud.on { display: block; }
+.fraud-title {
+  font-family: var(--display); font-weight: 800;
+  color: var(--danger); font-size: 14px;
+  margin-bottom: 10px; letter-spacing: -.01em;
+}
+.fraud-stats { display: flex; gap: 20px; margin-bottom: 10px; flex-wrap: wrap; }
+.fraud-stat-val {
+  font-family: var(--display); font-size: 18px;
+  font-weight: 800; color: var(--danger);
+}
+.fraud-stat-lbl {
+  font-family: var(--mono); font-size: 9px;
+  color: var(--ink-muted); letter-spacing: .06em; text-transform: uppercase;
+}
+.fraud-body { font-size: 12px; color: var(--ink-soft); line-height: 1.65; }
+.fraud-body code {
+  font-family: var(--mono); color: var(--coral);
+  background: var(--coral-soft); border-radius: 4px;
+  padding: .05rem .3rem; font-size: .88em;
+}
+
+/* ── SCORECARD ───────────────────────────────── */
+.scorecard { display: none; margin-bottom: 20px; }
+.scorecard.on {
+  display: grid;
+  grid-template-columns: auto 1fr 1fr 1fr;
+  gap: 12px; align-items: stretch;
+}
+
+.score-main {
+  background: rgba(10,35,66,.82);
+  border: 1px solid var(--rule); border-radius: var(--rlg);
+  padding: 20px 24px; text-align: center;
+  position: relative; overflow: hidden;
+}
+.score-main::before {
+  content: "";
+  position: absolute; inset: 0 0 auto 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--coral), var(--sky));
+}
+.score-num {
+  font-family: var(--display); font-size: 48px;
+  font-weight: 800; line-height: 1; margin-bottom: 4px;
+}
+.score-lbl {
+  font-family: var(--mono); font-size: .68rem;
+  color: var(--ink-muted); letter-spacing: .1em; text-transform: uppercase;
+}
+
+.score-cat {
+  background: rgba(10,35,66,.74);
+  border: 1px solid var(--rule); border-radius: var(--r);
+  padding: 14px 16px;
+}
+.score-cat-name {
+  font-family: var(--mono); font-size: .68rem;
+  letter-spacing: .1em; text-transform: uppercase;
+  color: var(--ink-muted); margin-bottom: 6px;
+}
+.score-cat-val {
+  font-family: var(--display); font-size: 22px;
+  font-weight: 800; color: var(--ink);
+}
+.sbar {
+  height: 3px; background: var(--rule); border-radius: 3px;
+  margin-top: 8px; overflow: hidden;
+}
+.sbar-fill { height: 100%; border-radius: 3px; transition: width .6s ease; }
+
+/* ── CARDS ───────────────────────────────────── */
+.card {
+  background: rgba(10,35,66,.74);
+  border: 1px solid var(--rule); border-radius: var(--rlg);
+  margin-bottom: 16px; overflow: hidden;
+  display: none; position: relative;
+}
+.card.on { display: block; }
+
+.card::before {
+  content: "";
+  position: absolute; inset: 0 0 auto 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--coral), var(--sky));
+}
+
+.card-hdr {
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--rule-soft);
+  font-family: var(--mono); font-size: .7rem;
+  letter-spacing: .12em; text-transform: uppercase;
+  color: var(--coral);
+  margin-top: 3px; /* clear the accent bar */
+}
+
+/* ── FINDINGS TABLE ──────────────────────────── */
+.ftable { width: 100%; border-collapse: collapse; }
+
+.ftable th {
+  text-align: left; font-family: var(--mono);
+  font-size: .66rem; letter-spacing: .12em; text-transform: uppercase;
+  color: var(--ink-muted); padding: 8px 14px;
+  border-bottom: 1px solid var(--rule);
+}
+.ftable td {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--rule-soft);
+  font-size: 12px; vertical-align: middle; color: var(--ink-soft);
+}
+.ftable tr:last-child td { border-bottom: none; }
+.ftable tr:hover td { background: rgba(255,255,255,.02); }
+
+.tag {
+  display: inline-flex; align-items: center;
+  font-family: var(--mono); font-size: .66rem;
+  letter-spacing: .06em; padding: 3px 9px;
+  border-radius: 999px; font-weight: 700; text-transform: uppercase;
+}
+.tag-pass { background: var(--ok-soft); color: var(--ok); border: 1px solid rgba(34,197,94,.35); }
+.tag-fail { background: var(--danger-soft); color: #fca5a5; border: 1px solid rgba(239,68,68,.4); }
+.tag-warn { background: var(--warn-soft); color: var(--warn); border: 1px solid rgba(245,158,11,.4); }
+.tag-info { background: var(--sky-soft); color: var(--sky); border: 1px solid rgba(143,215,255,.3); }
+
+/* ── REMEDIATION ─────────────────────────────── */
+.remed-list { list-style: none; padding: 0 0 8px; }
+
+.remed-item {
+  display: flex; gap: 14px; align-items: flex-start;
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--rule-soft);
+}
+.remed-item:last-child { border-bottom: none; }
+
+.remed-n {
+  font-family: var(--display); font-size: 18px;
+  font-weight: 800; color: var(--coral);
+  min-width: 28px; opacity: .75; line-height: 1.2;
+}
+.remed-title {
+  font-weight: 600; color: var(--ink);
+  margin-bottom: 4px; font-size: 13px;
+}
+.remed-desc {
+  color: var(--ink-soft); font-size: 11.5px; line-height: 1.65;
+}
+.remed-code {
+  margin-top: 8px; padding: 10px 12px;
+  background: rgba(4,19,38,.78);
+  border: 1px solid var(--rule);
+  border-left: 3px solid var(--coral);
+  border-radius: 0 10px 10px 0;
+  font-family: var(--mono); font-size: 11px;
+  color: var(--sky); word-break: break-all;
+  white-space: pre-wrap;
+}
+.remed-prio { font-family: var(--mono); font-size: 9px; letter-spacing: .08em; text-transform: uppercase; }
+.prio-high  { color: var(--danger); }
+.prio-med   { color: var(--warn); }
+.prio-low   { color: var(--ok); }
+
+/* ── REPORTS CARD ────────────────────────────── */
+.reports-hdr {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 20px; border-bottom: 1px solid var(--rule-soft);
+  margin-top: 3px;
+}
+.reports-label {
+  font-family: var(--mono); font-size: .7rem;
+  letter-spacing: .12em; text-transform: uppercase; color: var(--coral);
+}
+.refresh-btn {
+  background: transparent; border: 1px solid var(--rule);
+  color: var(--ink-muted); font-family: var(--mono); font-size: .7rem;
+  padding: 4px 12px; border-radius: 999px; cursor: pointer;
+  transition: border-color .18s, color .18s;
+}
+.refresh-btn:hover { border-color: var(--coral); color: var(--coral); }
+
+.report-item {
+  background: rgba(10,35,66,.55);
+  border: 1px solid var(--rule); border-radius: var(--r);
+  padding: 12px 16px; margin: 8px 16px;
+  display: flex; align-items: center; gap: 14px;
+}
+.report-name { font-weight: 600; color: var(--ink); font-size: 12px; }
+.report-meta { font-family: var(--mono); font-size: .65rem; color: var(--ink-muted); margin-top: 2px; }
+.report-score-val { font-family: var(--display); font-size: 20px; font-weight: 800; }
+.report-actions { display: flex; gap: 6px; flex-shrink: 0; }
+
+.empty {
+  text-align: center; padding: 52px 20px;
+  color: var(--ink-muted); font-size: 12px;
+  font-family: var(--mono);
+}
+.empty-icon { font-size: 32px; margin-bottom: 10px; opacity: .3; }
+.empty-title {
+  font-family: var(--display); font-size: 15px;
+  font-weight: 700; color: var(--ink-muted); margin-bottom: 6px;
+}
+
+/* ── BUTTON VARIANTS ─────────────────────────── */
+.abtn, .btn-sm {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 8px 16px; border-radius: 999px;
+  font-family: var(--body); font-size: .8rem; font-weight: 700;
+  cursor: pointer; transition: filter .18s, transform .13s;
+  border: 1px solid transparent; white-space: nowrap;
+  text-decoration: none; letter-spacing: .01em;
+}
+.abtn:disabled { opacity: .4; cursor: not-allowed; transform: none !important; }
+
+.abtn-primary {
+  background: linear-gradient(135deg, var(--coral), var(--coral-deep));
+  color: #fff;
+  box-shadow: 0 8px 22px rgba(228,71,58,.22);
+}
+.abtn-primary:hover { filter: brightness(1.06); transform: translateY(-1px); color: #fff; }
+
+.abtn-secondary {
+  background: transparent; color: var(--sky);
+  border-color: rgba(143,215,255,.4);
+}
+.abtn-secondary:hover { background: var(--sky-soft); color: var(--sky); }
+
+.abtn-copy {
+  background: var(--ok-soft); color: var(--ok);
+  border-color: rgba(34,197,94,.35);
+}
+.abtn-copy:hover { background: rgba(34,197,94,.2); }
+
+.btn-sm {
+  padding: 5px 12px; font-size: .7rem;
+  font-family: var(--mono); letter-spacing: .04em;
+}
+.btn-sm-coral { background: var(--coral-soft); color: var(--coral); border-color: rgba(255,107,95,.35); }
+.btn-sm-coral:hover { filter: brightness(1.1); color: var(--coral); }
+.btn-sm-blue  { background: var(--sky-soft); color: var(--sky); border-color: rgba(143,215,255,.3); }
+.btn-sm-blue:hover { filter: brightness(1.1); color: var(--sky); }
+.btn-sm-green { background: var(--ok-soft); color: var(--ok); border-color: rgba(34,197,94,.3); }
+.btn-sm-green:hover { filter: brightness(1.1); color: var(--ok); }
+.btn-sm-gray  { background: transparent; color: var(--ink-muted); border-color: var(--rule); }
+.btn-sm-gray:hover { color: var(--ink-soft); }
+
+/* ── ACTION BAR ──────────────────────────────── */
+.action-bar {
+  display: none; position: sticky; bottom: 0;
+  background: rgba(4,19,38,.95);
+  border-top: 1px solid var(--rule);
+  backdrop-filter: blur(18px);
+  padding: 12px clamp(1rem,3vw,2rem);
+  z-index: 50;
+  flex-direction: row; gap: 10px; align-items: center; flex-wrap: wrap;
+}
+.action-bar.on { display: flex; }
+
+.action-domain {
+  flex: 1; min-width: 150px;
+}
+.action-domain small {
+  display: block; font-family: var(--mono); font-size: .65rem;
+  letter-spacing: .12em; text-transform: uppercase;
+  color: var(--ink-muted);
+}
+.domain-val {
+  font-family: var(--display); font-size: 15px;
+  font-weight: 800; color: var(--coral);
+}
+.action-btns { display: flex; gap: 8px; flex-wrap: wrap; }
+
+/* ── TOAST ───────────────────────────────────── */
+.toast {
+  position: fixed; bottom: 72px; left: 50%;
+  transform: translateX(-50%);
+  background: rgba(13,43,79,.96);
+  border: 1px solid var(--rule); border-radius: 999px;
+  color: var(--ink); font-family: var(--mono); font-size: 12px;
+  padding: 9px 18px; z-index: 9999;
+  opacity: 0; pointer-events: none; transition: opacity .2s;
+  box-shadow: var(--shadow); backdrop-filter: blur(12px);
+  white-space: nowrap;
+}
+.toast.on { opacity: 1; }
+
+/* ── FOOTER ──────────────────────────────────── */
+.portal-footer {
+  padding: clamp(1.5rem, 3vw, 2.5rem) clamp(1rem,3vw,2rem);
+  background: rgba(4,19,38,.74);
+  border-top: 1px solid var(--rule);
+  display: flex; justify-content: space-between; align-items: center;
+  flex-wrap: wrap; gap: .75rem;
+  max-width: 980px; margin: 0 auto; width: 100%;
+}
+.portal-footer-brand {
+  font-family: var(--display); font-size: 1.2rem;
+  font-weight: 800; color: var(--ink);
+}
+.portal-footer-brand span { color: var(--coral); font-style: italic; }
+.portal-footer-copy {
+  font-family: var(--mono); font-size: .7rem;
+  color: var(--ink-muted); letter-spacing: .06em;
+}
+
+/* ── MISC ────────────────────────────────────── */
+.hidden { display: none !important; }
+
+code {
+  font-family: var(--mono); color: var(--sky);
+  background: var(--sky-soft);
+  border: 1px solid rgba(143,215,255,.22);
+  border-radius: 5px; padding: .05rem .3rem; font-size: .88em;
+}
+
+/* ── RESPONSIVE ──────────────────────────────── */
+@media (max-width: 900px) {
+  .scorecard.on { grid-template-columns: 1fr 1fr; }
+  .steps { grid-template-columns: repeat(3, 1fr); }
+}
+@media (max-width: 640px) {
+  .scorecard.on { grid-template-columns: 1fr; }
+  .steps { grid-template-columns: repeat(2, 1fr); }
+  .search-row { flex-direction: column; }
+  .run-btn { border-radius: var(--r); }
+  .action-bar { flex-direction: column; align-items: stretch; }
+  .action-btns { flex-wrap: wrap; }
+}
+</style>
+</head>
+<body>
+
+<!-- AUTH GATE -->
+<div id="gate">
+  <div class="gate-card">
+    <div class="gate-logo">Next-Gen <span>IT</span> · Portal</div>
+    <div class="gate-sub">Operator Access</div>
+    <input type="password" class="gate-input" id="pwInput" placeholder="Access code" autocomplete="off"/>
+    <input type="password" class="gate-input" id="apiInput" placeholder="Anthropic API key  (sk-ant-...)" autocomplete="off" style="margin-top:6px;letter-spacing:.03em;text-align:left"/>
+    <div class="gate-err" id="gateErr"></div>
+    <button class="gate-btn" id="gateBtn">Authenticate →</button>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+
+  <header class="hdr">
+    <div class="hdr-brand">Next-Gen <span>IT</span> · Domain Audit Portal</div>
+    <div class="hdr-right">
+      <span class="badge">Operator</span>
+      <button class="lock-btn" id="lockBtn">⚿ Lock</button>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- SEARCH -->
+    <div class="search-wrap">
+      <span class="search-label">→ Run Domain Audit</span>
+      <div class="search-row">
+        <input type="text" class="search-input" id="domainInput"
+          placeholder="exprealty.com  ·  teamlead.realestate  ·  austinrealtygroup.com"
+          autocomplete="off" spellcheck="false"/>
+        <button class="run-btn" id="runBtn">▶ Run Audit</button>
+      </div>
+    </div>
+
+    <!-- PIPELINE -->
+    <div class="pipeline" id="pipeline">
+      <div class="pipeline-hdr">
+        <span class="pipeline-title">Scanning</span>
+        <span class="pipeline-domain" id="pDomain"></span>
+      </div>
+      <div class="steps">
+        <div class="step" id="s0">⚙️ NS / MX</div>
+        <div class="step" id="s1">📧 SPF / DMARC</div>
+        <div class="step" id="s2">🔒 SSL / Sitemap</div>
+        <div class="step" id="s3">🌐 Fetch HTML</div>
+        <div class="step" id="s4">🤖 Claude Analysis</div>
+        <div class="step" id="s5">📋 Build Report</div>
+      </div>
+      <div class="progress"><div class="progress-fill" id="pFill"></div></div>
+    </div>
+
+    <!-- FRAUD WARNING -->
+    <div class="fraud" id="fraud">
+      <div class="fraud-title">⚠️ Wire Fraud Risk — DMARC Not Enforced</div>
+      <div class="fraud-stats">
+        <div><div class="fraud-stat-val">$275M</div><div class="fraud-stat-lbl">Real Estate Fraud (2024)</div></div>
+        <div><div class="fraud-stat-val">12,368</div><div class="fraud-stat-lbl">IC3 Complaints Filed</div></div>
+        <div><div class="fraud-stat-val">$3.04B</div><div class="fraud-stat-lbl">BEC Total Losses</div></div>
+      </div>
+      <div class="fraud-body">DMARC is missing or set to <code>p=none</code>. Attackers can spoof any agent or escrow officer at this firm — sending fraudulent wire instructions that appear legitimate. Real estate closings are the #1 wire fraud target in the US. ALTA standards and most cyber insurance carriers require <code>p=quarantine</code> or <code>p=reject</code>.</div>
+    </div>
+
+    <!-- SCORECARD -->
+    <div class="scorecard" id="scorecard">
+      <div class="score-main">
+        <div class="score-num" id="scoreNum">--</div>
+        <div class="score-lbl">Total Score</div>
+      </div>
+      <div class="score-cat">
+        <div class="score-cat-name">Email Auth</div>
+        <div class="score-cat-val" id="emailScore">-/10</div>
+        <div class="sbar"><div class="sbar-fill" id="emailBar"></div></div>
+      </div>
+      <div class="score-cat">
+        <div class="score-cat-name" id="webLabel">Website / SEO</div>
+        <div class="score-cat-val" id="webScore">-/10</div>
+        <div class="sbar"><div class="sbar-fill" id="webBar"></div></div>
+      </div>
+      <div class="score-cat">
+        <div class="score-cat-name">Tech Stack</div>
+        <div class="score-cat-val" id="techScore">-/10</div>
+        <div class="sbar"><div class="sbar-fill" id="techBar"></div></div>
+      </div>
+    </div>
+
+    <!-- FINDINGS -->
+    <div class="card" id="findingsCard">
+      <div class="card-hdr">Findings</div>
+      <table class="ftable">
+        <thead><tr>
+          <th>Check</th><th>Status</th><th>Value</th><th>Risk</th>
+        </tr></thead>
+        <tbody id="findingsBody"></tbody>
+      </table>
+    </div>
+
+    <!-- REMEDIATION -->
+    <div class="card" id="remedCard">
+      <div class="card-hdr">Remediation Steps</div>
+      <ul class="remed-list" id="remedList"></ul>
+    </div>
+
+    <!-- PITCH ANGLE -->
+    <div class="card" id="pitchCard" style="display:none">
+      <div class="card-hdr">💬 Pitch Angle</div>
+      <div style="padding:16px 20px;font-size:13px;color:var(--ink-soft);line-height:1.7" id="pitchText"></div>
+    </div>
+
+    <!-- REPORTS -->
+    <div class="card on" id="reportsCard">
+      <div class="reports-hdr">
+        <span class="reports-label">Reports</span>
+        <button class="refresh-btn" id="refreshBtn">↺ Refresh</button>
+      </div>
+      <div id="reportsList">
+        <div class="empty">
+          <div class="empty-icon">📂</div>
+          <div class="empty-title">No reports yet</div>
+          Run a quick DNS scan above, or trigger a full AI audit via GitHub Actions.
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ACTION BAR -->
+  <div class="action-bar" id="actionBar">
+    <div class="action-domain">
+      <small>AUDIT COMPLETE</small>
+      <div class="domain-val" id="actionDomain">—</div>
+    </div>
+    <div class="action-btns">
+      <a class="abtn abtn-secondary hidden" id="aiReportLink" target="_blank">🤖 AI Report</a>
+      <button class="abtn abtn-primary hidden" id="execReportBtn">📊 Exec Report</button>
+      <button class="abtn hidden" id="execShareBtn" style="background:var(--sky-soft);border:1px solid rgba(143,215,255,.3);color:var(--sky)">🔗 Share Report</button>
+      <button class="abtn abtn-copy hidden" id="runbookBtn">📋 Runbook</button>
+      <button class="abtn hidden" id="runbookShareBtn" style="background:var(--ok-soft);border:1px solid rgba(34,197,94,.3);color:var(--ok)">🔗 Share Runbook</button>
+    </div>
+  </div>
+
+  <footer class="portal-footer">
+    <div class="portal-footer-brand">Next-Gen <span>IT</span></div>
+    <div class="portal-footer-copy">© 2026 Jeremiah Cargill · Built in production</div>
+  </footer>
+
+</div><!-- #app -->
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ─────────────────────────────────────────────
+   CONFIG — change password here only
+───────────────────────────────────────────── */
+const PASS        = 'NGIT2024';
+const SESSION_KEY = 'ngit_auth';   // single key, used nowhere else
+const REPORTS_KEY = 'ngit_reports';
+const MANIFEST    = 'https://jeremiah9980.github.io/Next-Gen-IT/reports/manifest.json';
+const RUNBOOK_URL = 'https://jeremiah9980.github.io/Next-Gen-IT/portal/runbook.html';
+const APIKEY_KEY  = 'ngit_apikey';
+const getApiKey   = () => sessionStorage.getItem(APIKEY_KEY);
+
+/* ─────────────────────────────────────────────
+   AUTH — single system, no login.html dependency
+───────────────────────────────────────────── */
+const gate   = document.getElementById('gate');
+const app    = document.getElementById('app');
+const pwEl   = document.getElementById('pwInput');
+const gateErr= document.getElementById('gateErr');
+
+function authed()  { return sessionStorage.getItem(SESSION_KEY) === '1'; }
+function unlock()  {
+  sessionStorage.setItem(SESSION_KEY, '1');
+  const ak = document.getElementById('apiInput').value.trim();
+  if (ak) sessionStorage.setItem(APIKEY_KEY, ak);
+  gate.classList.add('hidden');
+  app.classList.add('on');
+  renderReports();
+  fetchManifest();
+}
+function lock() {
+  sessionStorage.removeItem(SESSION_KEY);
+  sessionStorage.removeItem(APIKEY_KEY);
+  gate.classList.remove('hidden');
+  app.classList.remove('on');
+  pwEl.value = '';
+  gateErr.textContent = '';
+}
+
+function authCheck() {
+  if (authed()) { unlock(); return; }
+  // show gate (already visible by default)
+}
+
+document.getElementById('gateBtn').addEventListener('click', () => {
+  if (pwEl.value === PASS) {
+    gateErr.textContent = '';
+    pwEl.classList.remove('err');
+    unlock();
+  } else {
+    gateErr.textContent = 'Invalid access code.';
+    pwEl.classList.add('err');
+    pwEl.value = '';
+    pwEl.focus();
+  }
+});
+pwEl.addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('gateBtn').click(); });
+document.getElementById('lockBtn').addEventListener('click', lock);
+
+/* ─────────────────────────────────────────────
+   DNS via Cloudflare DoH (works cross-origin)
+───────────────────────────────────────────── */
+// Fetch with manual timeout (AbortController — broad browser compat)
+function fetchWithTimeout(url, opts={}, ms=8000) {
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), ms);
+  return fetch(url, { ...opts, signal: ctrl.signal })
+    .finally(() => clearTimeout(timer));
+}
+
+// DoH — tries Google first, falls back to Cloudflare
+async function doh(name, type) {
+  // 1.1.1.1 JSON API is the only provider that works from GitHub Pages origin
+  const endpoints = [
+    { url: `https://1.1.1.1/dns-query?name=${encodeURIComponent(name)}&type=${type}`, h: { Accept: 'application/dns-json' } },
+    { url: `https://dns.google/resolve?name=${encodeURIComponent(name)}&type=${type}`, h: {} },
+  ];
+  for (const ep of endpoints) {
+    try {
+      const r = await fetchWithTimeout(ep.url, { headers: ep.h }, 7000);
+      if (!r.ok) continue;
+      const d = await r.json();
+      return (d.Answer || []).map(a => String(a.data).replace(/^"|"$/g,'').replace(/" "/g,''));
+    } catch {}
+  }
+  return [];
+}
+
+const getTXT = n => doh(n, 'TXT');
+const getMX  = n => doh(n, 'MX');
+const getNS  = n => doh(n, 'NS');
+const getA   = n => doh(n, 'A');
+
+/* ─────────────────────────────────────────────
+   SITE PROBE — no-cors only (avoids CORS errors)
+───────────────────────────────────────────── */
+async function probeSite(domain) {
+  const out = { ssl: false, hasSitemap: false };
+  // SSL: no-cors HEAD succeeds if HTTPS is reachable
+  try {
+    await fetchWithTimeout(`https://${domain}`, { method:'HEAD', mode:'no-cors' }, 6000);
+    out.ssl = true;
+  } catch {}
+  // Sitemap: also no-cors (we only care if it exists, not its content)
+  try {
+    await fetchWithTimeout(`https://${domain}/sitemap.xml`, { method:'HEAD', mode:'no-cors' }, 5000);
+    out.hasSitemap = true;
+  } catch {}
+  return out;
+}
+
+/* ─────────────────────────────────────────────
+   HTML FETCH via CORS proxy
+───────────────────────────────────────────── */
+async function fetchSiteHtml(domain) {
+  const proxies = [
+    `https://corsproxy.io/?url=${encodeURIComponent('https://'+domain)}`,
+    `https://api.allorigins.win/raw?url=${encodeURIComponent('https://'+domain)}`,
+  ];
+  for (const proxy of proxies) {
+    try {
+      const r = await fetchWithTimeout(proxy, {}, 14000);
+      if (!r.ok) continue;
+      const t = await r.text();
+      if (t && t.length > 200) return t.slice(0, 22000); // head+body enough for analysis
+    } catch(e) { console.warn('[NGIT HTML]', proxy, e.message); }
+  }
+  return null;
+}
+
+/* ─────────────────────────────────────────────
+   CLAUDE AUDIT PROMPT
+───────────────────────────────────────────── */
+function buildAuditPrompt(domain, dns, html) {
+  const dnsBlock = JSON.stringify(dns, null, 2);
+  const htmlBlock = html
+    ? `LIVE HTML (first 22,000 chars):
+${html}`
+    : 'HTML: unavailable (CORS proxy failed — score HTML items conservatively)';
+
+  return `You are a domain health auditor for Next-Gen IT, a consulting firm serving small real estate teams in Austin/Central Texas.
+
+Audit domain: ${domain}
+
+DNS DATA:
+${dnsBlock}
+
+${htmlBlock}
+
+Score this domain across 30 items (3 categories × 10 items) using PASS=1 / FAIL=0. Return ONLY valid JSON — no markdown, no preamble.
+
+CATEGORY 1 — Email Auth (items 1-10):
+1. MX records exist
+2. SPF record present
+3. SPF uses hard fail (-all)
+4. DMARC record present
+5. DMARC policy is quarantine or reject (not p=none)
+6. DMARC has rua= reporting address
+7. DKIM selector found
+8. Email provider identified (MX resolves to known provider)
+9. No SPF +all (permissive) risk
+10. SPF includes correct provider mechanisms
+
+CATEGORY 2 — Website & SEO (items 11-20):
+11. Site loads and HTTPS confirmed
+12. Mobile responsive (viewport meta tag)
+13. IDX/MLS search present (scripts: idxbroker, ihf-key, wolfnet, dsidxpress, showcase)
+14. Contact or lead capture form present
+15. Google Business Profile linked (maps.google.com or place_id embed)
+16. Local geo keywords in <title> or <meta description> (city, state, region)
+17. Active blog or market updates section present
+18. XML sitemap accessible
+19. Analytics tag present (GA4 G-, GTM-, UA-)
+20. Schema markup / structured data (application/ld+json, LocalBusiness, RealEstateAgent)
+
+CATEGORY 3 — Tech Stack & CRM (items 21-30):
+21. CRM identified (followupboss, kvcore, lofty, chime, boomtown, ylopo, liondesk, sierra)
+22. Live chat or chatbot widget (intercom, drift, tidio, livechat)
+23. Online scheduling tool (calendly, showingtime, acuity)
+24. Facebook Pixel installed (fbq(, facebook.com/tr)
+25. Google Tag Manager present
+26. Heatmap/session recording (hotjar, clarity.ms, fullstory)
+27. Video content embedded (youtube, vimeo, <video>)
+28. Social media profiles linked (facebook, instagram, linkedin, youtube)
+29. Client testimonials or reviews section
+30. HTTPS redirect enforced (http redirects to https)
+
+PROVIDER IDENTIFICATION from DNS + HTML:
+- registrar: from WHOIS NS patterns
+- dns_host: from NS records
+- web_host: from HTTP headers or NS
+- cms: from HTML meta generator or URL patterns
+- email_provider: from MX records
+
+PITCH ANGLE: 2-sentence outreach hook using the most critical gaps found.
+
+Return this exact JSON structure:
+{
+  "scores": { "email": <0-10>, "web": <0-10>, "tech": <0-10> },
+  "items": [<30 booleans, 1=pass 0=fail, index 0-29>],
+  "providers": {
+    "dns_host": "<string>",
+    "web_host": "<string>",
+    "cms": "<string>",
+    "email_provider": "<string>"
+  },
+  "findings": [
+    { "check": "<name>", "status": "<pass|warn|fail|info>", "value": "<string>", "risk": "<string>" }
+  ],
+  "remediation": [
+    { "n": <1-5>, "p": "<high|med|low>", "title": "<string>", "desc": "<string>", "code": "<string or null>" }
+  ],
+  "pitchAngle": "<string>",
+  "wireRisk": <true|false>
+}
+
+findings should cover: SPF, DMARC, DKIM, MX, SSL, sitemap, schema markup, analytics, local SEO keywords, IDX/CRM status.
+remediation: top 1-5 items only, priority ordered.
+wireRisk: true if DMARC is missing or p=none.`;
+}
+
+/* ─────────────────────────────────────────────
+   CLAUDE API CALL
+───────────────────────────────────────────── */
+async function callClaude(domain, dns, htmlContent) {
+  const apiKey = getApiKey();
+  if (!apiKey) throw new Error('no_api_key');
+
+  const prompt = buildAuditPrompt(domain, dns, htmlContent);
+
+  const r = await fetchWithTimeout('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': apiKey,
+      'anthropic-version': '2023-06-01',
+      'anthropic-dangerous-direct-browser-access': 'true',
+    },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 2000,
+      messages: [{ role: 'user', content: prompt }]
+    })
+  }, 45000);
+
+  if (!r.ok) {
+    const err = await r.text();
+    throw new Error(`Claude API ${r.status}: ${err.slice(0,200)}`);
+  }
+
+  const data = await r.json();
+  const text = data.content.find(b => b.type === 'text')?.text || '';
+  const clean = text.replace(/```json|```/g, '').trim();
+  return JSON.parse(clean);
+}
+
+/* ─────────────────────────────────────────────
+   AUDIT ENGINE
+───────────────────────────────────────────── */
+let currentData = null;
+
+function step(i, state) {
+  document.getElementById(`s${i}`).className = `step ${state}`;
+  document.getElementById('pFill').style.width = `${Math.round((i+1)/6*100)}%`;
+}
+const wait = ms => new Promise(r => setTimeout(r, ms));
+
+async function runAudit(domain) {
+  if (!authed()) { lock(); return; }
+
+  domain = domain.toLowerCase()
+    .replace(/^https?:\/\//,'').replace(/^www\./,'').replace(/\/.*/,'').trim();
+  if (!domain) return;
+
+  // Reset UI
+  document.getElementById('pipeline').classList.add('on');
+  document.getElementById('pDomain').textContent = domain;
+  document.getElementById('pFill').style.width = '0';
+  for (let i=0;i<6;i++) document.getElementById(`s${i}`).className='step';
+  ['fraud','scorecard','findingsCard','remedCard','actionBar'].forEach(id => {
+    document.getElementById(id).classList.remove('on');
+  });
+  document.getElementById('runBtn').disabled = true;
+
+  const d = {
+    domain, ts: new Date().toISOString(),
+    ns:[], mx:[], spf:null, dmarc:null, dkim:null,
+    ssl:false, hasSitemap:false,
+    hasGoogleWS:false,
+    findings:[], remediation:[], scores:{email:0,web:0,tech:0}
+  };
+
+  try {
+    // S0: NS + MX
+    step(0,'scanning');
+    [d.ns, d.mx] = await Promise.all([getNS(domain), getMX(domain)]);
+    step(0, d.ns.length ? 'done' : 'warn');
+
+    // S1: SPF / DMARC / DKIM
+    step(1,'scanning');
+    const txt   = await getTXT(domain);
+    const dmarc = await getTXT(`_dmarc.${domain}`);
+    d.spf   = txt.find(t => t.startsWith('v=spf1')) || null;
+    d.dmarc = dmarc.find(t => t.startsWith('v=DMARC1')) || null;
+    d.hasGoogleWS = /google-site-verification/i.test(txt.join(' '));
+    const SELECTORS = ['google','selector1','selector2','default','k1','smtp','mail','dkim'];
+    for (const sel of SELECTORS) {
+      try {
+        const recs = await getTXT(`${sel}._domainkey.${domain}`);
+        if (recs.some(r => r.includes('p=') || r.includes('k=rsa') || r.includes('k=ed25519'))) {
+          d.dkim = sel; break;
+        }
+      } catch {}
+    }
+    step(1, (d.spf && d.dmarc) ? 'done' : 'warn');
+
+    // S2: SSL + Sitemap probe
+    step(2,'scanning');
+    const site = await probeSite(domain);
+    d.ssl = site.ssl;
+    d.hasSitemap = site.hasSitemap;
+    step(2, d.ssl ? 'done' : 'warn');
+
+    // S3: Fetch live HTML via CORS proxy
+    step(3,'scanning');
+    d.siteHtml = await fetchSiteHtml(domain);
+    step(3, d.siteHtml ? 'done' : 'warn');
+
+    // S4: Claude analysis
+    step(4,'scanning');
+    const apiKey = getApiKey();
+    if (apiKey) {
+      const aiResult = await callClaude(domain, {
+        ns: d.ns, mx: d.mx, spf: d.spf, dmarc: d.dmarc,
+        dkim: d.dkim, ssl: d.ssl, hasSitemap: d.hasSitemap,
+        hasGoogleWS: d.hasGoogleWS
+      }, d.siteHtml);
+      // Merge AI results into d
+      d.scores    = aiResult.scores;
+      d.findings  = aiResult.findings || [];
+      d.remediation = aiResult.remediation || [];
+      d.pitchAngle  = aiResult.pitchAngle || '';
+      d.providers   = aiResult.providers || {};
+      d.wireRisk    = aiResult.wireRisk ?? (!d.dmarc || (d.dmarc && d.dmarc.includes('p=none')));
+      d.aiScored    = true;
+      step(4,'done');
+    } else {
+      // No API key — fall back to DNS-only scoring
+      d.wireRisk = !d.dmarc || (d.dmarc && d.dmarc.includes('p=none'));
+      d.aiScored = false;
+      buildFindings(d);
+      buildRemediation(d);
+      computeScores(d);
+      step(4,'warn');
+    }
+
+    // S5: Render
+    step(5,'scanning');
+    await wait(300);
+    step(5,'done');
+
+  } catch(err) {
+    console.error('[NGIT] Audit error:', err.message, err);
+    if (err.message === 'no_api_key') {
+      // shouldn't reach here — handled above
+    } else if (err.message?.includes('Claude API')) {
+      // API error — show toast and fall back to DNS scoring
+      toast('⚠️ Claude API error — showing DNS-only results');
+      d.wireRisk = !d.dmarc || (d.dmarc && d.dmarc.includes('p=none'));
+      buildFindings(d); buildRemediation(d); computeScores(d);
+    }
+    for (let i=0;i<6;i++) {
+      const el = document.getElementById(`s${i}`);
+      if (el && el.className.includes('scanning')) el.className = 'step warn';
+    }
+  }
+
+  document.getElementById('pFill').style.width = '100%';
+  document.getElementById('runBtn').disabled = false;
+  currentData = d;
+  renderResults(d);
+  saveReport(d);
+}
+
+/* ─────────────────────────────────────────────
+   SCORING
+───────────────────────────────────────────── */
+function computeScores(d) {
+  // Email auth (10 pts)
+  let email = 0;
+  if (d.spf) email += 2;
+  if (d.spf && d.spf.includes('-all')) email += 2;
+  if (d.dmarc) email += 2;
+  if (d.dmarc && (d.dmarc.includes('p=quarantine') || d.dmarc.includes('p=reject'))) email += 4;
+  d.scores.email = Math.min(email, 10);
+
+  // Website/SEO (10 pts)
+  // DNS/probe-detectable: 6 pts max (4 checks)
+  // HTML-required items (IDX, contact form, local keywords, blog,
+  //   Google Business, analytics, schema): 4 pts — always 0 in DNS-only mode
+  let web = 0;
+  if (d.ns.length)    web += 1;  // domain resolves
+  if (d.ssl)          web += 2;  // HTTPS confirmed
+  if (d.hasSitemap)   web += 2;  // sitemap present
+  if (d.mx.length)    web += 1;  // mail infrastructure exists
+  // +4 pts available only via full AI audit (HTML inspection)
+  d.scores.web = Math.min(web, 10);
+  d.scores.webMaxDns = 6; // flag for UI to show "N/A" on unchecked items
+
+  // Tech stack (10 pts) — DNS-detectable only
+  let tech = 0;
+  if (d.hasGoogleWS)                        tech += 3; // Google Workspace
+  if (d.dkim)                               tech += 3; // DKIM active
+  if (d.spf && d.spf.includes('-all'))      tech += 2; // hardened SPF
+  if (d.dmarc && !d.dmarc.includes('p=none')) tech += 2; // DMARC enforced
+  d.scores.tech = Math.min(tech, 10);
+}
+
+function gradeClass(score, max) {
+  const p = score/max;
+  return p>=.8?'ga': p>=.65?'gb': p>=.5?'gc': p>=.35?'gd': 'gf';
+}
+function barColor(score, max) {
+  const p = score/max;
+  return p>=.7 ? 'var(--green)' : p>=.4 ? 'var(--amber)' : 'var(--red)';
+}
+
+/* ─────────────────────────────────────────────
+   FINDINGS
+───────────────────────────────────────────── */
+function buildFindings(d) {
+  d.findings = [
+    {
+      check:'SPF Record',
+      status: !d.spf ? 'fail' : d.spf.includes('-all') ? 'pass' : 'warn',
+      value: d.spf || 'Not found',
+      risk: !d.spf ? 'HIGH — email spoofing enabled' : d.spf.includes('-all') ? 'None' : 'Soft fail (~all) — spoofing risk'
+    },
+    {
+      check:'DMARC Policy',
+      status: !d.dmarc ? 'fail' : (d.dmarc.includes('p=reject')||d.dmarc.includes('p=quarantine')) ? 'pass' : 'warn',
+      value: d.dmarc || 'Not found',
+      risk: !d.dmarc ? 'CRITICAL — no domain protection' : d.dmarc.includes('p=none') ? 'HIGH — monitoring only' : 'None'
+    },
+    {
+      check:'DKIM',
+      status: d.dkim ? 'pass' : 'warn',
+      value: d.dkim ? `Selector: ${d.dkim}._domainkey` : 'No common selector found',
+      risk: d.dkim ? 'None' : 'Affects deliverability — signing not confirmed'
+    },
+    {
+      check:'MX Records',
+      status: d.mx.length ? 'pass' : 'fail',
+      value: d.mx.slice(0,2).join(', ') || 'None found',
+      risk: d.mx.length ? 'None' : 'No email infrastructure'
+    },
+    {
+      check:'SSL / HTTPS',
+      status: d.ssl ? 'pass' : 'warn',
+      value: d.ssl ? 'HTTPS reachable' : 'Could not confirm (CORS restricted)',
+      risk: d.ssl ? 'None' : 'Site may lack HTTPS'
+    },
+    {
+      check:'XML Sitemap',
+      status: d.hasSitemap ? 'pass' : 'warn',
+      value: d.hasSitemap ? 'Found at /sitemap.xml' : 'Not found',
+      risk: d.hasSitemap ? 'None' : 'Reduced search indexing'
+    },
+    {
+      check:'Local SEO Keywords',
+      status: 'info',
+      value: 'Requires HTML scan',
+      risk: 'Run full AI audit — checks geo keywords in <title> & meta description'
+    },
+    {
+      check:'Schema Markup',
+      status: 'info',
+      value: 'Requires HTML scan',
+      risk: 'Run full AI audit — checks LocalBusiness / RealEstateAgent JSON-LD'
+    },
+    {
+      check:'Analytics Tag',
+      status: 'info',
+      value: 'Requires HTML scan',
+      risk: 'Run full AI audit — checks GA4/GTM (JS-rendered, not visible via DNS)'
+    },
+    {
+      check:'Contact / Lead Form',
+      status: 'info',
+      value: 'Requires HTML scan',
+      risk: 'Run full AI audit — checks for <form> with contact/inquiry intent'
+    },
+    {
+      check:'Nameservers',
+      status: d.ns.length ? 'pass' : 'fail',
+      value: d.ns.slice(0,2).join(', ') || 'None',
+      risk: d.ns.length ? 'None' : 'Domain not resolving'
+    },
+    {
+      check:'Google Workspace',
+      status: d.hasGoogleWS ? 'pass' : 'info',
+      value: d.hasGoogleWS ? 'Verified via DNS TXT' : 'Not detected in DNS',
+      risk: d.hasGoogleWS ? 'None' : 'Email platform unconfirmed from DNS'
+    },
+    {
+      check:'Analytics / CRM',
+      status: 'info',
+      value: 'Requires full AI audit',
+      risk: 'Trigger via GitHub Actions for tech stack detection'
+    }
+  ];
+}
+
+/* ─────────────────────────────────────────────
+   REMEDIATION
+───────────────────────────────────────────── */
+function buildRemediation(d) {
+  const R = []; let n=1;
+
+  if (!d.spf)
+    R.push({n:n++,p:'high',title:'Publish SPF Record',
+      desc:'Add an SPF TXT record to authorize mail servers for this domain.',
+      code:`v=spf1 include:_spf.google.com ~all\n→ Upgrade to -all once confirmed working`});
+  else if (!d.spf.includes('-all'))
+    R.push({n:n++,p:'med',title:'Harden SPF to Hard Fail (-all)',
+      desc:'Current SPF uses soft fail (~all). Change to -all to reject unauthorized senders.',
+      code:d.spf.replace('~all','-all').replace('?all','-all')});
+
+  if (!d.dmarc)
+    R.push({n:n++,p:'high',title:'Publish DMARC Record',
+      desc:'Add a DMARC TXT record at _dmarc.[domain]. Start with p=none, advance to quarantine/reject.',
+      code:`Host: _dmarc.${d.domain}\nValue: v=DMARC1; p=none; rua=mailto:dmarc@${d.domain}; fo=1`});
+  else if (d.dmarc.includes('p=none'))
+    R.push({n:n++,p:'high',title:'Enforce DMARC Policy',
+      desc:'DMARC is set to p=none (monitoring only). Advance to p=quarantine then p=reject.',
+      code:d.dmarc.replace('p=none','p=quarantine')+'\n→ After 30 days clean, advance to p=reject'});
+
+  if (!d.dkim)
+    R.push({n:n++,p:'med',title:'Verify DKIM Signing',
+      desc:'No DKIM selector found via DNS scan. Confirm your email provider has DKIM enabled and the DNS record is published.',
+      code:'Google Workspace: Admin → Apps → Gmail → Authenticate Email → Generate\nM365: EAC → Protection → DKIM → Enable'});
+
+  if (!d.ssl)
+    R.push({n:n++,p:'high',title:'Enable SSL / HTTPS',
+      desc:"Site did not confirm HTTPS. Contact your host to install a TLS certificate (Let's Encrypt is free).",
+      code:'Most hosts: cPanel → SSL/TLS → AutoSSL / Let\'s Encrypt'});
+
+  if (!d.hasSitemap)
+    R.push({n:n++,p:'med',title:'Generate XML Sitemap',
+      desc:'A sitemap helps search engines index all site pages.',
+      code:'WordPress: Yoast SEO → Features → Enable Sitemap\nSquarespace: Settings → Advanced → Sitemap (auto)'});
+
+  if (!d.hasGoogleWS && !d.mx.some(m => /google/i.test(m)))
+    R.push({n:n++,p:'low',title:'Consider Google Workspace',
+      desc:'No Google Workspace signals detected. Google Workspace provides professional email + strong DKIM/DMARC tooling.',
+      code:'https://workspace.google.com → Business Starter ($6/user/mo)'});
+
+  d.remediation = R;
+}
+
+/* ─────────────────────────────────────────────
+   RENDER RESULTS
+───────────────────────────────────────────── */
+function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+function renderResults(d) {
+  const total = d.scores.email + d.scores.web + d.scores.tech;
+
+  // Fraud warning — use AI result if available
+  const showFraud = d.wireRisk ?? (!d.dmarc || (d.dmarc && d.dmarc.includes('p=none')));
+  document.getElementById('fraud').classList.toggle('on', showFraud);
+
+  // AI mode badge
+  const pipelineTitle = document.querySelector('.pipeline-title');
+  if (pipelineTitle) {
+    pipelineTitle.textContent = d.aiScored ? '🤖 AI Audit Complete' : '⚡ DNS Scan Complete';
+  }
+
+  // Scores
+  const sc = document.getElementById('scorecard');
+  sc.classList.add('on');
+  const sn = document.getElementById('scoreNum');
+  sn.textContent = `${total}/30`;
+  sn.className = `score-num ${gradeClass(total,30)}`;
+
+  document.getElementById('webLabel').textContent =
+    d.aiScored ? 'Website / SEO' : 'Website / SEO (DNS only)';
+  [['email',d.scores.email],['web',d.scores.web],['tech',d.scores.tech]].forEach(([k,v])=>{
+    document.getElementById(`${k}Score`).textContent = `${v}/10`;
+    const bar = document.getElementById(`${k}Bar`);
+    bar.style.width = `${v*10}%`;
+    bar.style.background = barColor(v,10);
+  });
+
+  // Findings
+  const tbody = document.getElementById('findingsBody');
+  tbody.innerHTML = '';
+  for (const f of d.findings) {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${esc(f.check)}</td><td><span class="tag tag-${f.status}">${f.status.toUpperCase()}</span></td><td>${esc(f.value)}</td><td>${esc(f.risk)}</td>`;
+    tbody.appendChild(tr);
+  }
+  document.getElementById('findingsCard').classList.add('on');
+
+  // Remediation
+  const ul = document.getElementById('remedList');
+  ul.innerHTML = '';
+  if (!d.remediation.length) {
+    ul.innerHTML = '<li style="padding:16px 20px;color:var(--green)">✓ No critical remediations required.</li>';
+  } else {
+    for (const r of d.remediation) {
+      const li = document.createElement('li');
+      li.className = 'remed-item';
+      li.innerHTML = `<div class="remed-num">${String(r.n).padStart(2,'0')}</div>
+        <div>
+          <div class="remed-title">${esc(r.title)} <span class="remed-prio prio-${r.p}">[${r.p.toUpperCase()}]</span></div>
+          <div class="remed-desc">${esc(r.desc)}</div>
+          ${r.code?`<div class="remed-code">${esc(r.code)}</div>`:''}
+        </div>`;
+      ul.appendChild(li);
+    }
+  }
+  document.getElementById('remedCard').classList.add('on');
+
+  // Pitch angle (AI only)
+  if (d.pitchAngle) {
+    document.getElementById('pitchText').textContent = d.pitchAngle;
+    document.getElementById('pitchCard').style.display = 'block';
+  } else {
+    document.getElementById('pitchCard').style.display = 'none';
+  }
+
+  // Action bar
+  document.getElementById('actionDomain').textContent = d.domain;
+
+  // Exec Report + Runbook buttons
+  const execBtn = document.getElementById('execReportBtn');
+  const rbBtn   = document.getElementById('runbookBtn');
+  const execShareBtn = document.getElementById('execShareBtn');
+  const rbShareBtn   = document.getElementById('runbookShareBtn');
+
+  execBtn.classList.toggle('hidden', !d.aiScored);
+  rbBtn.classList.toggle('hidden', !d.aiScored);
+  execShareBtn.classList.toggle('hidden', !d.aiScored);
+  rbShareBtn.classList.toggle('hidden', !d.aiScored);
+
+  // Encode audit data (strip siteHtml to keep URL manageable)
+  function encodeAudit(data) {
+    const clean = Object.assign({}, data);
+    delete clean.siteHtml;
+    return btoa(unescape(encodeURIComponent(JSON.stringify(clean))));
+  }
+
+  const base = 'https://jeremiah9980.github.io/Next-Gen-IT/portal/';
+  const encoded = encodeAudit(d);
+  const reportUrl  = base + 'report.html#data=' + encoded;
+  const runbookUrl = base + 'runbook.html#data=' + encoded;
+
+  // Open buttons — open renderer pages directly
+  execBtn.onclick = () => window.open(reportUrl, '_blank');
+  rbBtn.onclick   = () => window.open(runbookUrl, '_blank');
+
+  // Share buttons — copy URL to clipboard + toast
+  execShareBtn.onclick = () => {
+    navigator.clipboard.writeText(reportUrl)
+      .then(() => toast('🔗 Exec report link copied!'))
+      .catch(() => { const t=document.createElement('textarea');t.value=reportUrl;document.body.appendChild(t);t.select();document.execCommand('copy');document.body.removeChild(t);toast('🔗 Report link copied!'); });
+  };
+  rbShareBtn.onclick = () => {
+    navigator.clipboard.writeText(runbookUrl)
+      .then(() => toast('🔗 Runbook link copied!'))
+      .catch(() => { const t=document.createElement('textarea');t.value=runbookUrl;document.body.appendChild(t);t.select();document.execCommand('copy');document.body.removeChild(t);toast('🔗 Runbook link copied!'); });
+  };
+
+
+
+  // AI report link (from manifest)
+  const aiEl = document.getElementById('aiReportLink');
+  const match = manifestReports.find(r => r.domain === d.domain);
+  if (match) {
+    aiEl.href = match.url;
+    aiEl.textContent = `🤖 AI Report (${match.grade} · ${match.total_score}/30)`;
+    aiEl.classList.remove('hidden');
+  } else {
+    aiEl.classList.add('hidden');
+  }
+
+  document.getElementById('actionBar').classList.add('on');
+}
+
+/* ═══════════════════════════════════════════════════════════
+   OPEN DOC HELPER
+═══════════════════════════════════════════════════════════ */
+function openDoc(htmlStr) {
+  const blob = new Blob([htmlStr], { type: 'text/html' });
+  window.open(URL.createObjectURL(blob), '_blank');
+}
+function esc2(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function today() { return new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'}); }
+function gradeColor(t,m){const p=t/m;return p>=.8?'#10b981':p>=.65?'#84cc16':p>=.5?'#f59e0b':p>=.35?'#f97316':'#ef4444';}
+
+/* ═══════════════════════════════════════════════════════════
+   EXECUTIVE REPORT
+═══════════════════════════════════════════════════════════ */
+function generateExecReport(d) {
+  const total=((d.scores||{}).email||0)+((d.scores||{}).web||0)+((d.scores||{}).tech||0);
+  const gc=gradeColor(total,30), scanDate=today();
+  const findings=(d.findings||[]).map(f=>`<tr><td>${esc2(f.check)}</td><td><span class="tag tag-${f.status}">${(f.status||'').toUpperCase()}</span></td><td style="font-family:monospace;font-size:11px">${esc2(f.value)}</td><td>${esc2(f.risk)}</td></tr>`).join('');
+  const remed=(d.remediation||[]).map(r=>`<div class="ri"><div class="rn">${String(r.n||'').padStart(2,'0')}</div><div><div class="rt">${esc2(r.title)} <span class="prio prio-${r.p}">[${(r.p||'').toUpperCase()}]</span></div><div class="rd">${esc2(r.desc)}</div>${r.code?`<pre class="rc">${esc2(r.code)}</pre>`:''}</div></div>`).join('');
+  const provRows=d.providers?Object.entries(d.providers).filter(([,v])=>v).map(([k,v])=>`<tr><td class="pk">${esc2(k.replace(/_/g,' '))}</td><td>${esc2(v)}</td></tr>`).join(''):'';
+  const wireBlock=d.wireRisk?`<div class="fraud"><div class="ftitle">⚠️ Wire Fraud Risk — DMARC Not Enforced</div><div class="fstats"><div><div class="fv">$275M</div><div class="fl">RE Fraud 2024</div></div><div><div class="fv">12,368</div><div class="fl">IC3 Complaints</div></div><div><div class="fv">$3.04B</div><div class="fl">BEC Losses</div></div></div><p>DMARC is missing or not enforced on <strong>${esc2(d.domain)}</strong>. Attackers can spoof any email at this domain — sending fraudulent wire transfer instructions that appear legitimate. ALTA standards and most cyber insurance carriers require <code>p=quarantine</code> or <code>p=reject</code>.</p></div>`:'';
+  const pitchBlock=d.pitchAngle?`<div class="pitch"><div class="plbl">💬 Pitch Angle</div><p>${esc2(d.pitchAngle)}</p></div>`:'';
+  return `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Domain Audit — ${esc2(d.domain)}</title><style>*{box-sizing:border-box;margin:0;padding:0}body{background:#050a14;color:#e8f0fe;font-family:'IBM Plex Mono',monospace;font-size:13px;line-height:1.5}.page{max-width:900px;margin:0 auto;padding:32px 24px}.hero{background:linear-gradient(135deg,#0b1821,#0d1f30);border:1px solid rgba(0,180,255,.15);border-radius:16px;padding:28px 32px;margin-bottom:20px}.eyebrow{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#00b4ff;margin-bottom:10px;display:block}.hero h1{font-size:28px;font-weight:800;color:#fff;font-family:sans-serif;margin-bottom:6px}.hero h1 em{color:#00b4ff;font-style:normal}.hmeta{display:flex;gap:20px;flex-wrap:wrap;margin-top:14px;font-size:11px;color:#4d6080}.sgrid{display:grid;grid-template-columns:auto 1fr 1fr 1fr;gap:12px;margin-bottom:20px}.smain{background:#0b1821;border:1px solid rgba(0,180,255,.15);border-radius:14px;padding:20px;text-align:center}.sbig{font-family:sans-serif;font-size:40px;font-weight:900;line-height:1}.slbl{font-size:10px;color:#4d6080;letter-spacing:.08em;text-transform:uppercase;margin-top:4px}.scat{background:#0b1821;border:1px solid rgba(255,255,255,.06);border-radius:14px;padding:16px}.scn{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:#4d6080;margin-bottom:6px}.scv{font-family:sans-serif;font-size:24px;font-weight:700}.sbar{height:3px;background:#1e2330;border-radius:3px;margin-top:8px;overflow:hidden}.sbar-f{height:100%;border-radius:3px}.card{background:#0b1821;border:1px solid rgba(255,255,255,.06);border-radius:14px;margin-bottom:16px;overflow:hidden}.chdr{padding:13px 20px;border-bottom:1px solid rgba(255,255,255,.06);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:#4d6080}table{width:100%;border-collapse:collapse}th{padding:10px 14px;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:#4d6080;border-bottom:1px solid rgba(255,255,255,.06);text-align:left}td{padding:10px 14px;border-bottom:1px solid rgba(255,255,255,.04);font-size:12px;color:#8da0b8;vertical-align:top}tr:last-child td{border-bottom:none}.tag{font-size:10px;font-weight:700;letter-spacing:.06em;padding:2px 8px;border-radius:4px;text-transform:uppercase}.tag-pass{background:rgba(16,185,129,.12);color:#10b981}.tag-warn{background:rgba(245,158,11,.12);color:#f59e0b}.tag-fail{background:rgba(239,68,68,.12);color:#ef4444}.tag-info{background:rgba(37,99,235,.15);color:#60a5fa}.ri{display:flex;gap:14px;padding:14px 20px;border-bottom:1px solid rgba(255,255,255,.04)}.ri:last-child{border-bottom:none}.rn{font-family:sans-serif;font-size:22px;font-weight:900;color:#00b4ff;width:28px;flex-shrink:0}.rt{font-size:13px;font-weight:600;color:#e8f0fe;margin-bottom:4px}.prio{font-size:10px;font-weight:600;margin-left:6px;text-transform:uppercase}.prio-high{color:#ef4444}.prio-med{color:#f59e0b}.prio-low{color:#10b981}.rd{font-size:12px;color:#8da0b8;margin-bottom:6px}.rc{font-size:11px;color:#00b4ff;background:rgba(0,180,255,.06);border:1px solid rgba(0,180,255,.15);border-left:3px solid #00b4ff;border-radius:6px;padding:10px 12px;white-space:pre-wrap;word-break:break-all;margin-top:6px}.fraud{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.3);border-radius:14px;padding:20px 24px;margin-bottom:16px}.ftitle{color:#ef4444;font-weight:700;font-size:14px;margin-bottom:12px}.fstats{display:flex;gap:24px;margin-bottom:12px;flex-wrap:wrap}.fv{font-family:sans-serif;font-size:22px;font-weight:900;color:#ef4444}.fl{font-size:10px;color:#4d6080;letter-spacing:.06em}.fraud p{font-size:12px;color:#8da0b8;line-height:1.6}code{color:#f59e0b;background:rgba(245,158,11,.1);border-radius:4px;padding:1px 5px}.pitch{background:rgba(37,99,235,.08);border:1px solid rgba(37,99,235,.2);border-radius:14px;padding:18px 22px;margin-bottom:16px}.plbl{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:#60a5fa;margin-bottom:8px}.pitch p{font-size:13px;color:#c8d8f0;line-height:1.7}.pk{color:#00b4ff;font-size:11px;text-transform:capitalize}.footer{text-align:center;padding:24px;font-size:11px;color:#4d6080;border-top:1px solid rgba(255,255,255,.06);margin-top:24px}@media(max-width:600px){.sgrid{grid-template-columns:1fr 1fr}}</style></head><body><div class="page"><div class="hero"><span class="eyebrow">Next-Gen IT · Domain Health Audit</span><h1>${esc2(d.domain)} <em>domain audit</em> report.</h1><div class="hmeta"><span>Prepared by Next-Gen IT</span><span>Scan date: ${scanDate}</span><span>AI-powered · 30-point analysis</span></div></div>${wireBlock}<div class="sgrid"><div class="smain"><div class="sbig" style="color:${gc}">${total}/30</div><div class="slbl">Total Score</div></div><div class="scat"><div class="scn">Email Auth</div><div class="scv">${(d.scores||{}).email||0}/10</div><div class="sbar"><div class="sbar-f" style="width:${((d.scores||{}).email||0)*10}%;background:${gradeColor((d.scores||{}).email||0,10)}"></div></div></div><div class="scat"><div class="scn">Website / SEO</div><div class="scv">${(d.scores||{}).web||0}/10</div><div class="sbar"><div class="sbar-f" style="width:${((d.scores||{}).web||0)*10}%;background:${gradeColor((d.scores||{}).web||0,10)}"></div></div></div><div class="scat"><div class="scn">Tech Stack</div><div class="scv">${(d.scores||{}).tech||0}/10</div><div class="sbar"><div class="sbar-f" style="width:${((d.scores||{}).tech||0)*10}%;background:${gradeColor((d.scores||{}).tech||0,10)}"></div></div></div></div>${provRows?`<div class="card"><div class="chdr">Identified Stack</div><table><tbody>${provRows}</tbody></table></div>`:''}<div class="card"><div class="chdr">Findings</div><table><thead><tr><th>Check</th><th>Status</th><th>Value</th><th>Risk</th></tr></thead><tbody>${findings}</tbody></table></div><div class="card"><div class="chdr">Remediation</div>${remed}</div>${pitchBlock}<div class="footer">Generated by Next-Gen IT · ${esc2(d.domain)} · ${scanDate}</div></div></body></html>`;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   CORRECTIVE ACTION RUNBOOK
+═══════════════════════════════════════════════════════════ */
+function generateRunbook(d) {
+  const scanDate=today();
+  const failed=(d.findings||[]).filter(f=>f.status==='fail'||f.status==='warn');
+  const remed=(d.remediation||[]);
+  const tocItems=remed.map(r=>`<a href="#step-${r.n}" style="display:block;padding:8px 12px;border-radius:10px;color:#334155;font-size:14px;text-decoration:none" onmouseover="this.style.background='#f1f5f9'" onmouseout="this.style.background=''">${r.n}. ${esc2(r.title)}</a>`).join('');
+  const stepCards=remed.map(r=>{
+    const pc=r.p==='high'?'#dc2626':r.p==='med'?'#d97706':'#16a34a';
+    return `<div id="step-${r.n}" style="border:1px solid #e2e8f0;border-radius:20px;background:#fff;margin-bottom:20px;overflow:hidden"><div style="background:#f8fafc;border-bottom:1px solid #e2e8f0;padding:16px 22px;display:flex;align-items:center;gap:14px"><div style="width:36px;height:36px;border-radius:12px;background:linear-gradient(135deg,#e55b4d,#c94035);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:15px;color:#fff;flex-shrink:0">${r.n}</div><div style="flex:1"><div style="font-size:16px;font-weight:700;color:#0f172a">${esc2(r.title)}</div><div style="font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:${pc};margin-top:2px">Priority: ${(r.p||'').toUpperCase()}</div></div></div><div style="padding:18px 22px"><p style="color:#475569;line-height:1.7;margin-bottom:${r.code?'14px':'0'}">${esc2(r.desc)}</p>${r.code?`<div style="font-family:monospace;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#64748b;margin-bottom:6px">→ Record / Command</div><pre style="background:#f8fafc;border:1px solid #e2e8f0;border-left:3px solid #e55b4d;border-radius:0 10px 10px 0;padding:14px 16px;overflow-x:auto;font-family:monospace;font-size:12px;color:#334155;line-height:1.6;white-space:pre-wrap;word-break:break-all">${esc2(r.code)}</pre>`:''}<div style="margin-top:14px;border:1px solid #e2e8f0;border-radius:12px;padding:12px 14px;background:#f8fafc"><label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;color:#475569;font-size:13px"><input type="checkbox" style="margin-top:2px;accent-color:#e55b4d;width:16px;height:16px;flex-shrink:0"><span>Mark complete — verify in DNS / browser after implementing</span></label></div></div></div>`;
+  }).join('');
+  const failRows=failed.map(f=>{const c=f.status==='fail'?'#dc2626':'#d97706',bg=f.status==='fail'?'#fef2f2':'#fffbeb';return `<tr><td style="padding:10px 14px;border-bottom:1px solid #f1f5f9;font-size:13px;font-weight:600;color:#0f172a">${esc2(f.check)}</td><td style="padding:10px 14px;border-bottom:1px solid #f1f5f9"><span style="font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:3px 8px;border-radius:4px;background:${bg};color:${c}">${(f.status||'').toUpperCase()}</span></td><td style="padding:10px 14px;border-bottom:1px solid #f1f5f9;font-size:12px;color:#64748b;font-family:monospace">${esc2(f.value)}</td><td style="padding:10px 14px;border-bottom:1px solid #f1f5f9;font-size:12px;color:#64748b">${esc2(f.risk)}</td></tr>`;}).join('');
+  return `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Corrective Action Runbook — ${esc2(d.domain)}</title><style>*{box-sizing:border-box;margin:0;padding:0}body{background:#f8fafc;color:#334155;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;line-height:1.5}.wrap{max-width:1100px;margin:0 auto;padding:28px 20px}.hdr{background:#fff;border:1px solid #e2e8f0;border-radius:16px;padding:28px 32px;margin-bottom:20px}.ey{font-family:monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#e55b4d;display:block;margin-bottom:8px}.hdr h1{font-size:26px;font-weight:800;color:#0f172a;margin-bottom:6px}.hdr h1 em{color:#e55b4d;font-style:normal}.hmeta{display:flex;gap:20px;flex-wrap:wrap;margin-top:12px;font-size:12px;color:#94a3b8}.layout{display:grid;grid-template-columns:260px 1fr;gap:20px;align-items:start}.toc{position:sticky;top:20px;background:#fff;border:1px solid #e2e8f0;border-radius:16px;padding:16px}.toclbl{font-family:monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#e55b4d;margin-bottom:10px;display:block}.srow{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px}.stat{background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:14px 16px}.sv{font-size:24px;font-weight:800;color:#0f172a;font-family:monospace}.sl{font-size:11px;color:#94a3b8;letter-spacing:.06em;text-transform:uppercase;margin-top:3px}.sec{background:#fff;border:1px solid #e2e8f0;border-radius:16px;margin-bottom:20px;overflow:hidden}.sechdr{padding:14px 22px;border-bottom:1px solid #f1f5f9;font-family:monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#94a3b8}.wirebox{background:#fef2f2;border:1px solid #fecaca;border-radius:14px;padding:18px 22px;margin-bottom:20px}.wt{color:#dc2626;font-weight:700;font-size:15px;margin-bottom:10px}.wstats{display:flex;gap:20px;margin-bottom:10px;flex-wrap:wrap}.wv{font-size:20px;font-weight:900;color:#dc2626;font-family:monospace}.wl{font-size:10px;color:#94a3b8;letter-spacing:.06em}.wirebox p{font-size:13px;color:#64748b;line-height:1.6}.wirebox code{background:#fee2e2;color:#dc2626;border-radius:4px;padding:1px 6px;font-family:monospace}.footer{text-align:center;padding:24px;font-size:12px;color:#94a3b8;border-top:1px solid #e2e8f0;margin-top:24px}@media print{.toc{display:none}.layout{grid-template-columns:1fr}}@media(max-width:800px){.layout{grid-template-columns:1fr}.toc{position:static}.srow{grid-template-columns:1fr 1fr}}</style></head><body><div class="wrap"><div class="hdr"><span class="ey">Next-Gen IT · Corrective Action Runbook</span><h1><em>${esc2(d.domain)}</em> — fix the audit findings.</h1><p style="color:#64748b;margin-top:8px">Step-by-step instructions for every failed or at-risk item. Work through in order — HIGH priority first.</p><div class="hmeta"><span>📅 ${scanDate}</span><span>🏢 ${esc2(d.domain)}</span><span>⚠️ ${remed.length} items to fix</span></div></div><div class="srow"><div class="stat"><div class="sv" style="color:${gradeColor((d.scores||{}).email||0,10)}">${(d.scores||{}).email||0}/10</div><div class="sl">Email Auth</div></div><div class="stat"><div class="sv" style="color:${gradeColor((d.scores||{}).web||0,10)}">${(d.scores||{}).web||0}/10</div><div class="sl">Website / SEO</div></div><div class="stat"><div class="sv" style="color:${gradeColor((d.scores||{}).tech||0,10)}">${(d.scores||{}).tech||0}/10</div><div class="sl">Tech Stack</div></div></div>${d.wireRisk?`<div class="wirebox"><div class="wt">⚠️ Wire Fraud Risk — Fix DMARC First</div><div class="wstats"><div><div class="wv">$275M</div><div class="wl">RE Fraud 2024</div></div><div><div class="wv">12,368</div><div class="wl">IC3 Complaints</div></div></div><p>DMARC is missing or set to <code>p=none</code> on <strong>${esc2(d.domain)}</strong>. Fix SPF and DMARC before any other items.</p></div>`:''}<div class="layout"><div class="toc"><span class="toclbl">Jump to step</span>${tocItems||'<p style="color:#94a3b8;font-size:13px">No actions needed.</p>'}</div><div>${failed.length?`<div class="sec" style="margin-bottom:20px"><div class="sechdr">Failed / At-Risk Items</div><table style="width:100%;border-collapse:collapse"><thead><tr><th style="padding:10px 14px;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#94a3b8;border-bottom:1px solid #f1f5f9;text-align:left">Check</th><th style="padding:10px 14px;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#94a3b8;border-bottom:1px solid #f1f5f9;text-align:left">Status</th><th style="padding:10px 14px;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#94a3b8;border-bottom:1px solid #f1f5f9;text-align:left">Value</th><th style="padding:10px 14px;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#94a3b8;border-bottom:1px solid #f1f5f9;text-align:left">Risk</th></tr></thead><tbody>${failRows}</tbody></table></div>`:''}<div>${stepCards||'<div style="padding:24px;color:#64748b;text-align:center">✓ All checks passed.</div>'}</div></div></div><div class="footer">Generated by Next-Gen IT · ${esc2(d.domain)} · ${scanDate}</div></div></body></html>`;
+}
+
+
+/* ─────────────────────────────────────────────
+   MANIFEST (AI reports from GitHub Actions)
+───────────────────────────────────────────── */
+let manifestReports = [];
+
+async function fetchManifest() {
+  try {
+    const r = await fetch(MANIFEST + '?t=' + Date.now(), { cache:'no-cache' });
+    if (!r.ok) return;
+    const data = await r.json();
+    manifestReports = data.reports || [];
+    renderReports();
+  } catch(e) { console.warn('[NGIT] manifest fetch failed', e); }
+}
+
+/* ─────────────────────────────────────────────
+   REPORTS STORAGE
+───────────────────────────────────────────── */
+function saveReport(d) {
+  let reports;
+  try { reports = JSON.parse(localStorage.getItem(REPORTS_KEY)) || []; } catch { reports=[]; }
+  const idx = reports.findIndex(r => r.domain===d.domain);
+  if (idx>=0) reports.splice(idx,1);
+  reports.unshift(d);
+  if (reports.length>20) reports.pop();
+  localStorage.setItem(REPORTS_KEY, JSON.stringify(reports));
+  renderReports();
+}
+
+function renderReports() {
+  const local = (() => { try { return JSON.parse(localStorage.getItem(REPORTS_KEY))||[]; } catch { return []; } })();
+  const container = document.getElementById('reportsList');
+  let html = '';
+
+  if (manifestReports.length) {
+    html += `<div class="report-section-label">🤖 AI-Generated Reports (GitHub Actions)</div>`;
+    for (const r of manifestReports) {
+      html += `<div class="report-item">
+        <div class="report-icon">🤖</div>
+        <div class="report-info">
+          <div class="report-name">${esc(r.domain)}</div>
+          <div class="report-meta">${esc(r.scan_date)} · Full AI audit</div>
+        </div>
+        <div class="report-score ${gradeClass(r.total_score,30)}">${r.total_score}/30</div>
+        <div class="report-actions">
+          <a class="sbtn sbtn-green" href="${esc(r.url)}" target="_blank">View</a>
+          <button class="sbtn sbtn-blue" onclick="rerun(${esc(JSON.stringify(r.domain))})">Re-scan</button>
+        </div>
+      </div>`;
+    }
+  }
+
+  if (local.length) {
+    html += `<div class="report-section-label">⚡ Quick DNS Scans (local)</div>`;
+    for (const r of local) {
+      const total = r.scores.email + r.scores.web + r.scores.tech;
+      const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(r))));
+      const shareUrl = `${RUNBOOK_URL}#data=${encoded}`;
+      html += `<div class="report-item">
+        <div class="report-icon">🏠</div>
+        <div class="report-info">
+          <div class="report-name">${esc(r.domain)}</div>
+          <div class="report-meta">${new Date(r.ts).toLocaleString()} · DNS-only scan</div>
+        </div>
+        <div class="report-score ${gradeClass(total,30)}">${total}/30</div>
+        <div class="report-actions">
+          <button class="sbtn sbtn-blue" onclick="rerun(${esc(JSON.stringify(r.domain))})">Re-run</button>
+          <a class="sbtn sbtn-blue" href="${esc(shareUrl)}" target="_blank">Runbook</a>
+        </div>
+      </div>`;
+    }
+  }
+
+  if (!html) {
+    container.innerHTML = `<div class="empty"><div class="empty-icon">📂</div><div class="empty-title">No reports yet</div>Run a quick DNS scan, or trigger a full AI audit via GitHub Actions.</div>`;
+    return;
+  }
+  container.innerHTML = html;
+}
+
+function rerun(domain) {
+  document.getElementById('domainInput').value = domain;
+  runAudit(domain);
+}
+
+/* ─────────────────────────────────────────────
+   TOAST
+───────────────────────────────────────────── */
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('on');
+  setTimeout(()=>t.classList.remove('on'), 2200);
+}
+
+/* ─────────────────────────────────────────────
+   WIRE UP
+───────────────────────────────────────────── */
+document.getElementById('runBtn').addEventListener('click', () => {
+  const domain = document.getElementById('domainInput').value.trim();
+  if (domain) runAudit(domain);
+});
+document.getElementById('domainInput').addEventListener('keydown', e => {
+  if (e.key==='Enter') document.getElementById('runBtn').click();
+});
+document.getElementById('refreshBtn').addEventListener('click', () => {
+  fetchManifest();
+  toast('↺ Refreshing reports…');
+});
+
+// Boot
+authCheck();
+</script>
+</body>
+</html>
