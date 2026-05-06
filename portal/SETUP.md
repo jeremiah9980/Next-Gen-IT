@@ -2,7 +2,7 @@
 
 ## Files to add to your repo
 
-```
+```text
 portal/
   login.html    ← new login page (drop in)
   auth.js       ← new auth utility (drop in)
@@ -39,12 +39,14 @@ async function hashPw(pw) {
 hashPw('yourChosenPassword').then(h => console.log(h));
 ```
 
-4. Copy the 64-character hex string
-5. In `login.html`, find the line:
+1. Copy the 64-character hex string
+2. In `login.html`, find the line:
+
    ```js
    const CORRECT_HASH = 'a1c9e4b3...';
    ```
-6. Replace the value with your new hash
+
+3. Replace the value with your new hash
 
 ---
 
