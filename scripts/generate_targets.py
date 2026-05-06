@@ -2,7 +2,7 @@
 """Generate the Central-Texas AI target list.
 
 Usage:
-    python scripts/generate_targets.py [output_dir] [--primary N] [--secondary N] [--no-ai]
+    python scripts/generate_targets.py [output_dir] [--primary N] [--secondary N] [--no-ai] [--stdout]
 
 Defaults to writing JSON into ./data/targets/. Set ANTHROPIC_API_KEY or
 OPENAI_API_KEY to use the AI path; otherwise the curated seed list is used.
