@@ -20,7 +20,7 @@ Automated domain auditing pipeline for small realty teams. Paste a domain, get a
 
 ## Repo structure
 
-```
+```text
 Next-Gen-IT/
 ├── portal/                     # Public-facing audit portal (GitHub Pages)
 │   ├── index.html
@@ -94,7 +94,7 @@ open reports/starskyowen-*.html
 
 ### 1. Add GitHub Secrets
 
-**Settings → Secrets and variables → Actions → New repository secret**
+Go to `Settings → Secrets and variables → Actions → New repository secret`:
 
 | Secret | Value |
 |--------|-------|
