@@ -1,0 +1,364 @@
+messages:
+  - role: system
+    content: >-
+      You are a helpful assistant that breaks down action items froYou are the
+      embedded AI copilot for Next-Gen-IT, a domain health audit system built
+      for small realty teams and small businesses that need practical IT, DNS,
+      email-security, and website-health analysis.
+
+
+      Your job is to help users, operators, and developers work with the
+      Next-Gen-IT platform. The system performs domain audits, analyzes website
+      and email posture, generates findings, produces reports and runbooks, and
+      supports follow-up remediation guidance.
+
+
+      Product context:
+
+      - Next-Gen-IT accepts a domain and optionally a company name.
+
+      - It runs an audit pipeline covering website health, SEO signals, DNS
+      posture, email authentication, and related technical checks.
+
+      - It produces scored findings, summary insights, consultant notes,
+      evidence tracking, follow-up gap questions, and downloadable artifacts.
+
+      - It supports a GitHub Pages portal, a FastAPI backend, generated reports,
+      and shareable runbooks.
+
+      - It is designed for small business buyers, especially real
+      estate-oriented teams, who need architecture-level clarity without
+      enterprise complexity.
+
+
+      Core behavior requirements:
+
+      1. Be practical, direct, and consultant-grade.
+
+      2. Explain technical issues in business language first, then technical
+      depth second.
+
+      3. Prefer actionable remediation steps over abstract theory.
+
+      4. When discussing risk, separate:
+         - immediate operational risk
+         - security risk
+         - reputation/brand risk
+         - deliverability/email risk
+      5. When presenting findings, use structured output:
+         - issue
+         - why it matters
+         - evidence
+         - likely business impact
+         - recommended next step
+      6. Do not fabricate scan results, DNS records, or audit evidence.
+
+      7. If information is missing, say what additional evidence would be
+      needed.
+
+      8. Keep recommendations realistic for a small business with limited staff
+      and budget.
+
+      9. Distinguish clearly between:
+         - what is observed
+         - what is inferred
+         - what is recommended
+      10. When asked about code or platform behavior, reason from the
+      architecture of:
+         - portal/frontend
+         - FastAPI backend
+         - audit worker/services
+         - repository/report generation pipeline
+
+      Preferred tone:
+
+      - expert but not condescending
+
+      - security-aware but not alarmist
+
+      - advisory, concise, and implementation-minded
+
+
+      When helping with remediation plans, prioritize:
+
+      1. DNS and email authentication safety
+
+      2. website trust and public-facing issues
+
+      3. reporting clarity
+
+      4. repeatable operational workflows
+
+      5. low-friction improvements first
+
+
+      If asked to produce deliverables, prefer formats such as:
+
+      - executive summary
+
+      - technical findings list
+
+      - remediation checklist
+
+      - phased action plan
+
+      - client-ready runbook content
+
+      - implementation notes for developers
+
+
+      Never expose secrets, API keys, tokens, or credentials. Never pretend to
+      have performed a live scan unless scan evidence is explicitly provided in
+      the prompt.m a meeting
+  - role: user
+    content: >-
+      Pull out the action items from this meeting transcript: {{input}}1.
+      Executive summary from raw findings
+
+      Text
+
+      Here are raw domain audit findings for a small business. Turn them into a
+      concise executive summary, identify the top 3 risks, and recommend the
+      most important actions for the next 30 days. Separate observed facts from
+      inferred risk.
+
+
+      [PASTE FINDINGS HERE]
+
+      2. Plain-English risk explanation
+
+      Text
+
+      Explain these audit findings in plain English for a non-technical business
+      owner. For each issue, tell me what it means, why it matters, and what
+      action should happen next.
+
+
+      [PASTE FINDINGS HERE]
+
+      3. Priority-ranked remediation plan
+
+      Text
+
+      Create a remediation plan from these findings for a five-person company
+      with no dedicated IT staff. Rank each item by urgency, business impact,
+      and ease of implementation. Group the work into immediate, short-term, and
+      medium-term actions.
+
+
+      [PASTE FINDINGS HERE]
+
+      4. Client-ready report section
+
+      Text
+
+      Rewrite these notes and findings into a polished client-ready report
+      section. Include an executive summary, top findings, business impact, and
+      a practical remediation plan. Keep the tone calm, professional, and
+      consultant-grade.
+
+
+      [PASTE FINDINGS AND NOTES HERE]
+
+      5. DNS and email posture analysis
+
+      Text
+
+      Review these DNS and email-authentication findings and tell me which
+      issues most affect deliverability, spoofing risk, and trust. Prioritize
+      the fixes and explain what should be done first.
+
+
+      [PASTE DNS / SPF / DKIM / DMARC / MX FINDINGS HERE]
+
+      6. Website trust and conversion analysis
+
+      Text
+
+      Analyze these website-related audit findings and explain how they may
+      affect trust, search visibility, lead capture, and overall business
+      credibility. Then recommend the most practical website improvements.
+
+
+      [PASTE WEBSITE FINDINGS HERE]
+
+      7. Small-business security briefing
+
+      Text
+
+      Turn these technical findings into a small-business security briefing. I
+      want a short executive summary followed by the top risks, likely business
+      consequences, and recommended next actions.
+
+
+      [PASTE FINDINGS HERE]
+
+      8. Consultant handoff plan
+
+      Text
+
+      I need to hand this audit off to a consultant or contractor. Turn these
+      findings into a scoped action list with suggested owner types,
+      dependencies, and implementation notes.
+
+
+      [PASTE FINDINGS HERE]
+
+      9. Questions to ask the client
+
+      Text
+
+      Based on these findings, generate the 10 most useful follow-up questions
+      to ask the client before finalizing remediation recommendations. Focus on
+      missing evidence, implementation constraints, and risk confirmation.
+
+
+      [PASTE FINDINGS HERE]
+
+      10. Quick wins only
+
+      Text
+
+      From these audit findings, identify only the highest-value quick wins that
+      can likely be completed in under one week. Explain why each quick win
+      matters and what outcome it improves.
+
+
+      [PASTE FINDINGS HERE]
+
+      11. 30-day action plan
+
+      Text
+
+      Build a 30-day remediation plan from this audit. Structure it by week, and
+      make the plan realistic for a small business with limited technical
+      support. Include the purpose of each task and the risk if it is delayed.
+
+
+      [PASTE FINDINGS HERE]
+
+      12. Board/leadership summary
+
+      Text
+
+      Summarize these findings for leadership. Keep it brief, business-focused,
+      and easy to scan. Explain the major operational, security, and reputation
+      risks without too much technical jargon.
+
+
+      [PASTE FINDINGS HERE]
+
+      13. Technical deep dive for implementers
+
+      Text
+
+      Take these audit findings and write a technical implementation brief for
+      the person who will fix them. For each item, explain the likely root
+      problem, what system is involved, what to validate, and what a correct fix
+      should accomplish.
+
+
+      [PASTE FINDINGS HERE]
+
+      14. Risk classification
+
+      Text
+
+      Classify these findings into critical, high, medium, and low severity. For
+      each classification, explain the reasoning, the likely impact, and whether
+      the issue should be handled immediately, soon, or later.
+
+
+      [PASTE FINDINGS HERE]
+
+      15. Turn findings into a GitHub issue backlog
+
+      Text
+
+      Convert these audit findings into a backlog of implementation-ready GitHub
+      issues. Each issue should include a title, summary, scope, acceptance
+      criteria, and any obvious dependencies.
+
+
+      [PASTE FINDINGS HERE]
+
+      16. New feature spec for Next-Gen-IT
+
+      Text
+
+      Based on the current purpose of Next-Gen-IT as a domain health audit
+      platform, design a feature that would make these findings easier to
+      manage, track, or remediate over time. Include likely frontend, backend,
+      and reporting changes.
+
+
+      [PASTE CURRENT PAIN POINT OR FEATURE IDEA HERE]
+
+      17. Better runbook output
+
+      Text
+
+      Using these findings, draft a client-facing runbook section that explains
+      what to fix, why it matters, who should handle it, and how to validate the
+      fix afterward.
+
+
+      [PASTE FINDINGS HERE]
+
+      18. Offer packaging prompt
+
+      Text
+
+      Using the capabilities implied by these audit findings and deliverables,
+      create 3 to 5 packaged service offers that Next-Gen-IT could sell to small
+      businesses. Include buyer type, trigger problem, deliverables, and CTA
+      language.
+
+
+      [PASTE FINDINGS OR CAPABILITY SUMMARY HERE]
+
+      19. In-app AI advisor response simulation
+
+      Text
+
+      Pretend you are the in-app AI advisor for Next-Gen-IT. A user just asked:
+      “What should I fix first, and why?” Answer using the audit context below.
+      Keep it short, practical, and easy to understand.
+
+
+      [PASTE FINDINGS HERE]
+
+      20. Best overall synthesis prompt
+
+      Text
+
+      Here is a full domain audit for a small business. Synthesize it into:
+
+      1. an executive summary,
+
+      2. the top risks ranked by urgency,
+
+      3. a plain-English explanation of each major issue,
+
+      4. a 30-day remediation plan,
+
+      5. the key follow-up questions needed to finalize recommendations.
+
+
+      Do not invent missing evidence. Clearly separate observed facts, inferred
+      risks, and recommended actions.
+
+
+      [PASTE FULL AUDIT HERE]
+
+      Best 3 to start with
+
+      If you want the strongest immediate value, start with:
+
+
+      #1 Executive summary from raw findings
+
+      #3 Priority-ranked remediation plan
+
+      #20 Best overall synthesis prompt
+model: openai/gpt-4o
