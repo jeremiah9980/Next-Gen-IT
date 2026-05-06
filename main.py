@@ -25,8 +25,11 @@ from .schemas import (
     AuditDetailResponse,
     AuditSummaryResponse,
     NoteCreateRequest,
+    TargetListRequest,
+    TargetListResponse,
 )
 from .services.gap_assistant import generate_follow_up_questions
+from .services.target_generator import generate_target_list
 from .services.worker import start_audit_thread
 
 app = FastAPI(title=settings.app_name)
@@ -118,6 +121,31 @@ def get_gap_questions(audit_id: str) -> dict[str, list[str]]:
     notes = get_notes(audit_id)
     questions = generate_follow_up_questions(audit, findings, evidence_items, notes)
     return {"questions": questions}
+
+
+@app.post("/api/targets/generate", response_model=TargetListResponse)
+def generate_targets_endpoint(payload: TargetListRequest | None = None) -> TargetListResponse:
+    payload = payload or TargetListRequest()
+    target_list = generate_target_list(
+        primary_count=payload.primary_count,
+        secondary_count=payload.secondary_count,
+        use_ai=payload.use_ai,
+    )
+    return TargetListResponse(**target_list.to_dict())
+
+
+@app.get("/api/targets", response_model=TargetListResponse)
+def get_targets_endpoint(
+    primary_count: int = 20,
+    secondary_count: int = 15,
+    use_ai: bool = True,
+) -> TargetListResponse:
+    target_list = generate_target_list(
+        primary_count=primary_count,
+        secondary_count=secondary_count,
+        use_ai=use_ai,
+    )
+    return TargetListResponse(**target_list.to_dict())
 
 
 @app.get("/api/audits/{audit_id}/report")
