@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Close the Deal — Module 4 · Next‑Gen‑IT</title>
+<meta name="description" content="Module 4 field manual: territory and the scored list, the 20-second opener, discovery, quoting, objections, paper, and pipeline discipline."/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --paper:#071A32; --paper-deep:#0A2342; --paper-edge:#041326;
+  --panel:rgba(10,35,66,.82); --panel-strong:rgba(13,43,79,.94);
+  --ink:#FFFFFF; --ink-soft:#D7E2F0; --ink-muted:#91A6C3;
+  --rule:rgba(145,166,195,.22); --rule-soft:rgba(145,166,195,.12);
+  --coral:#FF6B5F; --coral-deep:#E4473A; --coral-soft:rgba(255,107,95,.14); --coral-glow:rgba(255,107,95,.38);
+  --sky:#8FD7FF; --sky-deep:#1B8BD6; --sky-soft:rgba(143,215,255,.14); --sky-glow:rgba(143,215,255,.28);
+  --ok:#22C55E; --ok-soft:rgba(34,197,94,.14);
+  --warn:#F59E0B; --warn-soft:rgba(245,158,11,.12);
+  --danger:#EF4444; --danger-soft:rgba(239,68,68,.12);
+  --display:'Fraunces',Georgia,serif; --body:'IBM Plex Sans',sans-serif; --mono:'IBM Plex Mono',monospace;
+  --gutter:clamp(1rem,3vw,2rem); --page-max:1020px;
+  --radius:22px; --radius-sm:14px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{min-height:100vh;font-family:var(--body);color:var(--ink);line-height:1.6;font-size:15px;
+  background:radial-gradient(circle at 82% 12%,var(--coral-glow) 0%,transparent 30%),
+             radial-gradient(circle at 14% 22%,var(--sky-glow) 0%,transparent 34%),
+             linear-gradient(135deg,var(--paper-edge) 0%,var(--paper) 46%,#0B274D 100%);
+  background-attachment:fixed;-webkit-font-smoothing:antialiased;display:flex;flex-direction:column}
+a{color:var(--sky);text-decoration:none} a:hover{text-decoration:underline}
+button{font-family:inherit}
+:focus-visible{outline:2px solid var(--sky);outline-offset:2px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+.container{width:100%;max-width:var(--page-max);margin:0 auto;padding:0 var(--gutter)}
+
+.site-nav{position:sticky;top:0;z-index:999;background:rgba(4,19,38,.82);border-bottom:1px solid var(--rule);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
+.site-nav-inner{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:.85rem var(--gutter);max-width:var(--page-max);margin:0 auto;flex-wrap:wrap}
+.brand{font-family:var(--display);font-weight:700;font-size:1.05rem;letter-spacing:-.01em;color:var(--ink)}
+.brand em{font-style:italic;color:var(--coral)}
+.brand-sub{font-family:var(--mono);font-size:.68rem;color:var(--ink-muted);letter-spacing:.1em;text-transform:uppercase;margin-left:.6rem}
+.nav-right{display:flex;gap:.5rem;align-items:center}
+.nav-link{font-family:var(--mono);font-size:.68rem;letter-spacing:.06em;border:1px solid var(--rule);border-radius:999px;padding:.4rem .9rem;color:var(--ink-muted)}
+.nav-link:hover{border-color:var(--sky);color:var(--sky);text-decoration:none}
+.reset-btn{background:none;border:1px solid var(--rule);border-radius:999px;color:var(--ink-muted);font-family:var(--mono);font-size:.7rem;padding:.42rem .95rem;cursor:pointer;transition:all .18s}
+.reset-btn:hover{border-color:var(--coral);color:var(--coral)}
+
+main{flex:1;padding:clamp(2rem,5vw,3.2rem) 0 2.5rem}
+.eyebrow{display:inline-flex;align-items:center;gap:.7rem;font-family:var(--mono);color:var(--sky);font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;margin-bottom:1rem}
+.eyebrow::before{content:"";width:34px;height:2px;background:linear-gradient(90deg,var(--coral),var(--sky));border-radius:2px}
+.hero{padding-bottom:clamp(1.4rem,4vw,2.2rem)}
+.hero h1{font-family:var(--display);font-size:clamp(2.4rem,6vw,4.1rem);line-height:.95;letter-spacing:-.035em;margin-bottom:1.1rem;font-weight:600;text-wrap:balance}
+.hero h1 em{font-style:italic;color:var(--coral);text-shadow:0 0 36px var(--coral-glow)}
+.lede{color:var(--ink-soft);font-size:clamp(.96rem,1.6vw,1.06rem);max-width:64ch;font-weight:300}
+.lede strong{font-weight:600;color:var(--ink)}
+
+.panel{position:relative;background:linear-gradient(180deg,rgba(255,255,255,.08),rgba(255,255,255,.035)),var(--panel);border:1px solid var(--rule);border-radius:var(--radius);box-shadow:0 16px 55px rgba(0,0,0,.18);overflow:hidden}
+.pipeline{padding:clamp(1.1rem,3vw,1.5rem) clamp(1.2rem,3vw,1.8rem);margin:1.3rem 0 1.4rem}
+.pipeline-hdr{display:flex;align-items:baseline;justify-content:space-between;gap:1rem;margin-bottom:.9rem;flex-wrap:wrap}
+.pipeline-title{font-family:var(--mono);font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-muted)}
+.pipeline-pct{font-family:var(--display);font-weight:700;font-size:1.9rem;line-height:1;color:var(--coral);text-shadow:0 0 28px var(--coral-glow)}
+.steps{display:flex;gap:.5rem;margin-bottom:.85rem;flex-wrap:wrap}
+.step{display:flex;align-items:center;gap:.45rem;padding:.42rem .85rem;background:rgba(4,19,38,.5);border:1px solid var(--rule);border-radius:999px;font-family:var(--mono);font-size:.7rem;color:var(--ink-muted);transition:all .25s}
+.step.scanning{border-color:var(--warn);color:var(--warn);background:var(--warn-soft)}
+.step.done{border-color:var(--ok);color:var(--ok);background:var(--ok-soft)}
+.progress{height:4px;background:var(--rule-soft);border-radius:4px;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--coral),var(--sky));transition:width .5s ease;width:0}
+.pipeline-note{font-family:var(--mono);font-size:.68rem;color:var(--ink-muted);margin-top:.75rem}
+
+.tabs{display:flex;gap:.5rem;margin-bottom:1.4rem;flex-wrap:wrap}
+.tab{background:rgba(4,19,38,.5);border:1px solid var(--rule);border-radius:999px;color:var(--ink-soft);font-family:var(--mono);font-size:.72rem;letter-spacing:.04em;padding:.55rem 1.05rem;cursor:pointer;transition:all .18s;min-height:38px}
+.tab:hover{border-color:var(--sky);color:var(--sky)}
+.tab.active{background:linear-gradient(135deg,var(--coral),var(--coral-deep));border-color:transparent;color:#fff;font-weight:600;box-shadow:0 10px 32px rgba(228,71,58,.28)}
+
+.card{margin-bottom:1.4rem}
+.card-hdr{padding:1rem clamp(1.2rem,3vw,1.6rem);border-bottom:1px solid var(--rule-soft);display:flex;align-items:baseline;justify-content:space-between;gap:1rem;flex-wrap:wrap}
+.card-label{font-family:var(--mono);font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-muted)}
+.card-body{padding:1.2rem clamp(1.2rem,3vw,1.6rem)}
+.session-tag{font-family:var(--mono);font-weight:600;font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;color:var(--sky)}
+.session-name{font-family:var(--display);font-weight:600;font-size:1.32rem;letter-spacing:-.01em;display:block;margin-top:.15rem}
+.session-time{font-family:var(--mono);font-size:.68rem;color:var(--ink-muted);letter-spacing:.08em;text-transform:uppercase}
+
+.lesson{border-bottom:1px solid var(--rule-soft)}
+.lesson:last-child{border-bottom:none}
+.lesson-hdr{display:flex;align-items:flex-start;gap:.9rem;padding:1rem clamp(1.2rem,3vw,1.6rem);cursor:pointer;transition:background .15s;user-select:none}
+.lesson-hdr:hover{background:rgba(255,255,255,.03)}
+.chk{width:21px;height:21px;border:1.5px solid var(--rule);border-radius:7px;flex-shrink:0;margin-top:2px;display:flex;align-items:center;justify-content:center;font-size:.75rem;color:transparent;transition:all .18s;background:rgba(4,19,38,.5)}
+.lesson.done .chk{background:var(--ok-soft);border-color:var(--ok);color:var(--ok)}
+.lesson-info{flex:1;min-width:0}
+.lesson-title{font-size:.98rem;font-weight:600}
+.lesson.done .lesson-title{color:var(--ink-muted)}
+.lesson-meta{font-family:var(--mono);font-size:.68rem;color:var(--ink-muted);margin-top:.15rem}
+.caret{color:var(--coral);font-size:.7rem;transition:transform .2s;margin-top:.35rem}
+.lesson.open .caret{transform:rotate(90deg)}
+.lesson-body{display:none;padding:0 clamp(1.2rem,3vw,1.6rem) 1.3rem calc(clamp(1.2rem,3vw,1.6rem) + 30px);color:var(--ink-soft);font-size:.9rem;font-weight:300}
+.lesson.open .lesson-body{display:block}
+.lesson-body p{margin-bottom:.75rem}
+.lesson-body ul,.lesson-body ol{margin:0 0 .75rem 1.2rem}
+.lesson-body li{margin-bottom:.35rem}
+.lesson-body strong{color:var(--ink);font-weight:600}
+.lesson-body em{color:var(--sky)}
+.lesson-body code{font-family:var(--mono);color:var(--sky);font-size:.8rem;background:rgba(143,215,255,.1);padding:.08rem .4rem;border-radius:5px}
+@media (max-width:640px){.lesson-body{padding-left:clamp(1.2rem,3vw,1.6rem)}}
+
+.codeblock{position:relative;background:rgba(4,19,38,.72);border:1px solid var(--rule);border-radius:var(--radius-sm);padding:.95rem 1.05rem;font-family:var(--mono);font-size:.75rem;line-height:1.6;color:var(--ink-soft);white-space:pre-wrap;word-break:break-word;margin-bottom:.8rem}
+.codeblock .c{color:var(--coral)} .codeblock .s{color:var(--sky)} .codeblock .g{color:var(--ok)} .codeblock .m{color:var(--ink-muted)}
+.copy-btn{position:absolute;top:.6rem;right:.6rem;background:var(--panel-strong);border:1px solid var(--rule);border-radius:999px;color:var(--ink-muted);font-family:var(--mono);font-size:.65rem;padding:.25rem .7rem;cursor:pointer}
+.copy-btn:hover{border-color:var(--sky);color:var(--sky)}
+.copy-btn.copied{border-color:var(--ok);color:var(--ok)}
+
+.callout{border-radius:var(--radius-sm);padding:.85rem 1.05rem;font-size:.85rem;margin-bottom:.8rem;line-height:1.6;font-weight:300;color:var(--ink-soft)}
+.callout b{display:block;margin-bottom:.2rem;font-family:var(--mono);font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;font-weight:600}
+.co-warn{background:var(--warn-soft);border:1px solid rgba(245,158,11,.3)} .co-warn b{color:var(--warn)}
+.co-danger{background:var(--danger-soft);border:1px solid rgba(239,68,68,.3)} .co-danger b{color:var(--danger)}
+.co-ok{background:var(--ok-soft);border:1px solid rgba(34,197,94,.3)} .co-ok b{color:var(--ok)}
+.co-info{background:var(--sky-soft);border:1px solid rgba(143,215,255,.3)} .co-info b{color:var(--sky)}
+
+.ftable{width:100%;border-collapse:collapse;font-size:.84rem}
+.ftable th{padding:.55rem .75rem;font-family:var(--mono);font-size:.64rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-muted);border-bottom:1px solid var(--rule);text-align:left;font-weight:500}
+.ftable td{padding:.55rem .75rem;border-bottom:1px solid var(--rule-soft);vertical-align:top;color:var(--ink-soft);font-weight:300}
+.ftable tr:last-child td{border-bottom:none}
+.ftable code{font-family:var(--mono);color:var(--sky);font-size:.76rem}
+.ftable td b{color:var(--ink);font-weight:600}
+.tbl-scroll{overflow-x:auto}
+
+.diagram{margin:.4rem 0 1rem;background:rgba(4,19,38,.45);border:1px solid var(--rule-soft);border-radius:var(--radius-sm);padding:.8rem}
+.diagram svg{width:100%;height:auto;display:block}
+.diagram-cap{font-family:var(--mono);font-size:.62rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-muted);text-align:center;margin-top:.5rem}
+
+.objection{border-bottom:1px solid var(--rule-soft)}
+.objection:last-child{border-bottom:none}
+.obj-q{display:flex;gap:.7rem;align-items:flex-start;padding:.75rem clamp(1.2rem,3vw,1.6rem);cursor:pointer;user-select:none}
+.obj-q:hover{background:rgba(255,255,255,.03)}
+.obj-num{font-family:var(--display);font-style:italic;font-weight:700;color:var(--coral);font-size:1rem;width:1.4rem;flex-shrink:0;text-shadow:0 0 18px var(--coral-glow)}
+.obj-text{flex:1;font-size:.9rem;font-weight:600;color:var(--ink)}
+.obj-a{display:none;padding:0 clamp(1.2rem,3vw,1.6rem) .9rem calc(clamp(1.2rem,3vw,1.6rem) + 2.1rem);color:var(--ink-soft);font-size:.86rem;font-weight:300}
+.objection.open .obj-a{display:block}
+.obj-a em{color:var(--sky)}
+
+.check-item{display:flex;align-items:flex-start;gap:.8rem;padding:.6rem clamp(1.2rem,3vw,1.6rem);border-bottom:1px solid var(--rule-soft);cursor:pointer;user-select:none}
+.check-item:hover{background:rgba(255,255,255,.03)}
+.check-item:last-child{border-bottom:none}
+.check-item .chk{width:18px;height:18px;font-size:.68rem;border-radius:6px;margin-top:1px}
+.check-item.done .chk{background:var(--ok-soft);border-color:var(--ok);color:var(--ok)}
+.check-text{font-size:.86rem;color:var(--ink-soft);font-weight:300}
+.check-item.done .check-text{color:var(--ink-muted);text-decoration:line-through}
+.check-group-label{font-family:var(--mono);font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--sky);padding:.7rem clamp(1.2rem,3vw,1.6rem) .2rem}
+.tag{font-family:var(--mono);font-size:.62rem;font-weight:600;letter-spacing:.08em;padding:.2rem .6rem;border-radius:999px;text-transform:uppercase;display:inline-block}
+.tag-info{background:var(--sky-soft);color:var(--sky)}
+.tag-fail{background:var(--danger-soft);color:var(--danger)}
+
+.script{border-left:3px solid var(--coral);background:rgba(255,107,95,.06);border-radius:0 var(--radius-sm) var(--radius-sm) 0;padding:.85rem 1rem;margin-bottom:.8rem;font-size:.88rem;color:var(--ink-soft);font-weight:300;font-style:italic}
+.script b{display:block;font-style:normal;font-family:var(--mono);font-size:.64rem;letter-spacing:.1em;text-transform:uppercase;color:var(--coral);margin-bottom:.3rem;font-weight:600}
+
+.view{display:none} .view.on{display:block}
+.site-footer{border-top:1px solid var(--rule);background:rgba(4,19,38,.6);padding:1.3rem var(--gutter);text-align:center}
+.footer-meta{font-family:var(--mono);font-size:.68rem;color:var(--ink-muted)}
+.footer-meta em{font-style:italic;color:var(--coral)}
+</style>
+</head>
+<body>
+
+<nav class="site-nav">
+  <div class="site-nav-inner">
+    <div class="brand">Next‑Gen‑<em>IT</em><span class="brand-sub">Module 4 · Close the Deal</span></div>
+    <div class="nav-right">
+      <a class="nav-link" href="./signup.html" style="border-color:rgba(255,107,95,.55);color:#FF6B5F">Sign up</a><a class="nav-link" href="./modules.html">All modules</a>
+      <button class="reset-btn" onclick="resetProgress()">Reset progress</button>
+    </div>
+  </div>
+</nav>
+
+<main><div class="container">
+<section class="hero">
+  <div class="eyebrow">Field training · Module 4 of 5 · Prereq: Module 2 · runs parallel with Module 3</div>
+  <h1>Doors don't open themselves.<br><em>Knock like a pro.</em></h1>
+  <p class="lede">Everything before this was the product. This is the pipeline: a list worth working, a twenty-second opener, five discovery questions, a quote you can say without flinching, and paper that gets you paid. <strong>Honest selling isn't soft selling</strong> — it's saying true things confidently and letting the evidence close.</p>
+</section>
+
+<section class="panel pipeline">
+  <div class="pipeline-hdr"><span class="pipeline-title">Module 4 pipeline</span><span class="pipeline-pct" id="pct">0%</span></div>
+  <div class="steps">
+    <div class="step" id="ps1">◆ S1 · Territory</div>
+    <div class="step" id="ps2">◆ S2 · The Conversation</div>
+    <div class="step" id="ps3">◆ S3 · Paper &amp; Pay</div>
+    <div class="step" id="ps4">◆ Field checklist</div>
+    <div class="step" id="ps5">◆ Graduation</div>
+  </div>
+  <div class="progress"><div class="progress-fill" id="pfill"></div></div>
+  <p class="pipeline-note">Progress saves in this browser · the comp recital must be word-perfect to graduate.</p>
+</section>
+
+<nav class="tabs">
+  <button class="tab active" data-view="v-ov">Overview</button>
+  <button class="tab" data-view="v-s1">S1 · Territory</button>
+  <button class="tab" data-view="v-s2">S2 · The Conversation</button>
+  <button class="tab" data-view="v-s3">S3 · Paper &amp; Pay</button>
+  <button class="tab" data-view="v-chk">Checklist &amp; Graduation</button>
+</nav>
+
+<!-- ============ OVERVIEW ============ -->
+<div class="view on" id="v-ov">
+<section class="panel card">
+  <div class="card-hdr"><span class="card-label">The math this module runs on</span><span class="tag tag-info">volume × honesty</span></div>
+  <div class="card-body">
+    <p style="margin-bottom:.8rem;color:var(--ink-soft);font-weight:300">Field sales is arithmetic wearing boots. You don't need a golden tongue; you need <strong style="color:var(--ink)">a scored list, a repeatable conversation, and enough doors</strong>. The funnel below is the whole business plan — every number in it improves with reps, and every "no" is data if you debrief it in two minutes.</p>
+    <div class="diagram">
+      <svg viewBox="0 0 760 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Weekly funnel: 50-business list, 30 doors knocked, 9 real conversations, 3 quotes, 1 close plus care plan attach">
+        <rect x="15" y="30" width="132" height="120" rx="12" fill="rgba(143,215,255,.08)" stroke="#8FD7FF"/>
+        <text x="81" y="55" fill="#8FD7FF" font-family="IBM Plex Mono" font-size="10" text-anchor="middle">THE LIST</text>
+        <text x="81" y="86" fill="#FFFFFF" font-family="Fraunces" font-size="26" font-weight="700" text-anchor="middle">50</text>
+        <text x="81" y="106" fill="#D7E2F0" font-family="IBM Plex Sans" font-size="9.5" text-anchor="middle">scored by pain</text>
+        <text x="81" y="120" fill="#91A6C3" font-family="IBM Plex Sans" font-size="8.5" text-anchor="middle">refilled weekly</text>
+        <text x="160" y="95" fill="#91A6C3" font-size="14" text-anchor="middle">→</text>
+        <rect x="173" y="30" width="132" height="120" rx="12" fill="rgba(143,215,255,.08)" stroke="#8FD7FF"/>
+        <text x="239" y="55" fill="#8FD7FF" font-family="IBM Plex Mono" font-size="10" text-anchor="middle">DOORS / WK</text>
+        <text x="239" y="86" fill="#FFFFFF" font-family="Fraunces" font-size="26" font-weight="700" text-anchor="middle">30</text>
+        <text x="239" y="106" fill="#D7E2F0" font-family="IBM Plex Sans" font-size="9.5" text-anchor="middle">10 a day, 3 days</text>
+        <text x="239" y="120" fill="#91A6C3" font-family="IBM Plex Sans" font-size="8.5" text-anchor="middle">routed by trade hours</text>
+        <text x="318" y="95" fill="#91A6C3" font-size="14" text-anchor="middle">→</text>
+        <rect x="331" y="30" width="132" height="120" rx="12" fill="rgba(245,158,11,.08)" stroke="#F59E0B"/>
+        <text x="397" y="55" fill="#F59E0B" font-family="IBM Plex Mono" font-size="10" text-anchor="middle">CONVOS</text>
+        <text x="397" y="86" fill="#FFFFFF" font-family="Fraunces" font-size="26" font-weight="700" text-anchor="middle">~9</text>
+        <text x="397" y="106" fill="#D7E2F0" font-family="IBM Plex Sans" font-size="9.5" text-anchor="middle">owner present +</text>
+        <text x="397" y="120" fill="#D7E2F0" font-family="IBM Plex Sans" font-size="9.5" text-anchor="middle">willing to talk</text>
+        <text x="476" y="95" fill="#91A6C3" font-size="14" text-anchor="middle">→</text>
+        <rect x="489" y="30" width="120" height="120" rx="12" fill="rgba(255,107,95,.08)" stroke="#FF6B5F"/>
+        <text x="549" y="55" fill="#FF6B5F" font-family="IBM Plex Mono" font-size="10" text-anchor="middle">QUOTES</text>
+        <text x="549" y="86" fill="#FFFFFF" font-family="Fraunces" font-size="26" font-weight="700" text-anchor="middle">3</text>
+        <text x="549" y="106" fill="#D7E2F0" font-family="IBM Plex Sans" font-size="9.5" text-anchor="middle">number said out loud</text>
+        <text x="620" y="95" fill="#91A6C3" font-size="14" text-anchor="middle">→</text>
+        <rect x="633" y="30" width="115" height="120" rx="12" fill="rgba(34,197,94,.1)" stroke="#22C55E"/>
+        <text x="690" y="55" fill="#22C55E" font-family="IBM Plex Mono" font-size="10" text-anchor="middle">CLOSE / WK</text>
+        <text x="690" y="86" fill="#FFFFFF" font-family="Fraunces" font-size="26" font-weight="700" text-anchor="middle">1</text>
+        <text x="690" y="106" fill="#D7E2F0" font-family="IBM Plex Sans" font-size="9.5" text-anchor="middle">+ care-plan attach</text>
+        <text x="690" y="120" fill="#91A6C3" font-family="IBM Plex Sans" font-size="8.5" text-anchor="middle">deposit same day</text>
+        <text x="380" y="178" fill="#91A6C3" font-family="IBM Plex Mono" font-size="9" text-anchor="middle">RATIOS IMPROVE WITH REPS · THE ONLY UNFORGIVABLE NUMBER IS ZERO DOORS</text>
+      </svg>
+      <div class="diagram-cap">One close a week at Standard tier + care plan ≈ a real income — track every stage, every week</div>
+    </div>
+  </div>
+</section>
+
+<section class="panel card">
+  <div class="card-hdr"><span class="card-label">Module map</span></div>
+  <div class="card-body">
+    <div class="tbl-scroll"><table class="ftable">
+      <tr><th>Session</th><th>What you leave with</th><th>Time</th></tr>
+      <tr><td><b>S1 · Territory</b></td><td>A scored 50-business list, a weekly route, and the right hour for every trade</td><td>~2 hrs</td></tr>
+      <tr><td><b>S2 · The Conversation</b></td><td>The 20-second opener, five discovery questions, the quote table, five objections drilled</td><td>~3 hrs</td></tr>
+      <tr><td><b>S3 · Paper &amp; Pay</b></td><td>The one-page agreement, deposit-first discipline, pipeline stages, and the comp plan cold</td><td>~2 hrs</td></tr>
+    </table></div>
+  </div>
+</section>
+</div>
+
+<!-- ============ S1 ============ -->
+<div class="view" id="v-s1">
+<section class="panel card">
+  <div class="card-hdr">
+    <div><span class="session-tag">Session 1</span><span class="session-name">Territory &amp; the list</span></div>
+    <span class="session-time">~2 hrs · laptop + map</span>
+  </div>
+
+  <div class="lesson" data-id="m1a">
+    <div class="lesson-hdr" onclick="toggleLesson(this)"><div class="chk" onclick="toggleDone(event,this)">✓</div>
+      <div class="lesson-info"><div class="lesson-title">1.1 — Build the 50</div><div class="lesson-meta">45 min · list before legs</div></div><span class="caret">▶</span></div>
+    <div class="lesson-body">
+      <p>Knocking without a list is exercise, not sales. The list is 50 local, owner-operated service businesses where the Module 2 audit will find real problems. Sources, in order of yield:</p>
+      <ul>
+        <li><strong>The map crawl:</strong> search each trade ("plumber", "salon", "landscaping", "auto repair", "bakery") on Google Maps for your zone. Open each profile. No website link, a Facebook page as the "website", or a dead link → straight onto the list.</li>
+        <li><strong>The drive-by log:</strong> every strip mall and trade van you pass. Van with a phone number and no web address is a lead painted on sheet metal.</li>
+        <li><strong>New business filings &amp; chamber lists:</strong> new businesses need everything and haven't bought it yet.</li>
+      </ul>
+      <p>Tracker columns (the pipeline.csv from the launch kit): <code>name · trade · address · phone · score · flags · stage · last touch · next step</code>. A row with an empty "next step" is a dead row.</p>
+    </div>
+  </div>
+
+  <div class="lesson" data-id="m1b">
+    <div class="lesson-hdr" onclick="toggleLesson(this)"><div class="chk" onclick="toggleDone(event,this)">✓</div>
+      <div class="lesson-info"><div class="lesson-title">1.2 — Score by pain</div><div class="lesson-meta">30 min · rank the 50</div></div><span class="caret">▶</span></div>
+    <div class="lesson-body">
+      <p>Work the list top-down by score. Points:</p>
+      <div class="tbl-scroll"><table class="ftable">
+        <tr><th>Flag</th><th>Points</th><th>Why it converts</th></tr>
+        <tr><td><b>No website at all</b></td><td><code>+3</code></td><td>Cleanest sale — nothing to defend, everything to gain</td></tr>
+        <tr><td><b>Broken site</b> (dead links, not mobile, expired SSL)</td><td><code>+2</code></td><td>They already believe in websites; theirs just embarrasses them</td></tr>
+        <tr><td><b>Outdated site</b> (5+ yrs old, wrong hours)</td><td><code>+1</code></td><td>Pride sale — slower, but sticky clients</td></tr>
+        <tr><td><b>No Google Business Profile / unclaimed</b></td><td><code>+2</code></td><td>Invisible on maps = invisible, and you can prove it in one search</td></tr>
+        <tr><td><b>Under 10 reviews</b></td><td><code>+1</code></td><td>Review engine (M3) sells itself with one comparison to the rival</td></tr>
+        <tr><td><b>@gmail / @yahoo business email</b></td><td><code>+1</code></td><td>Opens the professionalism + spoofing conversation from M2</td></tr>
+      </table></div>
+      <p><strong>6+ points = call on them this week.</strong> Re-score monthly; businesses decay onto your list all by themselves.</p>
+    </div>
+  </div>
+
+  <div class="lesson" data-id="m1c">
+    <div class="lesson-hdr" onclick="toggleLesson(this)"><div class="chk" onclick="toggleDone(event,this)">✓</div>
+      <div class="lesson-info"><div class="lesson-title">1.3 — Route the week: right door, right hour</div><div class="lesson-meta">30 min · 10 doors/day without wasted miles</div></div><span class="caret">▶</span></div>
+    <div class="lesson-body">
+      <p>Ten doors a day, three field days a week, routed geographically so you're walking, not driving. And the hour matters more than the pitch:</p>
+      <div class="tbl-scroll"><table class="ftable">
+        <tr><th>Trade</th><th>Best window</th><th>Why</th></tr>
+        <tr><td><b>Contractors / trades</b></td><td><code>7:00–8:00 am</code></td><td>Loading the truck at the shop — after that they're gone all day</td></tr>
+        <tr><td><b>Restaurants / cafés</b></td><td><code>2:00–4:00 pm</code></td><td>Between rushes; walk in at noon and you've lost them forever</td></tr>
+        <tr><td><b>Retail / salons</b></td><td><code>10:00–11:00 am</code></td><td>Open, stocked, pre-lunch lull, owner often on-site</td></tr>
+        <tr><td><b>Auto shops</b></td><td><code>Mid-afternoon</code></td><td>Morning drop-offs done, bays working, counter's free</td></tr>
+      </table></div>
+      <div class="callout co-warn"><b>The person matters more than the hour</b>If the owner isn't there, you haven't knocked — you've visited. Get the owner's name and their usual hours from whoever is there, log it, and come back. Never pitch staff; it burns the door.</div>
+    </div>
+  </div>
+</section>
+</div>
+
+<!-- ============ S2 ============ -->
+<div class="view" id="v-s2">
+<section class="panel card">
+  <div class="card-hdr">
+    <div><span class="session-tag">Session 2</span><span class="session-name">The conversation</span></div>
+    <span class="session-time">~3 hrs · scripts, then roleplay until boring</span>
+  </div>
+
+  <div class="lesson" data-id="m2a">
+    <div class="lesson-hdr" onclick="toggleLesson(this)"><div class="chk" onclick="toggleDone(event,this)">✓</div>
+      <div class="lesson-info"><div class="lesson-title">2.1 — The 20-second opener + the leave-behind</div><div class="lesson-meta">40 min · time yourself</div></div><span class="caret">▶</span></div>
+    <div class="lesson-body">
+      <p>You get twenty seconds before an owner decides you're a solicitor or a person. The opener earns the next two minutes, nothing more — <strong>its job is a conversation, not a sale.</strong></p>
+      <div class="script"><b>The opener — local, specific, evidence in hand</b>"Hi — are you the owner? I'm Myles, I'm with Next-Gen-IT, we're local. I'm not here to pitch you for an hour — I looked up how your business shows up online before I walked in, and I found a couple things I'd want to know about if it were my shop. Takes two minutes to show you. Got two minutes, or should I leave it with you?"</div>
+      <ul>
+        <li><strong>"Are you the owner?"</strong> first — never waste the opener on staff.</li>
+        <li><strong>"I looked you up before I walked in"</strong> — instantly separates you from every flyer-dropper they've ever waved off.</li>
+        <li><strong>The exit ramp</strong> ("or should I leave it with you?") lowers the pressure, which raises the yes rate. People lean toward doors that aren't being pushed.</li>
+      </ul>
+      <p>The leave-behind is the Module 2 <strong>findings page</strong> — one page, their business name on it, ≤6 findings, severity-ordered, your number at the bottom. Not a brochure. Brochures are about you; the findings page is about them, which is why it survives the counter for weeks.</p>
+    </div>
+  </div>
+
+  <div class="lesson" data-id="m2b">
+    <div class="lesson-hdr" onclick="toggleLesson(this)"><div class="chk" onclick="toggleDone(event,this)">✓</div>
+      <div class="lesson-info"><div class="lesson-title">2.2 — Discovery: five questions, 70/30 listening</div><div class="lesson-meta">40 min · the sale happens here, quietly</div></div><span class="caret">▶</span></div>
+    <div class="lesson-body">
+      <p>Once they give you the two minutes, resist the urge to present. Ask, and shut up. <strong>They should talk 70% of the time</strong> — every answer is either a qualification, an objection defused early, or the exact words you'll use in the close.</p>
+      <ol>
+        <li><em>"How do most of your customers find you right now?"</em> — baseline; "word of mouth" means Google is untapped upside.</li>
+        <li><em>"What happens when someone calls and you're mid-job?"</em> — tees up missed-call text-back (M3) without naming it.</li>
+        <li><em>"Who handles the email and the website stuff now?"</em> — finds the nephew before the nephew finds you.</li>
+        <li><em>"Have you ever paid anyone for this before? How'd that go?"</em> — surfaces scar tissue; you'll inherit their last guy's sins unless you ask.</li>
+        <li><em>"What would one more good job a week actually be worth to you?"</em> — they price the value themselves. Their number is always bigger than your quote.</li>
+      </ol>
+      <div class="callout co-ok"><b>Write down their words</b>The close is their own sentences played back: "You said a bathroom remodel runs about four grand and you're missing calls every week — the whole setup is $1,500 once and $199 a month. It pays for itself the first time it catches one call."</div>
+    </div>
+  </div>
+
+  <div class="lesson" data-id="m2c">
+    <div class="lesson-hdr" onclick="toggleLesson(this)"><div class="chk" onclick="toggleDone(event,this)">✓</div>
+      <div class="lesson-info"><div class="lesson-title">2.3 — Quoting: three tiers, one breath, then silence</div><div class="lesson-meta">40 min · say the number like it's the weather</div></div><span class="caret">▶</span></div>
+    <div class="lesson-body">
+      <div class="tbl-scroll"><table class="ftable">
+        <tr><th>Package</th><th>One-time</th><th>What it is</th><th>Care plan attach</th></tr>
+        <tr><td><b>Starter</b></td><td><code>$750</code></td><td>One sharp page: who, what, where, hours, click-to-call, review link, done in a week</td><td>Essentials $99/mo</td></tr>
+        <tr><td><b>Standard</b></td><td><code>$1,500</code></td><td>5 pages · services broken out · photo gallery · intake form · GBP built or rescued</td><td>Standard $199/mo</td></tr>
+        <tr><td><b>Pro</b></td><td><code>$3,000</code></td><td>Everything above + booking/scheduling or light e-commerce · content written from owner interviews</td><td>Pro $299/mo</td></tr>
+      </table></div>
+      <p>Present all three, recommend one: <em>"Most shops your size take Standard — here's why."</em> Three options make the middle feel sensible; one option makes any price feel like a demand.</p>
+      <div class="callout co-danger"><b>The silence rule</b>Say the price, then stop talking. Count five in your head if you have to. The person who speaks first after the number is negotiating against themselves — and it will not be you, because you practiced this exact silence in roleplay until it stopped feeling rude.</div>
+    </div>
+  </div>
+
+  <div class="lesson" data-id="m2d">
+    <div class="lesson-hdr" onclick="toggleLesson(this)"><div class="chk" onclick="toggleDone(event,this)">✓</div>
+      <div class="lesson-info"><div class="lesson-title">2.4 — The five objections, drilled cold</div><div class="lesson-meta">60 min · open each one, say it out loud</div></div><span class="caret">▶</span></div>
+    <div class="lesson-body">
+      <p>Objections aren't attacks; they're the owner thinking out loud. Every answer below shares a spine: <strong>agree with the true part, add the missing fact, hand back a small decision.</strong> Tap each to open:</p>
+    </div>
+  </div>
+  <div class="objection"><div class="obj-q" onclick="this.parentElement.classList.toggle('open')"><span class="obj-num">1</span><span class="obj-text">"That's too expensive."</span></div>
+    <div class="obj-a">"Compared to what it costs today, yeah, it's real money. Here's the math I'd run: you said a job's worth about $400. The Standard setup is $1,500 once — four jobs, ever, and it's paid for. After that every job it brings in is profit. <em>And if the audit's wrong about what you're missing, don't buy anything.</em> Want me to leave the findings page so you can check my work?"</div></div>
+  <div class="objection"><div class="obj-q" onclick="this.parentElement.classList.toggle('open')"><span class="obj-num">2</span><span class="obj-text">"My nephew handles our website."</span></div>
+    <div class="obj-a">"That's honestly great — family that shows up is worth keeping. Two questions I'd want answered either way: when's the last backup he ran, and who has the passwords if he's busy in finals week? If he's got both covered, you're in better shape than most shops on this street. If he's not sure — I'm not here to replace him, I'm here so it's <em>somebody's job</em> instead of somebody's favor."</div></div>
+  <div class="objection"><div class="obj-q" onclick="this.parentElement.classList.toggle('open')"><span class="obj-num">3</span><span class="obj-text">"I don't have time for this right now."</span></div>
+    <div class="obj-a">"That's exactly the pitch, honestly — the whole point is it takes zero of your time. I need about 20 minutes of you total: one sit-down for photos and your story, and one look before it goes live. Everything else is my problem. When's your slow day — I'll come to you."</div></div>
+  <div class="objection"><div class="obj-q" onclick="this.parentElement.classList.toggle('open')"><span class="obj-num">4</span><span class="obj-text">"Leave your card, I'll call you."</span></div>
+    <div class="obj-a">"Sure thing — and look, nobody ever calls, and that's fine, you're busy. Tell you what: I'll leave the findings page, not a card. It's got the three things I found with your name on them. I'm back on this street Thursday — if it made sense, two minutes then. If not, keep the page, fix them yourself, no hard feelings." <em>(Then actually come back Thursday. The comeback IS the close.)</em></div></div>
+  <div class="objection"><div class="obj-q" onclick="this.parentElement.classList.toggle('open')"><span class="obj-num">5</span><span class="obj-text">"All my business is word of mouth — I don't need internet customers."</span></div>
+    <div class="obj-a">"Word of mouth is the best marketing there is — I'm not going to argue with what's working. One thing though: word of mouth moved. When your customer tells their neighbor about you, the neighbor Googles you before calling. Right now that Google search shows <em>[the actual finding: nothing / the wrong hours / a competitor with 80 reviews]</em>. I'm not selling you new customers — I'm making sure the referred ones actually land."</div></div>
+</section>
+</div>
+
+<!-- ============ S3 ============ -->
+<div class="view" id="v-s3">
+<section class="panel card">
+  <div class="card-hdr">
+    <div><span class="session-tag">Session 3</span><span class="session-name">Paper, pipeline, and pay</span></div>
+    <span class="session-time">~2 hrs · the boring parts that make it a business</span>
+  </div>
+
+  <div class="lesson" data-id="m3a">
+    <div class="lesson-hdr" onclick="toggleLesson(this)"><div class="chk" onclick="toggleDone(event,this)">✓</div>
+      <div class="lesson-info"><div class="lesson-title">3.1 — The one-page agreement</div><div class="lesson-meta">30 min · walk it line by line</div></div><span class="caret">▶</span></div>
+    <div class="lesson-body">
+      <p>One page, plain English, signed at the counter. Handshakes are for meeting people, not scoping projects. The six blocks:</p>
+      <ol>
+        <li><strong>Scope</strong> — exactly what's being built, by package name and page count. What's listed is included; what isn't, isn't.</li>
+        <li><strong>Price &amp; deposit</strong> — total, <strong>50% today</strong>, 50% at launch. Deposit starts the clock.</li>
+        <li><strong>Timeline</strong> — a real date, with the client's dependency named ("photos and approvals within 5 days, or the date slides").</li>
+        <li><strong>Ownership</strong> — the Module 2 promise on paper: <em>domain, hosting, and content belong to the client. Full stop.</em> This clause wins deals against every agency that holds sites hostage.</li>
+        <li><strong>Care plan opt-in</strong> — a checkbox with the tier and monthly price, cancelable anytime with 30 days' notice. Cancelable-anytime closes more plans than any pitch; locked contracts create ex-clients.</li>
+        <li><strong>Signatures + date.</strong></li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="lesson" data-id="m3b">
+    <div class="lesson-hdr" onclick="toggleLesson(this)"><div class="chk" onclick="toggleDone(event,this)">✓</div>
+      <div class="lesson-info"><div class="lesson-title">3.2 — Deposit first, always. Then never chase.</div><div class="lesson-meta">30 min · money rules</div></div><span class="caret">▶</span></div>
+    <div class="lesson-body">
+      <ul>
+        <li><strong>No deposit, no work.</strong> Not a keystroke. A client who won't pay half up front was never a client — they were a quote collector, and you just found out for free.</li>
+        <li><strong>Invoice on the spot.</strong> Payment link sent from your phone while you're still standing there. "Want to knock out the deposit now so I can get you on this week's build schedule?" Every hour between yes and invoice is where deals evaporate.</li>
+        <li><strong>The pause rule:</strong> final payment overdue 7 days → friendly nudge; 14 days → work and plan pause, stated kindly and in advance (it's in the agreement). You never have to be angry, because the paper does the enforcing.</li>
+      </ul>
+      <div class="script"><b>The day-14 pause, said warmly</b>"Hey — wanted to flag that the launch invoice is a couple weeks out now, so per our agreement I've paused things until it's settled. Soon as it's in, everything goes right back live same day. All good otherwise?"</div>
+    </div>
+  </div>
+
+  <div class="lesson" data-id="m3c">
+    <div class="lesson-hdr" onclick="toggleLesson(this)"><div class="chk" onclick="toggleDone(event,this)">✓</div>
+      <div class="lesson-info"><div class="lesson-title">3.3 — Pipeline discipline + the comp plan, cold</div><div class="lesson-meta">45 min · the weekly rhythm</div></div><span class="caret">▶</span></div>
+    <div class="lesson-body">
+      <p>Five stages, no more: <code>List → Contacted → Discovery → Quoted → Closed/Lost</code>. Every row moves or gets a reason. The rhythm:</p>
+      <ul>
+        <li><strong>Weekly pipeline call</strong> with Jeremiah — numbers first (doors, convos, quotes, closes), stories second.</li>
+        <li><strong>The two-minute loss debrief</strong> on every "no": which stage did it die in, what was the last thing they said, would a different hour/opener/price have mattered? Written in the tracker while it's fresh. Losses debriefed become wins; losses shrugged off become patterns.</li>
+      </ul>
+      <div class="callout co-info"><b>The comp plan — recite it exactly, because money deserves precision</b>On <strong>collected</strong> revenue only: <strong>50%</strong> of site fees on deals you sourced AND built · <strong>20%</strong> on deals you sourced that Jeremiah built · <strong>10%</strong> ongoing spiff on care-plan revenue from your clients, for as long as they stay. Nothing is owed on quotes, handshakes, or invoices — only on money in the account. Around deal #10 we put the rep→LLC conversion conversation on paper.</div>
+      <p>Why "collected only" is said out loud on day one: it aligns everyone toward clients who actually pay, and it means a chargeback or a deadbeat never turns into an awkward clawback conversation between us.</p>
+    </div>
+  </div>
+</section>
+</div>
+
+<!-- ============ CHECKLIST + GRADUATION ============ -->
+<div class="view" id="v-chk">
+<section class="panel card">
+  <div class="card-hdr"><span class="card-label">The field kit — before the first door of every week</span><span class="tag tag-info">no kit, no knocking</span></div>
+  <div class="check-group-label">The list &amp; the route</div>
+  <div class="check-item" data-id="c1" onclick="toggleCheck(this)"><div class="chk">✓</div><span class="check-text">50-business list built and pain-scored · top 15 flagged for this week</span></div>
+  <div class="check-item" data-id="c2" onclick="toggleCheck(this)"><div class="chk">✓</div><span class="check-text">Week routed: 10 doors/day × 3 days, grouped by geography and trade hours</span></div>
+  <div class="check-item" data-id="c3" onclick="toggleCheck(this)"><div class="chk">✓</div><span class="check-text">Owner names researched where findable · logged in tracker</span></div>
+  <div class="check-group-label">The kit</div>
+  <div class="check-item" data-id="c4" onclick="toggleCheck(this)"><div class="chk">✓</div><span class="check-text">10 findings pages printed — each with the business's actual name and audit flags</span></div>
+  <div class="check-item" data-id="c5" onclick="toggleCheck(this)"><div class="chk">✓</div><span class="check-text">Findings/audit template loadable on phone for live "prove it" moments</span></div>
+  <div class="check-item" data-id="c6" onclick="toggleCheck(this)"><div class="chk">✓</div><span class="check-text">Quote sheet (three packages + care tiers) as one clean PDF on phone</span></div>
+  <div class="check-item" data-id="c7" onclick="toggleCheck(this)"><div class="chk">✓</div><span class="check-text">One-page agreement ready to fill and sign on the spot</span></div>
+  <div class="check-item" data-id="c8" onclick="toggleCheck(this)"><div class="chk">✓</div><span class="check-text">Payment link tested — deposit can be invoiced from the counter in under a minute</span></div>
+  <div class="check-group-label">The rehearsal</div>
+  <div class="check-item" data-id="c9" onclick="toggleCheck(this)"><div class="chk">✓</div><span class="check-text">Opener delivered out loud, timed under 20 seconds, three days running</span></div>
+  <div class="check-item" data-id="c10" onclick="toggleCheck(this)"><div class="chk">✓</div><span class="check-text">Five discovery questions from memory, in order</span></div>
+  <div class="check-item" data-id="c11" onclick="toggleCheck(this)"><div class="chk">✓</div><span class="check-text">Weekly pipeline call on the calendar · tracker current before it starts</span></div>
+  <div class="check-item" data-id="c12" onclick="toggleCheck(this)"><div class="chk">✓</div><span class="check-text">Every loss this week has a two-minute debrief note in the tracker</span></div>
+</section>
+
+<section class="panel card">
+  <div class="card-hdr"><span class="card-label">Graduation exam — full roleplay gauntlet, Jeremiah as the owner</span><span class="tag tag-info">pass = all 8</span></div>
+  <div class="card-body" style="padding-bottom:.4rem">
+    <p style="color:var(--ink-soft);font-weight:300;font-size:.9rem">One continuous roleplay: cold open → discovery → quote → two surprise objections → paper → deposit ask. <strong style="color:var(--danger)">Breaking the silence rule after the price is an automatic re-run.</strong></p>
+  </div>
+  <div class="check-group-label">Graduation criteria — check as demonstrated</div>
+  <div class="check-item" data-id="x1" onclick="toggleCheck(this)"><div class="chk">✓</div><span class="check-text">Opener cold, under 20 seconds, with the exit ramp intact</span></div>
+  <div class="check-item" data-id="x2" onclick="toggleCheck(this)"><div class="chk">✓</div><span class="check-text">Discovery run with 70/30 listen ratio held · owner's words written down</span></div>
+  <div class="check-item" data-id="x3" onclick="toggleCheck(this)"><div class="chk">✓</div><span class="check-text">Three-tier quote delivered with a recommendation · silence held after the number</span></div>
+  <div class="check-item" data-id="x4" onclick="toggleCheck(this)"><div class="chk">✓</div><span class="check-text">Two random objections handled without flinching or over-promising</span></div>
+  <div class="check-item" data-id="x5" onclick="toggleCheck(this)"><div class="chk">✓</div><span class="check-text">Agreement walked line-by-line, ownership clause explained with pride</span></div>
+  <div class="check-item" data-id="x6" onclick="toggleCheck(this)"><div class="chk">✓</div><span class="check-text">Deposit asked for directly, invoice link "sent" on the spot</span></div>
+  <div class="check-item" data-id="x7" onclick="toggleCheck(this)"><div class="chk">✓</div><span class="check-text">Funnel math and all five pipeline stages recited from memory</span></div>
+  <div class="check-item" data-id="x8" onclick="toggleCheck(this)"><div class="chk">✓</div><span class="check-text">Comp plan recited word-perfect: 50 / 20 / 10, collected revenue only</span></div>
+</section>
+
+<section class="panel card" style="text-align:center;padding:2rem clamp(1.2rem,3vw,1.6rem)">
+  <p style="font-family:var(--display);font-weight:600;font-size:clamp(1.25rem,3vw,1.6rem);letter-spacing:-.02em;margin-bottom:.5rem">Doors. Discovery. <em style="color:var(--coral);text-shadow:0 0 30px var(--coral-glow)">Deposit.</em></p>
+  <p style="color:var(--ink-soft);font-size:.9rem;font-weight:300;max-width:56ch;margin:0 auto">Every close in this system is a true sentence said confidently to the right person at the right hour, with the evidence on the counter. Do the reps and the ratios follow.</p>
+</section>
+</div>
+
+</div></main>
+
+<footer class="site-footer">
+  <p class="footer-meta">Next‑Gen‑<em>IT</em> · Module 4: Close the Deal · <a href="./module-3.html">← Module 3</a> · <a href="./module-5.html">Module 5 →</a> · progress stored locally</p>
+</footer>
+
+<script>
+var KEY='ngit-module4-v1';
+var state={};
+try{state=JSON.parse(localStorage.getItem(KEY))||{}}catch(e){state={}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){}}
+
+document.querySelectorAll('.tab').forEach(function(t){
+  t.addEventListener('click',function(){
+    document.querySelectorAll('.tab').forEach(function(x){x.classList.remove('active')});
+    document.querySelectorAll('.view').forEach(function(v){v.classList.remove('on')});
+    t.classList.add('active');
+    document.getElementById(t.dataset.view).classList.add('on');
+    window.scrollTo({top:0});
+  });
+});
+
+function toggleLesson(hdr){hdr.parentElement.classList.toggle('open')}
+function toggleDone(ev,chk){
+  ev.stopPropagation();
+  var l=chk.closest('.lesson');
+  l.classList.toggle('done');
+  state[l.dataset.id]=l.classList.contains('done');
+  save();render();
+}
+function toggleCheck(item){
+  item.classList.toggle('done');
+  state[item.dataset.id]=item.classList.contains('done');
+  save();render();
+}
+
+var G={
+  S1: ["m1a", "m1b", "m1c"],
+  S2: ["m2a", "m2b", "m2c", "m2d"],
+  S3: ["m3a", "m3b", "m3c"],
+  CHK: ["c1", "c2", "c3", "c4", "c5", "c6", "c7", "c8", "c9", "c10", "c11", "c12"],
+  GRAD: ["x1", "x2", "x3", "x4", "x5", "x6", "x7", "x8"]
+};
+function gs(ids){var d=ids.filter(function(i){return state[i]}).length;return d===ids.length?'done':(d>0?'scanning':'')}
+function render(){
+  var all=[].concat.apply([],Object.keys(G).map(function(k){return G[k]}));
+  var done=all.filter(function(i){return state[i]}).length;
+  var pct=Math.round(done/all.length*100);
+  document.getElementById('pct').textContent=pct+'%';
+  document.getElementById('pfill').style.width=pct+'%';
+  [['ps1',G.S1],
+  ['ps2',G.S2],
+  ['ps3',G.S3],
+  ['ps4',G.CHK],
+  ['ps5',G.GRAD]].forEach(function(p){
+    var el=document.getElementById(p[0]);if(!el)return;
+    el.classList.remove('done','scanning');
+    var g=gs(p[1]);if(g)el.classList.add(g);
+  });
+}
+document.querySelectorAll('.lesson').forEach(function(l){if(state[l.dataset.id])l.classList.add('done')});
+document.querySelectorAll('.check-item').forEach(function(c){if(state[c.dataset.id])c.classList.add('done')});
+render();
+
+function resetProgress(){
+  if(!confirm('Clear all progress on this module?'))return;
+  state={};save();
+  document.querySelectorAll('.lesson,.check-item').forEach(function(e){e.classList.remove('done')});
+  render();
+}
+function copyBlock(btn){
+  var t=btn.parentElement.cloneNode(true);
+  t.querySelector('.copy-btn').remove();
+  navigator.clipboard.writeText(t.textContent.trim()).then(function(){
+    btn.textContent='copied';btn.classList.add('copied');
+    setTimeout(function(){btn.textContent='copy';btn.classList.remove('copied')},1500);
+  });
+}
+</script>
+</body>
+</html>

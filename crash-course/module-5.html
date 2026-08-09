@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Run the Practice — Module 5 · Next‑Gen‑IT</title>
+<meta name="description" content="Module 5 field manual: onboarding SOPs, the Maintenance Monday runbook, billing and the five-number dashboard, retention, referrals, and growth thresholds."/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --paper:#071A32; --paper-deep:#0A2342; --paper-edge:#041326;
+  --panel:rgba(10,35,66,.82); --panel-strong:rgba(13,43,79,.94);
+  --ink:#FFFFFF; --ink-soft:#D7E2F0; --ink-muted:#91A6C3;
+  --rule:rgba(145,166,195,.22); --rule-soft:rgba(145,166,195,.12);
+  --coral:#FF6B5F; --coral-deep:#E4473A; --coral-soft:rgba(255,107,95,.14); --coral-glow:rgba(255,107,95,.38);
+  --sky:#8FD7FF; --sky-deep:#1B8BD6; --sky-soft:rgba(143,215,255,.14); --sky-glow:rgba(143,215,255,.28);
+  --ok:#22C55E; --ok-soft:rgba(34,197,94,.14);
+  --warn:#F59E0B; --warn-soft:rgba(245,158,11,.12);
+  --danger:#EF4444; --danger-soft:rgba(239,68,68,.12);
+  --display:'Fraunces',Georgia,serif; --body:'IBM Plex Sans',sans-serif; --mono:'IBM Plex Mono',monospace;
+  --gutter:clamp(1rem,3vw,2rem); --page-max:1020px;
+  --radius:22px; --radius-sm:14px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{min-height:100vh;font-family:var(--body);color:var(--ink);line-height:1.6;font-size:15px;
+  background:radial-gradient(circle at 82% 12%,var(--coral-glow) 0%,transparent 30%),
+             radial-gradient(circle at 14% 22%,var(--sky-glow) 0%,transparent 34%),
+             linear-gradient(135deg,var(--paper-edge) 0%,var(--paper) 46%,#0B274D 100%);
+  background-attachment:fixed;-webkit-font-smoothing:antialiased;display:flex;flex-direction:column}
+a{color:var(--sky);text-decoration:none} a:hover{text-decoration:underline}
+button{font-family:inherit}
+:focus-visible{outline:2px solid var(--sky);outline-offset:2px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+.container{width:100%;max-width:var(--page-max);margin:0 auto;padding:0 var(--gutter)}
+
+.site-nav{position:sticky;top:0;z-index:999;background:rgba(4,19,38,.82);border-bottom:1px solid var(--rule);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
+.site-nav-inner{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:.85rem var(--gutter);max-width:var(--page-max);margin:0 auto;flex-wrap:wrap}
+.brand{font-family:var(--display);font-weight:700;font-size:1.05rem;letter-spacing:-.01em;color:var(--ink)}
+.brand em{font-style:italic;color:var(--coral)}
+.brand-sub{font-family:var(--mono);font-size:.68rem;color:var(--ink-muted);letter-spacing:.1em;text-transform:uppercase;margin-left:.6rem}
+.nav-right{display:flex;gap:.5rem;align-items:center}
+.nav-link{font-family:var(--mono);font-size:.68rem;letter-spacing:.06em;border:1px solid var(--rule);border-radius:999px;padding:.4rem .9rem;color:var(--ink-muted)}
+.nav-link:hover{border-color:var(--sky);color:var(--sky);text-decoration:none}
+.reset-btn{background:none;border:1px solid var(--rule);border-radius:999px;color:var(--ink-muted);font-family:var(--mono);font-size:.7rem;padding:.42rem .95rem;cursor:pointer;transition:all .18s}
+.reset-btn:hover{border-color:var(--coral);color:var(--coral)}
+
+main{flex:1;padding:clamp(2rem,5vw,3.2rem) 0 2.5rem}
+.eyebrow{display:inline-flex;align-items:center;gap:.7rem;font-family:var(--mono);color:var(--sky);font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;margin-bottom:1rem}
+.eyebrow::before{content:"";width:34px;height:2px;background:linear-gradient(90deg,var(--coral),var(--sky));border-radius:2px}
+.hero{padding-bottom:clamp(1.4rem,4vw,2.2rem)}
+.hero h1{font-family:var(--display);font-size:clamp(2.4rem,6vw,4.1rem);line-height:.95;letter-spacing:-.035em;margin-bottom:1.1rem;font-weight:600;text-wrap:balance}
+.hero h1 em{font-style:italic;color:var(--coral);text-shadow:0 0 36px var(--coral-glow)}
+.lede{color:var(--ink-soft);font-size:clamp(.96rem,1.6vw,1.06rem);max-width:64ch;font-weight:300}
+.lede strong{font-weight:600;color:var(--ink)}
+
+.panel{position:relative;background:linear-gradient(180deg,rgba(255,255,255,.08),rgba(255,255,255,.035)),var(--panel);border:1px solid var(--rule);border-radius:var(--radius);box-shadow:0 16px 55px rgba(0,0,0,.18);overflow:hidden}
+.pipeline{padding:clamp(1.1rem,3vw,1.5rem) clamp(1.2rem,3vw,1.8rem);margin:1.3rem 0 1.4rem}
+.pipeline-hdr{display:flex;align-items:baseline;justify-content:space-between;gap:1rem;margin-bottom:.9rem;flex-wrap:wrap}
+.pipeline-title{font-family:var(--mono);font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-muted)}
+.pipeline-pct{font-family:var(--display);font-weight:700;font-size:1.9rem;line-height:1;color:var(--coral);text-shadow:0 0 28px var(--coral-glow)}
+.steps{display:flex;gap:.5rem;margin-bottom:.85rem;flex-wrap:wrap}
+.step{display:flex;align-items:center;gap:.45rem;padding:.42rem .85rem;background:rgba(4,19,38,.5);border:1px solid var(--rule);border-radius:999px;font-family:var(--mono);font-size:.7rem;color:var(--ink-muted);transition:all .25s}
+.step.scanning{border-color:var(--warn);color:var(--warn);background:var(--warn-soft)}
+.step.done{border-color:var(--ok);color:var(--ok);background:var(--ok-soft)}
+.progress{height:4px;background:var(--rule-soft);border-radius:4px;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--coral),var(--sky));transition:width .5s ease;width:0}
+.pipeline-note{font-family:var(--mono);font-size:.68rem;color:var(--ink-muted);margin-top:.75rem}
+
+.tabs{display:flex;gap:.5rem;margin-bottom:1.4rem;flex-wrap:wrap}
+.tab{background:rgba(4,19,38,.5);border:1px solid var(--rule);border-radius:999px;color:var(--ink-soft);font-family:var(--mono);font-size:.72rem;letter-spacing:.04em;padding:.55rem 1.05rem;cursor:pointer;transition:all .18s;min-height:38px}
+.tab:hover{border-color:var(--sky);color:var(--sky)}
+.tab.active{background:linear-gradient(135deg,var(--coral),var(--coral-deep));border-color:transparent;color:#fff;font-weight:600;box-shadow:0 10px 32px rgba(228,71,58,.28)}
+
+.card{margin-bottom:1.4rem}
+.card-hdr{padding:1rem clamp(1.2rem,3vw,1.6rem);border-bottom:1px solid var(--rule-soft);display:flex;align-items:baseline;justify-content:space-between;gap:1rem;flex-wrap:wrap}
+.card-label{font-family:var(--mono);font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-muted)}
+.card-body{padding:1.2rem clamp(1.2rem,3vw,1.6rem)}
+.session-tag{font-family:var(--mono);font-weight:600;font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;color:var(--sky)}
+.session-name{font-family:var(--display);font-weight:600;font-size:1.32rem;letter-spacing:-.01em;display:block;margin-top:.15rem}
+.session-time{font-family:var(--mono);font-size:.68rem;color:var(--ink-muted);letter-spacing:.08em;text-transform:uppercase}
+
+.lesson{border-bottom:1px solid var(--rule-soft)}
+.lesson:last-child{border-bottom:none}
+.lesson-hdr{display:flex;align-items:flex-start;gap:.9rem;padding:1rem clamp(1.2rem,3vw,1.6rem);cursor:pointer;transition:background .15s;user-select:none}
+.lesson-hdr:hover{background:rgba(255,255,255,.03)}
+.chk{width:21px;height:21px;border:1.5px solid var(--rule);border-radius:7px;flex-shrink:0;margin-top:2px;display:flex;align-items:center;justify-content:center;font-size:.75rem;color:transparent;transition:all .18s;background:rgba(4,19,38,.5)}
+.lesson.done .chk{background:var(--ok-soft);border-color:var(--ok);color:var(--ok)}
+.lesson-info{flex:1;min-width:0}
+.lesson-title{font-size:.98rem;font-weight:600}
+.lesson.done .lesson-title{color:var(--ink-muted)}
+.lesson-meta{font-family:var(--mono);font-size:.68rem;color:var(--ink-muted);margin-top:.15rem}
+.caret{color:var(--coral);font-size:.7rem;transition:transform .2s;margin-top:.35rem}
+.lesson.open .caret{transform:rotate(90deg)}
+.lesson-body{display:none;padding:0 clamp(1.2rem,3vw,1.6rem) 1.3rem calc(clamp(1.2rem,3vw,1.6rem) + 30px);color:var(--ink-soft);font-size:.9rem;font-weight:300}
+.lesson.open .lesson-body{display:block}
+.lesson-body p{margin-bottom:.75rem}
+.lesson-body ul,.lesson-body ol{margin:0 0 .75rem 1.2rem}
+.lesson-body li{margin-bottom:.35rem}
+.lesson-body strong{color:var(--ink);font-weight:600}
+.lesson-body em{color:var(--sky)}
+.lesson-body code{font-family:var(--mono);color:var(--sky);font-size:.8rem;background:rgba(143,215,255,.1);padding:.08rem .4rem;border-radius:5px}
+@media (max-width:640px){.lesson-body{padding-left:clamp(1.2rem,3vw,1.6rem)}}
+
+.codeblock{position:relative;background:rgba(4,19,38,.72);border:1px solid var(--rule);border-radius:var(--radius-sm);padding:.95rem 1.05rem;font-family:var(--mono);font-size:.75rem;line-height:1.6;color:var(--ink-soft);white-space:pre-wrap;word-break:break-word;margin-bottom:.8rem}
+.codeblock .c{color:var(--coral)} .codeblock .s{color:var(--sky)} .codeblock .g{color:var(--ok)} .codeblock .m{color:var(--ink-muted)}
+.copy-btn{position:absolute;top:.6rem;right:.6rem;background:var(--panel-strong);border:1px solid var(--rule);border-radius:999px;color:var(--ink-muted);font-family:var(--mono);font-size:.65rem;padding:.25rem .7rem;cursor:pointer}
+.copy-btn:hover{border-color:var(--sky);color:var(--sky)}
+.copy-btn.copied{border-color:var(--ok);color:var(--ok)}
+
+.callout{border-radius:var(--radius-sm);padding:.85rem 1.05rem;font-size:.85rem;margin-bottom:.8rem;line-height:1.6;font-weight:300;color:var(--ink-soft)}
+.callout b{display:block;margin-bottom:.2rem;font-family:var(--mono);font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;font-weight:600}
+.co-warn{background:var(--warn-soft);border:1px solid rgba(245,158,11,.3)} .co-warn b{color:var(--warn)}
+.co-danger{background:var(--danger-soft);border:1px solid rgba(239,68,68,.3)} .co-danger b{color:var(--danger)}
+.co-ok{background:var(--ok-soft);border:1px solid rgba(34,197,94,.3)} .co-ok b{color:var(--ok)}
+.co-info{background:var(--sky-soft);border:1px solid rgba(143,215,255,.3)} .co-info b{color:var(--sky)}
+
+.ftable{width:100%;border-collapse:collapse;font-size:.84rem}
+.ftable th{padding:.55rem .75rem;font-family:var(--mono);font-size:.64rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-muted);border-bottom:1px solid var(--rule);text-align:left;font-weight:500}
+.ftable td{padding:.55rem .75rem;border-bottom:1px solid var(--rule-soft);vertical-align:top;color:var(--ink-soft);font-weight:300}
+.ftable tr:last-child td{border-bottom:none}
+.ftable code{font-family:var(--mono);color:var(--sky);font-size:.76rem}
+.ftable td b{color:var(--ink);font-weight:600}
+.tbl-scroll{overflow-x:auto}
+
+.diagram{margin:.4rem 0 1rem;background:rgba(4,19,38,.45);border:1px solid var(--rule-soft);border-radius:var(--radius-sm);padding:.8rem}
+.diagram svg{width:100%;height:auto;display:block}
+.diagram-cap{font-family:var(--mono);font-size:.62rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-muted);text-align:center;margin-top:.5rem}
+
+.objection{border-bottom:1px solid var(--rule-soft)}
+.objection:last-child{border-bottom:none}
+.obj-q{display:flex;gap:.7rem;align-items:flex-start;padding:.75rem clamp(1.2rem,3vw,1.6rem);cursor:pointer;user-select:none}
+.obj-q:hover{background:rgba(255,255,255,.03)}
+.obj-num{font-family:var(--display);font-style:italic;font-weight:700;color:var(--coral);font-size:1rem;width:1.4rem;flex-shrink:0;text-shadow:0 0 18px var(--coral-glow)}
+.obj-text{flex:1;font-size:.9rem;font-weight:600;color:var(--ink)}
+.obj-a{display:none;padding:0 clamp(1.2rem,3vw,1.6rem) .9rem calc(clamp(1.2rem,3vw,1.6rem) + 2.1rem);color:var(--ink-soft);font-size:.86rem;font-weight:300}
+.objection.open .obj-a{display:block}
+.obj-a em{color:var(--sky)}
+
+.check-item{display:flex;align-items:flex-start;gap:.8rem;padding:.6rem clamp(1.2rem,3vw,1.6rem);border-bottom:1px solid var(--rule-soft);cursor:pointer;user-select:none}
+.check-item:hover{background:rgba(255,255,255,.03)}
+.check-item:last-child{border-bottom:none}
+.check-item .chk{width:18px;height:18px;font-size:.68rem;border-radius:6px;margin-top:1px}
+.check-item.done .chk{background:var(--ok-soft);border-color:var(--ok);color:var(--ok)}
+.check-text{font-size:.86rem;color:var(--ink-soft);font-weight:300}
+.check-item.done .check-text{color:var(--ink-muted);text-decoration:line-through}
+.check-group-label{font-family:var(--mono);font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--sky);padding:.7rem clamp(1.2rem,3vw,1.6rem) .2rem}
+.tag{font-family:var(--mono);font-size:.62rem;font-weight:600;letter-spacing:.08em;padding:.2rem .6rem;border-radius:999px;text-transform:uppercase;display:inline-block}
+.tag-info{background:var(--sky-soft);color:var(--sky)}
+.tag-fail{background:var(--danger-soft);color:var(--danger)}
+
+.script{border-left:3px solid var(--coral);background:rgba(255,107,95,.06);border-radius:0 var(--radius-sm) var(--radius-sm) 0;padding:.85rem 1rem;margin-bottom:.8rem;font-size:.88rem;color:var(--ink-soft);font-weight:300;font-style:italic}
+.script b{display:block;font-style:normal;font-family:var(--mono);font-size:.64rem;letter-spacing:.1em;text-transform:uppercase;color:var(--coral);margin-bottom:.3rem;font-weight:600}
+
+.view{display:none} .view.on{display:block}
+.site-footer{border-top:1px solid var(--rule);background:rgba(4,19,38,.6);padding:1.3rem var(--gutter);text-align:center}
+.footer-meta{font-family:var(--mono);font-size:.68rem;color:var(--ink-muted)}
+.footer-meta em{font-style:italic;color:var(--coral)}
+</style>
+</head>
+<body>
+
+<nav class="site-nav">
+  <div class="site-nav-inner">
+    <div class="brand">Next‑Gen‑<em>IT</em><span class="brand-sub">Module 5 · Run the Practice</span></div>
+    <div class="nav-right">
+      <a class="nav-link" href="./signup.html" style="border-color:rgba(255,107,95,.55);color:#FF6B5F">Sign up</a><a class="nav-link" href="./modules.html">All modules</a>
+      <button class="reset-btn" onclick="resetProgress()">Reset progress</button>
+    </div>
+  </div>
+</nav>
+
+<main><div class="container">
+<section class="hero">
+  <div class="eyebrow">Field training · Module 5 of 5 · Prereq: Modules 3 &amp; 4 · at least 3 paying clients</div>
+  <h1>One client is a gig.<br><em>Twenty is a company.</em></h1>
+  <p class="lede">Modules 1–4 make money. Module 5 keeps it made: onboarding that never drops a ball, a Monday runbook that services every client in a batch, invoices that collect themselves, and the five numbers that tell you — before your gut does — <strong>when to raise prices, when to save a client, and when to hire.</strong></p>
+</section>
+
+<section class="panel pipeline">
+  <div class="pipeline-hdr"><span class="pipeline-title">Module 5 pipeline</span><span class="pipeline-pct" id="pct">0%</span></div>
+  <div class="steps">
+    <div class="step" id="ps1">◆ S1 · Systems</div>
+    <div class="step" id="ps2">◆ S2 · Money &amp; Metrics</div>
+    <div class="step" id="ps3">◆ S3 · Retention</div>
+    <div class="step" id="ps4">◆ Practice checklist</div>
+    <div class="step" id="ps5">◆ Graduation</div>
+  </div>
+  <div class="progress"><div class="progress-fill" id="pfill"></div></div>
+  <p class="pipeline-note">Progress saves in this browser · graduation requires real clients and real numbers.</p>
+</section>
+
+<nav class="tabs">
+  <button class="tab active" data-view="v-ov">Overview</button>
+  <button class="tab" data-view="v-s1">S1 · Systems</button>
+  <button class="tab" data-view="v-s2">S2 · Money &amp; Metrics</button>
+  <button class="tab" data-view="v-s3">S3 · Retention</button>
+  <button class="tab" data-view="v-chk">Checklist &amp; Graduation</button>
+</nav>
+
+<!-- ============ OVERVIEW ============ -->
+<div class="view on" id="v-ov">
+<section class="panel card">
+  <div class="card-hdr"><span class="card-label">The practice loop — what "running it" means</span><span class="tag tag-info">systems over heroics</span></div>
+  <div class="card-body">
+    <p style="margin-bottom:.8rem;color:var(--ink-soft);font-weight:300">A gig runs on memory and hustle. A practice runs on a loop where every stage feeds the next — and every stage in this loop has a checklist in this module. When the loop runs on rails, <strong style="color:var(--ink)">growth stops costing sleep.</strong></p>
+    <div class="diagram">
+      <svg viewBox="0 0 760 210" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="The practice loop: close, onboard, deliver, report, refer, and back to close">
+        <rect x="20" y="70" width="115" height="60" rx="12" fill="rgba(255,107,95,.1)" stroke="#FF6B5F"/>
+        <text x="77" y="94" fill="#FF6B5F" font-family="IBM Plex Mono" font-size="10" text-anchor="middle">CLOSE</text>
+        <text x="77" y="110" fill="#D7E2F0" font-family="IBM Plex Sans" font-size="9" text-anchor="middle">Module 4</text>
+        <text x="148" y="103" fill="#91A6C3" font-size="14" text-anchor="middle">→</text>
+        <rect x="162" y="70" width="120" height="60" rx="12" fill="rgba(143,215,255,.1)" stroke="#8FD7FF"/>
+        <text x="222" y="90" fill="#8FD7FF" font-family="IBM Plex Mono" font-size="10" text-anchor="middle">ONBOARD</text>
+        <text x="222" y="106" fill="#D7E2F0" font-family="IBM Plex Sans" font-size="9" text-anchor="middle">48-hr SOP · S1</text>
+        <text x="222" y="119" fill="#91A6C3" font-family="IBM Plex Sans" font-size="8.5" text-anchor="middle">folder · vault · kickoff</text>
+        <text x="295" y="103" fill="#91A6C3" font-size="14" text-anchor="middle">→</text>
+        <rect x="309" y="70" width="120" height="60" rx="12" fill="rgba(34,197,94,.1)" stroke="#22C55E"/>
+        <text x="369" y="90" fill="#22C55E" font-family="IBM Plex Mono" font-size="10" text-anchor="middle">DELIVER</text>
+        <text x="369" y="106" fill="#D7E2F0" font-family="IBM Plex Sans" font-size="9" text-anchor="middle">Maintenance Monday</text>
+        <text x="369" y="119" fill="#91A6C3" font-family="IBM Plex Sans" font-size="8.5" text-anchor="middle">batched · runbook</text>
+        <text x="442" y="103" fill="#91A6C3" font-size="14" text-anchor="middle">→</text>
+        <rect x="456" y="70" width="120" height="60" rx="12" fill="rgba(245,158,11,.1)" stroke="#F59E0B"/>
+        <text x="516" y="90" fill="#F59E0B" font-family="IBM Plex Mono" font-size="10" text-anchor="middle">REPORT</text>
+        <text x="516" y="106" fill="#D7E2F0" font-family="IBM Plex Sans" font-size="9" text-anchor="middle">proof-of-work · M3</text>
+        <text x="516" y="119" fill="#91A6C3" font-family="IBM Plex Sans" font-size="8.5" text-anchor="middle">1st of the month</text>
+        <text x="589" y="103" fill="#91A6C3" font-size="14" text-anchor="middle">→</text>
+        <rect x="603" y="70" width="140" height="60" rx="12" fill="rgba(255,107,95,.1)" stroke="#FF6B5F"/>
+        <text x="673" y="90" fill="#FF6B5F" font-family="IBM Plex Mono" font-size="10" text-anchor="middle">REFER &amp; RENEW</text>
+        <text x="673" y="106" fill="#D7E2F0" font-family="IBM Plex Sans" font-size="9" text-anchor="middle">ask after wins · S3</text>
+        <text x="673" y="119" fill="#91A6C3" font-family="IBM Plex Sans" font-size="8.5" text-anchor="middle">$100 both sides</text>
+        <path d="M 673 137 Q 673 185 380 185 Q 77 185 77 137" fill="none" stroke="#91A6C3" stroke-dasharray="4 4"/>
+        <text x="380" y="177" fill="#91A6C3" font-family="IBM Plex Mono" font-size="9" text-anchor="middle">REFERRALS RE-ENTER AT CLOSE · WARM · PRE-SOLD · CHEAPEST DOOR THERE IS</text>
+        <text x="380" y="34" fill="#D7E2F0" font-family="IBM Plex Sans" font-size="10" text-anchor="middle">Every stage is a checklist. If a stage lives only in your head, it breaks the week you get busy — which is every week that matters.</text>
+      </svg>
+      <div class="diagram-cap">The loop, run monthly per client · retention feeds acquisition and MRR compounds</div>
+    </div>
+  </div>
+</section>
+
+<section class="panel card">
+  <div class="card-hdr"><span class="card-label">Module map</span></div>
+  <div class="card-body">
+    <div class="tbl-scroll"><table class="ftable">
+      <tr><th>Session</th><th>What you leave with</th><th>Time</th></tr>
+      <tr><td><b>S1 · Systems</b></td><td>The 48-hour onboarding SOP, the client-folder standard, and the Maintenance Monday runbook</td><td>~2 hrs</td></tr>
+      <tr><td><b>S2 · Money &amp; Metrics</b></td><td>Billing rhythm, the collections scripts, the five-number dashboard, and the annual raise letter</td><td>~2 hrs</td></tr>
+      <tr><td><b>S3 · Retention</b></td><td>The cancel-save protocol, the referral engine, QBRs, and the hire-threshold math</td><td>~2 hrs</td></tr>
+    </table></div>
+  </div>
+</section>
+</div>
+
+<!-- ============ S1 ============ -->
+<div class="view" id="v-s1">
+<section class="panel card">
+  <div class="card-hdr">
+    <div><span class="session-tag">Session 1</span><span class="session-name">Onboarding &amp; the runbook</span></div>
+    <span class="session-time">~2 hrs · build the templates once</span>
+  </div>
+
+  <div class="lesson" data-id="m1a">
+    <div class="lesson-hdr" onclick="toggleLesson(this)"><div class="chk" onclick="toggleDone(event,this)">✓</div>
+      <div class="lesson-info"><div class="lesson-title">1.1 — The 48-hour onboarding SOP</div><div class="lesson-meta">40 min · seven steps, same order, every client</div></div><span class="caret">▶</span></div>
+    <div class="lesson-body">
+      <p>The first 48 hours after a deposit set the tone for the next two years. Sloppy start, nervous client forever. The seven steps, in order, within 48 hours of the deposit clearing:</p>
+      <ol>
+        <li><strong>Welcome email</strong> (templated) — what happens next, the timeline, exactly what you need from them and by when, and the scope walls stated warmly up front.</li>
+        <li><strong>Client folder created</strong> from the template (1.2) — before anything else exists anywhere else.</li>
+        <li><strong>Credentials into the vault</strong> — domain, hosting, GBP, email. Never in texts, never in a notebook.</li>
+        <li><strong>Asset request sent</strong> — photos, logo, license numbers, the story — as one checklist, not five dribbled texts.</li>
+        <li><strong>Kickoff call booked</strong> — 20 minutes, on the calendar, within the week.</li>
+        <li><strong>Baseline screenshots captured</strong> (Module 3 habit) — reviews, GBP stats, uptime.</li>
+        <li><strong>Build slot on the calendar</strong> — real hours blocked, so the timeline in the agreement is backed by a schedule, not hope.</li>
+      </ol>
+      <div class="callout co-info"><b>Why 48 hours</b>Buyer's remorse peaks on day 2. A client who gets a professional welcome, a clear list, and a booked call before remorse arrives never feels it. Silence after a deposit is how refund requests are born.</div>
+    </div>
+  </div>
+
+  <div class="lesson" data-id="m1b">
+    <div class="lesson-hdr" onclick="toggleLesson(this)"><div class="chk" onclick="toggleDone(event,this)">✓</div>
+      <div class="lesson-info"><div class="lesson-title">1.2 — The client file: one folder, one truth</div><div class="lesson-meta">30 min · clone-able template</div></div><span class="caret">▶</span></div>
+    <div class="lesson-body">
+      <p>Twenty clients means you will forget everything about any one of them — that's not a flaw, it's the plan. The folder remembers so you don't have to:</p>
+      <div class="codeblock"><button class="copy-btn" onclick="copyBlock(this)">copy</button><span class="s">Clients/Rosas-Bakery/</span>
+├── <span class="c">00-agreement/</span>       signed contract · care-plan terms
+├── <span class="c">01-access/</span>          what's in the vault (names only, never passwords)
+├── <span class="c">02-assets/</span>          logo · photos · owner's story voice memo
+├── <span class="c">03-baseline/</span>        install-day screenshots (M3)
+├── <span class="c">04-reports/</span>         every monthly report ever sent
+└── <span class="c">05-notes/</span>           call notes · out-of-scope asks logged (upgrade fuel)</div>
+      <p>The test: <em>could Jeremiah cover this client for a month using only the folder?</em> If not, the folder's incomplete. That question is also the hiring test in S3 — the folder standard is what makes a first hire possible at all.</p>
+    </div>
+  </div>
+
+  <div class="lesson" data-id="m1c">
+    <div class="lesson-hdr" onclick="toggleLesson(this)"><div class="chk" onclick="toggleDone(event,this)">✓</div>
+      <div class="lesson-info"><div class="lesson-title">1.3 — Maintenance Monday: the batch runbook</div><div class="lesson-meta">45 min · service everyone in one sitting</div></div><span class="caret">▶</span></div>
+    <div class="lesson-body">
+      <p>Servicing clients one-at-a-time as things occur to you is how 10 clients eat 40 hours. Batching is how 20 clients fit in one day. Every Monday, the same sweep, in the same order, across the whole book:</p>
+      <div class="tbl-scroll"><table class="ftable">
+        <tr><th>Sweep</th><th>Per client</th><th>Book of 20</th></tr>
+        <tr><td><b>1 · Monitors</b> — uptime alerts, anything red overnight</td><td><code>~1 min</code></td><td>~20 min</td></tr>
+        <tr><td><b>2 · Backups</b> — confirm last run + offsite copy for every site</td><td><code>~2 min</code></td><td>~40 min</td></tr>
+        <tr><td><b>3 · Updates</b> — snapshot, apply, click-test (batched by platform)</td><td><code>~5 min</code></td><td>~90 min</td></tr>
+        <tr><td><b>4 · Reviews &amp; GBP</b> — new reviews get replies drafted; posts queued (Standard+)</td><td><code>~4 min</code></td><td>~60 min</td></tr>
+        <tr><td><b>5 · Leads check</b> — intake sheets scanned for anything unanswered (Pro)</td><td><code>~1 min</code></td><td>~15 min</td></tr>
+        <tr><td><b>6 · Log it</b> — one line per client in the delivery log → feeds the monthly report</td><td><code>~1 min</code></td><td>~20 min</td></tr>
+      </table></div>
+      <p><strong>≈4 hours for a full book of twenty.</strong> The log line is the secret: report day (1st of the month) becomes assembly, not archaeology.</p>
+    </div>
+  </div>
+</section>
+</div>
+
+<!-- ============ S2 ============ -->
+<div class="view" id="v-s2">
+<section class="panel card">
+  <div class="card-hdr">
+    <div><span class="session-tag">Session 2</span><span class="session-name">Money &amp; metrics</span></div>
+    <span class="session-time">~2 hrs · the five numbers + the scripts</span>
+  </div>
+
+  <div class="lesson" data-id="m2a">
+    <div class="lesson-hdr" onclick="toggleLesson(this)"><div class="chk" onclick="toggleDone(event,this)">✓</div>
+      <div class="lesson-info"><div class="lesson-title">2.1 — Billing rhythm &amp; the two collection scripts</div><div class="lesson-meta">40 min · never chase money angrily again</div></div><span class="caret">▶</span></div>
+    <div class="lesson-body">
+      <ul>
+        <li><strong>Care plans auto-bill on the 1st.</strong> Card on file at signup, no exceptions, no invoicing-and-hoping. "It just runs, like your other utilities" — said at signup, when everyone's happy.</li>
+        <li><strong>Projects: 50% deposit, 50% at launch.</strong> The site goes live when the final invoice is paid — stated in the agreement, never as a surprise.</li>
+        <li><strong>Failed card / late invoice cadence:</strong> day-7 nudge, day-14 pause. Both templated, both friendly, both automatic:</li>
+      </ul>
+      <div class="script"><b>Day-7 nudge</b>"Hey Rosa — heads up, the card on file didn't go through on the 1st (happens all the time, usually a new expiration date). Here's the update link — takes 30 seconds. Everything on the plan is still running as normal."</div>
+      <div class="script"><b>Day-14 pause</b>"Following up — the card still hasn't gone through, so per the plan terms I've paused the monthly services until it's sorted. The site stays up; the maintenance just waits. Soon as the card's updated everything resumes same-day, and I'll re-run whatever was missed. Here's the link again."</div>
+      <p><em>Notice what's absent:</em> guilt, threats, apology. The system enforces; you stay the friendly face of it. That separation is why clients pay late once, not habitually.</p>
+    </div>
+  </div>
+
+  <div class="lesson" data-id="m2b">
+    <div class="lesson-hdr" onclick="toggleLesson(this)"><div class="chk" onclick="toggleDone(event,this)">✓</div>
+      <div class="lesson-info"><div class="lesson-title">2.2 — The five-number dashboard</div><div class="lesson-meta">40 min · updated monthly, read weekly</div></div><span class="caret">▶</span></div>
+    <div class="lesson-body">
+      <p>A practice is run on five numbers in one sheet. Anything more is procrastination wearing a spreadsheet:</p>
+      <div class="tbl-scroll"><table class="ftable">
+        <tr><th>Number</th><th>What it is</th><th>Red line</th></tr>
+        <tr><td><b>MRR</b></td><td>Sum of all active care plans</td><td>Flat 3 months straight → sales problem (back to M4 funnel math)</td></tr>
+        <tr><td><b>Active clients</b></td><td>Paying plans right now</td><td>—</td></tr>
+        <tr><td><b>Churn</b></td><td>Plans lost this quarter ÷ plans at quarter start</td><td><code>&gt;10%/qtr</code> → delivery problem (are reports going out?)</td></tr>
+        <tr><td><b>Avg revenue / client</b></td><td>MRR ÷ active clients</td><td>Stuck at ~$99 → you're not attaching Standard/Pro; upgrade fuel is sitting in 05-notes</td></tr>
+        <tr><td><b>Hours / client / month</b></td><td>Delivery-log time ÷ clients</td><td><code>&gt;2 hrs</code> → automate it, reprice it, or fire the client eating it</td></tr>
+      </table></div>
+      <div class="callout co-warn"><b>The hours red line is the whole ballgame</b>Twenty clients × 2 hrs is a week of every month gone to maintenance. The moment the average creeps past 2, something is wrong with a system, a price, or one specific client — and the delivery log will name which. Feelings lie about workload; logs don't.</div>
+    </div>
+  </div>
+
+  <div class="lesson" data-id="m2c">
+    <div class="lesson-hdr" onclick="toggleLesson(this)"><div class="chk" onclick="toggleDone(event,this)">✓</div>
+      <div class="lesson-info"><div class="lesson-title">2.3 — The annual raise letter</div><div class="lesson-meta">30 min · +10%, earned in writing</div></div><span class="caret">▶</span></div>
+    <div class="lesson-body">
+      <p>Costs rise; plans that never do become resentments you subsidize. Once a year, each client gets a raise letter that leads with a year of receipts — because you've been sending proof-of-work monthly, the raise reads as obvious instead of audacious:</p>
+      <div class="codeblock"><button class="copy-btn" onclick="copyBlock(this)">copy</button><span class="m">Subject:</span> <span class="s">Year one on your plan — and a small update</span>
+
+Hi Rosa — one year in. Here's what the plan covered:
+
+<span class="g">✓ 52 backups, zero failures · 2 restore tests passed</span>
+<span class="g">✓ Uptime 99.98% — one 12-min blip, fixed before you saw it</span>
+<span class="g">✓ Reviews: 31 → 58 (avg 4.8★)</span>
+<span class="g">✓ 74 updates applied · 0 broke anything</span>
+<span class="g">✓ 22 GBP posts · profile views up 41% year over year</span>
+
+Starting [date, 60 days out], the plan moves from $199 to $219/mo —
+first change since you joined, and it keeps me able to give it the
+same attention. Nothing you need to do; happy to talk it through
+anytime. Thanks for a great year. — Myles</div>
+      <p><strong>Rules:</strong> 60 days' notice, one raise a year max, and the receipts paragraph is longer than the raise paragraph. Clients rarely leave over 10% with a year of green checkmarks above it — they leave over surprises.</p>
+    </div>
+  </div>
+</section>
+</div>
+
+<!-- ============ S3 ============ -->
+<div class="view" id="v-s3">
+<section class="panel card">
+  <div class="card-hdr">
+    <div><span class="session-tag">Session 3</span><span class="session-name">Retention, referrals &amp; when to grow</span></div>
+    <span class="session-time">~2 hrs · keep the book, then scale it</span>
+  </div>
+
+  <div class="lesson" data-id="m3a">
+    <div class="lesson-hdr" onclick="toggleLesson(this)"><div class="chk" onclick="toggleDone(event,this)">✓</div>
+      <div class="lesson-info"><div class="lesson-title">3.1 — The cancel-save protocol</div><div class="lesson-meta">40 min · a cancel is a conversation, not an event</div></div><span class="caret">▶</span></div>
+    <div class="lesson-body">
+      <p>Every cancel request gets a <strong>same-day phone call</strong> — not an email, not a form. The protocol:</p>
+      <ol>
+        <li><strong>Listen first.</strong> "Totally fine — before I process it, what changed?" The real reason is usually money, a misunderstanding of what the plan does, or a slow season. Each has a different save.</li>
+        <li><strong>Downgrade before you lose.</strong> "What if we drop you to Essentials at $99 — keep the backups and uptime, pause the rest — and revisit when the season picks up?" A $99 client is retained; a cancelled one costs thirty doors (M4 math) to replace.</li>
+        <li><strong>Lose gracefully.</strong> If they go: process it same day, confirm what they keep (everything — ownership promise), leave the door open. No guilt, no friction fees. How you lose clients is your reputation on the street you still work.</li>
+        <li><strong>Win-back at 90 days:</strong> one friendly check-in — "How's the site been? If anything's slipped, the door's open." A meaningful share come back once they've spent a quarter being their own IT guy.</li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="lesson" data-id="m3b">
+    <div class="lesson-hdr" onclick="toggleLesson(this)"><div class="chk" onclick="toggleDone(event,this)">✓</div>
+      <div class="lesson-info"><div class="lesson-title">3.2 — The referral engine + the Pro-tier QBR</div><div class="lesson-meta">40 min · warm doors on tap</div></div><span class="caret">▶</span></div>
+    <div class="lesson-body">
+      <p><strong>The offer:</strong> $100 credit to the referrer, $100 off for the friend. Stated once at onboarding, printed on a small card, and — the part everyone skips — <strong>asked for out loud at high-water moments:</strong> right after a glowing report, a five-star review of <em>you</em>, or a "the phone's been ringing" comment.</p>
+      <div class="script"><b>The ask, at the right moment</b>"Glad the plan's earning it. Hey — who's one other owner you know who's fighting their website the way you used to? If you send them my way, you both get a hundred bucks off. Just tell them Rosa sent you."</div>
+      <p><strong>The Pro-tier QBR</strong> — a 15-minute quarterly call that makes $299/mo feel like a bargain: the quarter's numbers in two minutes · what's coming next quarter (their slow season, a holiday push) · one recommendation with a price if it's out of scope · the referral ask if the mood's right. Fifteen minutes, four times a year, and Pro clients never ask "what am I paying for."</p>
+    </div>
+  </div>
+
+  <div class="lesson" data-id="m3c">
+    <div class="lesson-hdr" onclick="toggleLesson(this)"><div class="chk" onclick="toggleDone(event,this)">✓</div>
+      <div class="lesson-info"><div class="lesson-title">3.3 — The growth thresholds: when to hire, when to restructure</div><div class="lesson-meta">40 min · decisions by number, not by exhaustion</div></div><span class="caret">▶</span></div>
+    <div class="lesson-body">
+      <p>Growth decisions made while drowning are bad ones, so the thresholds get set now, calmly, in writing:</p>
+      <div class="tbl-scroll"><table class="ftable">
+        <tr><th>Trigger</th><th>The move</th></tr>
+        <tr><td><b>20 care clients</b> or <b>15 hrs/wk on maintenance</b></td><td>First hire: a part-time VA runs Maintenance Monday sweeps 1–2 and 6 from the runbook — possible only because the runbook and folder standard exist</td></tr>
+        <tr><td><b>Hours/client &gt; 2 for one specific client, 3 months running</b></td><td>Reprice that client or gracefully part ways — one client shouldn't tax nineteen</td></tr>
+        <tr><td><b>~Deal #10 closed (M4 comp plan)</b></td><td>The rep→LLC conversation goes on paper: Myles's entity, the split restructure, who owns which client relationships</td></tr>
+        <tr><td><b>MRR covers base personal expenses</b></td><td>The "quit math" is real: project income becomes growth fuel instead of rent — this is the line where it's a company</td></tr>
+      </table></div>
+      <div class="callout co-ok"><b>Why thresholds are written down in advance</b>Every one of these is emotional in the moment — hiring feels scary, firing a client feels rude, restructuring feels awkward. Numbers agreed on a calm Tuesday make the scary moment a checkbox. That's the whole philosophy of this module in one sentence.</div>
+    </div>
+  </div>
+</section>
+</div>
+
+<!-- ============ CHECKLIST + GRADUATION ============ -->
+<div class="view" id="v-chk">
+<section class="panel card">
+  <div class="card-hdr"><span class="card-label">The practice checklist — the operating system, installed once</span><span class="tag tag-info">templates before clients</span></div>
+  <div class="check-group-label">Onboarding kit</div>
+  <div class="check-item" data-id="c1" onclick="toggleCheck(this)"><div class="chk">✓</div><span class="check-text">Welcome email templated — timeline, asset list, scope walls included</span></div>
+  <div class="check-item" data-id="c2" onclick="toggleCheck(this)"><div class="chk">✓</div><span class="check-text">Client folder template (00–05) created and clone-tested</span></div>
+  <div class="check-item" data-id="c3" onclick="toggleCheck(this)"><div class="chk">✓</div><span class="check-text">Password vault set up · every existing client's creds migrated in</span></div>
+  <div class="check-item" data-id="c4" onclick="toggleCheck(this)"><div class="chk">✓</div><span class="check-text">48-hour SOP printed/saved · last new client actually went through all 7 steps</span></div>
+  <div class="check-group-label">Delivery engine</div>
+  <div class="check-item" data-id="c5" onclick="toggleCheck(this)"><div class="chk">✓</div><span class="check-text">Maintenance Monday blocked on the calendar, recurring, forever</span></div>
+  <div class="check-item" data-id="c6" onclick="toggleCheck(this)"><div class="chk">✓</div><span class="check-text">Runbook (6 sweeps) printed per tier · delivery log sheet live</span></div>
+  <div class="check-item" data-id="c7" onclick="toggleCheck(this)"><div class="chk">✓</div><span class="check-text">Report day (1st) on calendar · reports assemble from the delivery log</span></div>
+  <div class="check-group-label">Money system</div>
+  <div class="check-item" data-id="c8" onclick="toggleCheck(this)"><div class="chk">✓</div><span class="check-text">Every care plan on auto-bill with card on file — zero manual invoices</span></div>
+  <div class="check-item" data-id="c9" onclick="toggleCheck(this)"><div class="chk">✓</div><span class="check-text">Day-7 and day-14 scripts saved as templates, cadence noted</span></div>
+  <div class="check-item" data-id="c10" onclick="toggleCheck(this)"><div class="chk">✓</div><span class="check-text">Five-number dashboard sheet live with real current numbers</span></div>
+  <div class="check-group-label">Growth kit</div>
+  <div class="check-item" data-id="c11" onclick="toggleCheck(this)"><div class="chk">✓</div><span class="check-text">Referral cards printed · offer stated at every onboarding · QBR agenda templated</span></div>
+  <div class="check-item" data-id="c12" onclick="toggleCheck(this)"><div class="chk">✓</div><span class="check-text">Growth thresholds written down and agreed with Jeremiah — including the deal-#10 LLC conversation</span></div>
+</section>
+
+<section class="panel card">
+  <div class="card-hdr"><span class="card-label">Graduation exam — run the practice for real, one full month</span><span class="tag tag-info">pass = all 8 · real clients, real numbers</span></div>
+  <div class="card-body" style="padding-bottom:.4rem">
+    <p style="color:var(--ink-soft);font-weight:300;font-size:.9rem">This one can't be roleplayed in an afternoon — it's a month of operation, observed. <strong style="color:var(--danger)">The folder test is the gate: if Jeremiah can't cover a client from the folder alone, the month doesn't count.</strong></p>
+  </div>
+  <div class="check-group-label">Graduation criteria — check as demonstrated</div>
+  <div class="check-item" data-id="x1" onclick="toggleCheck(this)"><div class="chk">✓</div><span class="check-text">One client onboarded via the full 48-hour SOP, all seven steps timestamped</span></div>
+  <div class="check-item" data-id="x2" onclick="toggleCheck(this)"><div class="chk">✓</div><span class="check-text">Four consecutive Maintenance Mondays run · delivery log complete</span></div>
+  <div class="check-item" data-id="x3" onclick="toggleCheck(this)"><div class="chk">✓</div><span class="check-text">Month's reports assembled from the log in under an hour total</span></div>
+  <div class="check-item" data-id="x4" onclick="toggleCheck(this)"><div class="chk">✓</div><span class="check-text">Folder test passed on a random client — coverable by Jeremiah, cold</span></div>
+  <div class="check-item" data-id="x5" onclick="toggleCheck(this)"><div class="chk">✓</div><span class="check-text">Dashboard current · all five numbers explained, red lines recited from memory</span></div>
+  <div class="check-item" data-id="x6" onclick="toggleCheck(this)"><div class="chk">✓</div><span class="check-text">Late-payment roleplay: both scripts delivered warm, pause rule held</span></div>
+  <div class="check-item" data-id="x7" onclick="toggleCheck(this)"><div class="chk">✓</div><span class="check-text">Cancel-save roleplay ends in a downgrade, not a loss — and the graceful-loss version shown too</span></div>
+  <div class="check-item" data-id="x8" onclick="toggleCheck(this)"><div class="chk">✓</div><span class="check-text">Referral ask delivered naturally at a high-water moment (live or roleplay) + annual raise letter drafted for a real client</span></div>
+</section>
+
+<section class="panel card" style="text-align:center;padding:2rem clamp(1.2rem,3vw,1.6rem)">
+  <p style="font-family:var(--display);font-weight:600;font-size:clamp(1.25rem,3vw,1.6rem);letter-spacing:-.02em;margin-bottom:.5rem">Checklists. Numbers. <em style="color:var(--coral);text-shadow:0 0 30px var(--coral-glow)">Calm.</em></p>
+  <p style="color:var(--ink-soft);font-size:.9rem;font-weight:300;max-width:56ch;margin:0 auto">The program ends where it aimed from day one: a practice that runs on systems, grows on referrals, and makes its hard decisions with numbers written down on a calm Tuesday. That's the company. Go run it.</p>
+</section>
+</div>
+
+</div></main>
+
+<footer class="site-footer">
+  <p class="footer-meta">Next‑Gen‑<em>IT</em> · Module 5: Run the Practice · <a href="./module-4.html">← Module 4</a> · <a href="./modules.html">All modules</a> · progress stored locally</p>
+</footer>
+
+<script>
+var KEY='ngit-module5-v1';
+var state={};
+try{state=JSON.parse(localStorage.getItem(KEY))||{}}catch(e){state={}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){}}
+
+document.querySelectorAll('.tab').forEach(function(t){
+  t.addEventListener('click',function(){
+    document.querySelectorAll('.tab').forEach(function(x){x.classList.remove('active')});
+    document.querySelectorAll('.view').forEach(function(v){v.classList.remove('on')});
+    t.classList.add('active');
+    document.getElementById(t.dataset.view).classList.add('on');
+    window.scrollTo({top:0});
+  });
+});
+
+function toggleLesson(hdr){hdr.parentElement.classList.toggle('open')}
+function toggleDone(ev,chk){
+  ev.stopPropagation();
+  var l=chk.closest('.lesson');
+  l.classList.toggle('done');
+  state[l.dataset.id]=l.classList.contains('done');
+  save();render();
+}
+function toggleCheck(item){
+  item.classList.toggle('done');
+  state[item.dataset.id]=item.classList.contains('done');
+  save();render();
+}
+
+var G={
+  S1: ["m1a", "m1b", "m1c"],
+  S2: ["m2a", "m2b", "m2c"],
+  S3: ["m3a", "m3b", "m3c"],
+  CHK: ["c1", "c2", "c3", "c4", "c5", "c6", "c7", "c8", "c9", "c10", "c11", "c12"],
+  GRAD: ["x1", "x2", "x3", "x4", "x5", "x6", "x7", "x8"]
+};
+function gs(ids){var d=ids.filter(function(i){return state[i]}).length;return d===ids.length?'done':(d>0?'scanning':'')}
+function render(){
+  var all=[].concat.apply([],Object.keys(G).map(function(k){return G[k]}));
+  var done=all.filter(function(i){return state[i]}).length;
+  var pct=Math.round(done/all.length*100);
+  document.getElementById('pct').textContent=pct+'%';
+  document.getElementById('pfill').style.width=pct+'%';
+  [['ps1',G.S1],
+  ['ps2',G.S2],
+  ['ps3',G.S3],
+  ['ps4',G.CHK],
+  ['ps5',G.GRAD]].forEach(function(p){
+    var el=document.getElementById(p[0]);if(!el)return;
+    el.classList.remove('done','scanning');
+    var g=gs(p[1]);if(g)el.classList.add(g);
+  });
+}
+document.querySelectorAll('.lesson').forEach(function(l){if(state[l.dataset.id])l.classList.add('done')});
+document.querySelectorAll('.check-item').forEach(function(c){if(state[c.dataset.id])c.classList.add('done')});
+render();
+
+function resetProgress(){
+  if(!confirm('Clear all progress on this module?'))return;
+  state={};save();
+  document.querySelectorAll('.lesson,.check-item').forEach(function(e){e.classList.remove('done')});
+  render();
+}
+function copyBlock(btn){
+  var t=btn.parentElement.cloneNode(true);
+  t.querySelector('.copy-btn').remove();
+  navigator.clipboard.writeText(t.textContent.trim()).then(function(){
+    btn.textContent='copied';btn.classList.add('copied');
+    setTimeout(function(){btn.textContent='copy';btn.classList.remove('copied')},1500);
+  });
+}
+</script>
+</body>
+</html>

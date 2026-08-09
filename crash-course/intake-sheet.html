@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Client Intake Sheet · Next‑Gen‑IT</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..700;1,9..144,400..700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;600&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --navy:#071A32; --coral:#E4473A; --sky:#1B8BD6; --muted:#5B6B80; --rule:#C8D2E0;
+  --display:'Fraunces',Georgia,serif; --body:'IBM Plex Sans',sans-serif; --mono:'IBM Plex Mono',monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--body);color:var(--navy);font-size:11.5px;line-height:1.45;background:#fff;padding:.55in .6in;max-width:8.5in;margin:0 auto}
+@media print{body{padding:.35in .45in} .no-print{display:none}}
+@page{size:letter;margin:0}
+
+.head{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:2.5px solid var(--navy);padding-bottom:.55rem;margin-bottom:.9rem}
+.brand{font-family:var(--display);font-weight:700;font-size:1.45rem;letter-spacing:-.02em}
+.brand em{font-style:italic;color:var(--coral)}
+.brand-sub{font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-top:.1rem}
+.head-meta{font-family:var(--mono);font-size:.62rem;color:var(--muted);text-align:right;line-height:1.7}
+.head-meta b{color:var(--navy)}
+
+.eyebrow{display:flex;align-items:center;gap:.5rem;font-family:var(--mono);font-size:.6rem;letter-spacing:.13em;text-transform:uppercase;color:var(--sky);margin:.85rem 0 .45rem}
+.eyebrow::before{content:"";width:26px;height:2px;background:linear-gradient(90deg,var(--coral),var(--sky))}
+
+.grid{display:grid;gap:.45rem .8rem}
+.g2{grid-template-columns:1fr 1fr}
+.g3{grid-template-columns:1fr 1fr 1fr}
+.field{display:flex;flex-direction:column}
+.field label{font-family:var(--mono);font-size:.58rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:.15rem}
+.line{border:none;border-bottom:1px solid var(--rule);height:1.25rem}
+.line.tall{height:2.6rem}
+.big{height:3.6rem;border:1px solid var(--rule);border-radius:6px}
+
+.checks{display:grid;grid-template-columns:1fr 1fr;gap:.28rem .9rem;font-size:.72rem}
+.ck{display:flex;align-items:center;gap:.45rem;color:var(--navy)}
+.box{width:11px;height:11px;border:1.4px solid var(--navy);border-radius:3px;flex-shrink:0}
+
+.pkg{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.5rem;margin-top:.3rem}
+.pkg-card{border:1.4px solid var(--rule);border-radius:9px;padding:.5rem .6rem}
+.pkg-card.hot{border-color:var(--coral)}
+.pkg-name{font-family:var(--mono);font-size:.58rem;letter-spacing:.11em;text-transform:uppercase;color:var(--sky)}
+.pkg-val{font-family:var(--display);font-style:italic;font-weight:700;font-size:1.05rem;color:var(--coral)}
+.pkg-desc{font-size:.62rem;color:var(--muted);line-height:1.4;margin-top:.1rem}
+.pkg-pick{display:flex;align-items:center;gap:.35rem;margin-top:.3rem;font-family:var(--mono);font-size:.56rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+
+.foot{margin-top:.9rem;border-top:1px solid var(--rule);padding-top:.5rem;display:flex;justify-content:space-between;align-items:center}
+.foot-note{font-family:var(--mono);font-size:.56rem;color:var(--muted);letter-spacing:.05em;max-width:60%}
+.foot-note em{color:var(--coral);font-style:italic}
+.sig{display:flex;gap:1.2rem}
+.sig .field{width:1.7in}
+
+.two-col{display:grid;grid-template-columns:1.15fr .85fr;gap:1rem;align-items:start}
+</style>
+</head>
+<body>
+
+<div class="head">
+  <div>
+    <div class="brand">Next‑Gen‑<em>IT</em></div>
+    <div class="brand-sub">Client Intake · Website &amp; Domain Health</div>
+  </div>
+  <div class="head-meta">
+    Date: ____________&nbsp;&nbsp;Rep: <b>____________</b><br>
+    Free domain snapshot included with every intake
+  </div>
+</div>
+
+<div class="eyebrow">01 · The business</div>
+<div class="grid g2">
+  <div class="field"><label>Business name</label><div class="line"></div></div>
+  <div class="field"><label>What they do — owner's own words</label><div class="line"></div></div>
+  <div class="field"><label>Contact name &amp; role</label><div class="line"></div></div>
+  <div class="field"><label>Phone (cell if possible)</label><div class="line"></div></div>
+  <div class="field"><label>Email</label><div class="line"></div></div>
+  <div class="field"><label>Address</label><div class="line"></div></div>
+  <div class="field"><label>Current website / domain (or "none")</label><div class="line"></div></div>
+  <div class="field"><label>Hours</label><div class="line"></div></div>
+</div>
+
+<div class="two-col">
+<div>
+  <div class="eyebrow">02 · What they have today</div>
+  <div class="checks">
+    <span class="ck"><span class="box"></span>No website at all</span>
+    <span class="ck"><span class="box"></span>Facebook page only</span>
+    <span class="ck"><span class="box"></span>Old / broken site</span>
+    <span class="ck"><span class="box"></span>Site they can't edit</span>
+    <span class="ck"><span class="box"></span>Paying too much monthly</span>
+    <span class="ck"><span class="box"></span>Google listing unclaimed</span>
+    <span class="ck"><span class="box"></span>Business email = @gmail</span>
+    <span class="ck"><span class="box"></span>Don't know who owns domain</span>
+  </div>
+
+  <div class="eyebrow">03 · What they want the site to do</div>
+  <div class="checks">
+    <span class="ck"><span class="box"></span>Get phone calls</span>
+    <span class="ck"><span class="box"></span>Look legitimate</span>
+    <span class="ck"><span class="box"></span>Show services + prices</span>
+    <span class="ck"><span class="box"></span>Show photos of work</span>
+    <span class="ck"><span class="box"></span>Directions / find us</span>
+    <span class="ck"><span class="box"></span>Professional email</span>
+  </div>
+
+  <div class="eyebrow">04 · Content collected</div>
+  <div class="checks">
+    <span class="ck"><span class="box"></span>5–10 real photos (airdrop/text)</span>
+    <span class="ck"><span class="box"></span>Services + prices list</span>
+    <span class="ck"><span class="box"></span>Logo (if any)</span>
+    <span class="ck"><span class="box"></span>2–3 reviews to quote</span>
+  </div>
+  <div class="grid" style="margin-top:.4rem">
+    <div class="field"><label>Style notes — sites they like / hate &amp; why · colors · vibe</label><div class="line tall big"></div></div>
+  </div>
+</div>
+
+<div>
+  <div class="eyebrow">05 · Packages</div>
+  <div class="pkg" style="grid-template-columns:1fr">
+    <div class="pkg-card">
+      <div class="pkg-name">Starter</div><div class="pkg-val">$500–800</div>
+      <div class="pkg-desc">1‑page site · your domain · secure (https) · click‑to‑call · built for phones</div>
+      <div class="pkg-pick"><span class="box"></span> Interested</div>
+    </div>
+    <div class="pkg-card hot">
+      <div class="pkg-name">Standard</div><div class="pkg-val">$1,000–1,800</div>
+      <div class="pkg-desc">4–5 pages · photo gallery · contact form · pro email (info@you.com) · Google Business setup</div>
+      <div class="pkg-pick"><span class="box"></span> Interested</div>
+    </div>
+    <div class="pkg-card">
+      <div class="pkg-name">Care Plan</div><div class="pkg-val">$50–150/mo</div>
+      <div class="pkg-desc">We keep it running · monthly edits · domain renewals · traffic report</div>
+      <div class="pkg-pick"><span class="box"></span> Interested</div>
+    </div>
+  </div>
+
+  <div class="eyebrow">06 · Next step</div>
+  <div class="grid">
+    <div class="field"><label>Follow‑up date/time (bring their free domain report)</label><div class="line"></div></div>
+    <div class="field"><label>Notes</label><div class="line tall big"></div></div>
+  </div>
+</div>
+</div>
+
+<div class="foot">
+  <div class="foot-note">You own your domain and your website — <em>always.</em> We build it, secure it, and manage it for you. 50% deposit starts the build; balance at launch.</div>
+  <div class="sig">
+    <div class="field"><label>Owner initials</label><div class="line"></div></div>
+    <div class="field"><label>Rep initials</label><div class="line"></div></div>
+  </div>
+</div>
+
+</body>
+</html>

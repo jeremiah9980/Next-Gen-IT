@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Automate the Busywork — Module 3 · Next‑Gen‑IT</title>
+<meta name="description" content="Module 3 field manual: the care plan as a product. Three tiers, five automations, proof-of-work reporting, and the install-day playbook."/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --paper:#071A32; --paper-deep:#0A2342; --paper-edge:#041326;
+  --panel:rgba(10,35,66,.82); --panel-strong:rgba(13,43,79,.94);
+  --ink:#FFFFFF; --ink-soft:#D7E2F0; --ink-muted:#91A6C3;
+  --rule:rgba(145,166,195,.22); --rule-soft:rgba(145,166,195,.12);
+  --coral:#FF6B5F; --coral-deep:#E4473A; --coral-soft:rgba(255,107,95,.14); --coral-glow:rgba(255,107,95,.38);
+  --sky:#8FD7FF; --sky-deep:#1B8BD6; --sky-soft:rgba(143,215,255,.14); --sky-glow:rgba(143,215,255,.28);
+  --ok:#22C55E; --ok-soft:rgba(34,197,94,.14);
+  --warn:#F59E0B; --warn-soft:rgba(245,158,11,.12);
+  --danger:#EF4444; --danger-soft:rgba(239,68,68,.12);
+  --display:'Fraunces',Georgia,serif; --body:'IBM Plex Sans',sans-serif; --mono:'IBM Plex Mono',monospace;
+  --gutter:clamp(1rem,3vw,2rem); --page-max:1020px;
+  --radius:22px; --radius-sm:14px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{min-height:100vh;font-family:var(--body);color:var(--ink);line-height:1.6;font-size:15px;
+  background:radial-gradient(circle at 82% 12%,var(--coral-glow) 0%,transparent 30%),
+             radial-gradient(circle at 14% 22%,var(--sky-glow) 0%,transparent 34%),
+             linear-gradient(135deg,var(--paper-edge) 0%,var(--paper) 46%,#0B274D 100%);
+  background-attachment:fixed;-webkit-font-smoothing:antialiased;display:flex;flex-direction:column}
+a{color:var(--sky);text-decoration:none} a:hover{text-decoration:underline}
+button{font-family:inherit}
+:focus-visible{outline:2px solid var(--sky);outline-offset:2px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+.container{width:100%;max-width:var(--page-max);margin:0 auto;padding:0 var(--gutter)}
+
+.site-nav{position:sticky;top:0;z-index:999;background:rgba(4,19,38,.82);border-bottom:1px solid var(--rule);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
+.site-nav-inner{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:.85rem var(--gutter);max-width:var(--page-max);margin:0 auto;flex-wrap:wrap}
+.brand{font-family:var(--display);font-weight:700;font-size:1.05rem;letter-spacing:-.01em;color:var(--ink)}
+.brand em{font-style:italic;color:var(--coral)}
+.brand-sub{font-family:var(--mono);font-size:.68rem;color:var(--ink-muted);letter-spacing:.1em;text-transform:uppercase;margin-left:.6rem}
+.nav-right{display:flex;gap:.5rem;align-items:center}
+.nav-link{font-family:var(--mono);font-size:.68rem;letter-spacing:.06em;border:1px solid var(--rule);border-radius:999px;padding:.4rem .9rem;color:var(--ink-muted)}
+.nav-link:hover{border-color:var(--sky);color:var(--sky);text-decoration:none}
+.reset-btn{background:none;border:1px solid var(--rule);border-radius:999px;color:var(--ink-muted);font-family:var(--mono);font-size:.7rem;padding:.42rem .95rem;cursor:pointer;transition:all .18s}
+.reset-btn:hover{border-color:var(--coral);color:var(--coral)}
+
+main{flex:1;padding:clamp(2rem,5vw,3.2rem) 0 2.5rem}
+.eyebrow{display:inline-flex;align-items:center;gap:.7rem;font-family:var(--mono);color:var(--sky);font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;margin-bottom:1rem}
+.eyebrow::before{content:"";width:34px;height:2px;background:linear-gradient(90deg,var(--coral),var(--sky));border-radius:2px}
+.hero{padding-bottom:clamp(1.4rem,4vw,2.2rem)}
+.hero h1{font-family:var(--display);font-size:clamp(2.4rem,6vw,4.1rem);line-height:.95;letter-spacing:-.035em;margin-bottom:1.1rem;font-weight:600;text-wrap:balance}
+.hero h1 em{font-style:italic;color:var(--coral);text-shadow:0 0 36px var(--coral-glow)}
+.lede{color:var(--ink-soft);font-size:clamp(.96rem,1.6vw,1.06rem);max-width:64ch;font-weight:300}
+.lede strong{font-weight:600;color:var(--ink)}
+
+.panel{position:relative;background:linear-gradient(180deg,rgba(255,255,255,.08),rgba(255,255,255,.035)),var(--panel);border:1px solid var(--rule);border-radius:var(--radius);box-shadow:0 16px 55px rgba(0,0,0,.18);overflow:hidden}
+.pipeline{padding:clamp(1.1rem,3vw,1.5rem) clamp(1.2rem,3vw,1.8rem);margin:1.3rem 0 1.4rem}
+.pipeline-hdr{display:flex;align-items:baseline;justify-content:space-between;gap:1rem;margin-bottom:.9rem;flex-wrap:wrap}
+.pipeline-title{font-family:var(--mono);font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-muted)}
+.pipeline-pct{font-family:var(--display);font-weight:700;font-size:1.9rem;line-height:1;color:var(--coral);text-shadow:0 0 28px var(--coral-glow)}
+.steps{display:flex;gap:.5rem;margin-bottom:.85rem;flex-wrap:wrap}
+.step{display:flex;align-items:center;gap:.45rem;padding:.42rem .85rem;background:rgba(4,19,38,.5);border:1px solid var(--rule);border-radius:999px;font-family:var(--mono);font-size:.7rem;color:var(--ink-muted);transition:all .25s}
+.step.scanning{border-color:var(--warn);color:var(--warn);background:var(--warn-soft)}
+.step.done{border-color:var(--ok);color:var(--ok);background:var(--ok-soft)}
+.progress{height:4px;background:var(--rule-soft);border-radius:4px;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--coral),var(--sky));transition:width .5s ease;width:0}
+.pipeline-note{font-family:var(--mono);font-size:.68rem;color:var(--ink-muted);margin-top:.75rem}
+
+.tabs{display:flex;gap:.5rem;margin-bottom:1.4rem;flex-wrap:wrap}
+.tab{background:rgba(4,19,38,.5);border:1px solid var(--rule);border-radius:999px;color:var(--ink-soft);font-family:var(--mono);font-size:.72rem;letter-spacing:.04em;padding:.55rem 1.05rem;cursor:pointer;transition:all .18s;min-height:38px}
+.tab:hover{border-color:var(--sky);color:var(--sky)}
+.tab.active{background:linear-gradient(135deg,var(--coral),var(--coral-deep));border-color:transparent;color:#fff;font-weight:600;box-shadow:0 10px 32px rgba(228,71,58,.28)}
+
+.card{margin-bottom:1.4rem}
+.card-hdr{padding:1rem clamp(1.2rem,3vw,1.6rem);border-bottom:1px solid var(--rule-soft);display:flex;align-items:baseline;justify-content:space-between;gap:1rem;flex-wrap:wrap}
+.card-label{font-family:var(--mono);font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-muted)}
+.card-body{padding:1.2rem clamp(1.2rem,3vw,1.6rem)}
+.session-tag{font-family:var(--mono);font-weight:600;font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;color:var(--sky)}
+.session-name{font-family:var(--display);font-weight:600;font-size:1.32rem;letter-spacing:-.01em;display:block;margin-top:.15rem}
+.session-time{font-family:var(--mono);font-size:.68rem;color:var(--ink-muted);letter-spacing:.08em;text-transform:uppercase}
+
+.lesson{border-bottom:1px solid var(--rule-soft)}
+.lesson:last-child{border-bottom:none}
+.lesson-hdr{display:flex;align-items:flex-start;gap:.9rem;padding:1rem clamp(1.2rem,3vw,1.6rem);cursor:pointer;transition:background .15s;user-select:none}
+.lesson-hdr:hover{background:rgba(255,255,255,.03)}
+.chk{width:21px;height:21px;border:1.5px solid var(--rule);border-radius:7px;flex-shrink:0;margin-top:2px;display:flex;align-items:center;justify-content:center;font-size:.75rem;color:transparent;transition:all .18s;background:rgba(4,19,38,.5)}
+.lesson.done .chk{background:var(--ok-soft);border-color:var(--ok);color:var(--ok)}
+.lesson-info{flex:1;min-width:0}
+.lesson-title{font-size:.98rem;font-weight:600}
+.lesson.done .lesson-title{color:var(--ink-muted)}
+.lesson-meta{font-family:var(--mono);font-size:.68rem;color:var(--ink-muted);margin-top:.15rem}
+.caret{color:var(--coral);font-size:.7rem;transition:transform .2s;margin-top:.35rem}
+.lesson.open .caret{transform:rotate(90deg)}
+.lesson-body{display:none;padding:0 clamp(1.2rem,3vw,1.6rem) 1.3rem calc(clamp(1.2rem,3vw,1.6rem) + 30px);color:var(--ink-soft);font-size:.9rem;font-weight:300}
+.lesson.open .lesson-body{display:block}
+.lesson-body p{margin-bottom:.75rem}
+.lesson-body ul,.lesson-body ol{margin:0 0 .75rem 1.2rem}
+.lesson-body li{margin-bottom:.35rem}
+.lesson-body strong{color:var(--ink);font-weight:600}
+.lesson-body em{color:var(--sky)}
+.lesson-body code{font-family:var(--mono);color:var(--sky);font-size:.8rem;background:rgba(143,215,255,.1);padding:.08rem .4rem;border-radius:5px}
+@media (max-width:640px){.lesson-body{padding-left:clamp(1.2rem,3vw,1.6rem)}}
+
+.codeblock{position:relative;background:rgba(4,19,38,.72);border:1px solid var(--rule);border-radius:var(--radius-sm);padding:.95rem 1.05rem;font-family:var(--mono);font-size:.75rem;line-height:1.6;color:var(--ink-soft);white-space:pre-wrap;word-break:break-word;margin-bottom:.8rem}
+.codeblock .c{color:var(--coral)} .codeblock .s{color:var(--sky)} .codeblock .g{color:var(--ok)} .codeblock .m{color:var(--ink-muted)}
+.copy-btn{position:absolute;top:.6rem;right:.6rem;background:var(--panel-strong);border:1px solid var(--rule);border-radius:999px;color:var(--ink-muted);font-family:var(--mono);font-size:.65rem;padding:.25rem .7rem;cursor:pointer}
+.copy-btn:hover{border-color:var(--sky);color:var(--sky)}
+.copy-btn.copied{border-color:var(--ok);color:var(--ok)}
+
+.callout{border-radius:var(--radius-sm);padding:.85rem 1.05rem;font-size:.85rem;margin-bottom:.8rem;line-height:1.6;font-weight:300;color:var(--ink-soft)}
+.callout b{display:block;margin-bottom:.2rem;font-family:var(--mono);font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;font-weight:600}
+.co-warn{background:var(--warn-soft);border:1px solid rgba(245,158,11,.3)} .co-warn b{color:var(--warn)}
+.co-danger{background:var(--danger-soft);border:1px solid rgba(239,68,68,.3)} .co-danger b{color:var(--danger)}
+.co-ok{background:var(--ok-soft);border:1px solid rgba(34,197,94,.3)} .co-ok b{color:var(--ok)}
+.co-info{background:var(--sky-soft);border:1px solid rgba(143,215,255,.3)} .co-info b{color:var(--sky)}
+
+.ftable{width:100%;border-collapse:collapse;font-size:.84rem}
+.ftable th{padding:.55rem .75rem;font-family:var(--mono);font-size:.64rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-muted);border-bottom:1px solid var(--rule);text-align:left;font-weight:500}
+.ftable td{padding:.55rem .75rem;border-bottom:1px solid var(--rule-soft);vertical-align:top;color:var(--ink-soft);font-weight:300}
+.ftable tr:last-child td{border-bottom:none}
+.ftable code{font-family:var(--mono);color:var(--sky);font-size:.76rem}
+.ftable td b{color:var(--ink);font-weight:600}
+.tbl-scroll{overflow-x:auto}
+
+.diagram{margin:.4rem 0 1rem;background:rgba(4,19,38,.45);border:1px solid var(--rule-soft);border-radius:var(--radius-sm);padding:.8rem}
+.diagram svg{width:100%;height:auto;display:block}
+.diagram-cap{font-family:var(--mono);font-size:.62rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-muted);text-align:center;margin-top:.5rem}
+
+.objection{border-bottom:1px solid var(--rule-soft)}
+.objection:last-child{border-bottom:none}
+.obj-q{display:flex;gap:.7rem;align-items:flex-start;padding:.75rem clamp(1.2rem,3vw,1.6rem);cursor:pointer;user-select:none}
+.obj-q:hover{background:rgba(255,255,255,.03)}
+.obj-num{font-family:var(--display);font-style:italic;font-weight:700;color:var(--coral);font-size:1rem;width:1.4rem;flex-shrink:0;text-shadow:0 0 18px var(--coral-glow)}
+.obj-text{flex:1;font-size:.9rem;font-weight:600;color:var(--ink)}
+.obj-a{display:none;padding:0 clamp(1.2rem,3vw,1.6rem) .9rem calc(clamp(1.2rem,3vw,1.6rem) + 2.1rem);color:var(--ink-soft);font-size:.86rem;font-weight:300}
+.objection.open .obj-a{display:block}
+.obj-a em{color:var(--sky)}
+
+.check-item{display:flex;align-items:flex-start;gap:.8rem;padding:.6rem clamp(1.2rem,3vw,1.6rem);border-bottom:1px solid var(--rule-soft);cursor:pointer;user-select:none}
+.check-item:hover{background:rgba(255,255,255,.03)}
+.check-item:last-child{border-bottom:none}
+.check-item .chk{width:18px;height:18px;font-size:.68rem;border-radius:6px;margin-top:1px}
+.check-item.done .chk{background:var(--ok-soft);border-color:var(--ok);color:var(--ok)}
+.check-text{font-size:.86rem;color:var(--ink-soft);font-weight:300}
+.check-item.done .check-text{color:var(--ink-muted);text-decoration:line-through}
+.check-group-label{font-family:var(--mono);font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--sky);padding:.7rem clamp(1.2rem,3vw,1.6rem) .2rem}
+.tag{font-family:var(--mono);font-size:.62rem;font-weight:600;letter-spacing:.08em;padding:.2rem .6rem;border-radius:999px;text-transform:uppercase;display:inline-block}
+.tag-info{background:var(--sky-soft);color:var(--sky)}
+.tag-fail{background:var(--danger-soft);color:var(--danger)}
+
+.script{border-left:3px solid var(--coral);background:rgba(255,107,95,.06);border-radius:0 var(--radius-sm) var(--radius-sm) 0;padding:.85rem 1rem;margin-bottom:.8rem;font-size:.88rem;color:var(--ink-soft);font-weight:300;font-style:italic}
+.script b{display:block;font-style:normal;font-family:var(--mono);font-size:.64rem;letter-spacing:.1em;text-transform:uppercase;color:var(--coral);margin-bottom:.3rem;font-weight:600}
+
+.view{display:none} .view.on{display:block}
+.site-footer{border-top:1px solid var(--rule);background:rgba(4,19,38,.6);padding:1.3rem var(--gutter);text-align:center}
+.footer-meta{font-family:var(--mono);font-size:.68rem;color:var(--ink-muted)}
+.footer-meta em{font-style:italic;color:var(--coral)}
+</style>
+</head>
+<body>
+
+<nav class="site-nav">
+  <div class="site-nav-inner">
+    <div class="brand">Next‑Gen‑<em>IT</em><span class="brand-sub">Module 3 · Automate the Busywork</span></div>
+    <div class="nav-right">
+      <a class="nav-link" href="./signup.html" style="border-color:rgba(255,107,95,.55);color:#FF6B5F">Sign up</a><a class="nav-link" href="./modules.html">All modules</a>
+      <button class="reset-btn" onclick="resetProgress()">Reset progress</button>
+    </div>
+  </div>
+</nav>
+
+<main><div class="container">
+<section class="hero">
+  <div class="eyebrow">Field training · Module 3 of 5 · Prereq: Module 2 audit passed</div>
+  <h1>Sell it once.<br><em>Deliver it monthly.</em></h1>
+  <p class="lede">A site launch is a payday. A care plan is a <strong>paycheck</strong> — and the only way monthly work stays profitable is if machines do the repetitive parts. This module builds the care plan as a real product: three tiers, five automations, and a monthly report that proves you earned the invoice. <strong>If you can't prove you did it, you don't bill for it.</strong></p>
+</section>
+
+<section class="panel pipeline">
+  <div class="pipeline-hdr"><span class="pipeline-title">Module 3 pipeline</span><span class="pipeline-pct" id="pct">0%</span></div>
+  <div class="steps">
+    <div class="step" id="ps1">◆ S1 · The Product</div>
+    <div class="step" id="ps2">◆ S2 · The Machinery</div>
+    <div class="step" id="ps3">◆ S3 · Install Day</div>
+    <div class="step" id="ps4">◆ Install checklist</div>
+    <div class="step" id="ps5">◆ Graduation</div>
+  </div>
+  <div class="progress"><div class="progress-fill" id="pfill"></div></div>
+  <p class="pipeline-note">Progress saves in this browser · the ethics recital is pass/fail regardless of total.</p>
+</section>
+
+<nav class="tabs">
+  <button class="tab active" data-view="v-ov">Overview</button>
+  <button class="tab" data-view="v-s1">S1 · The Product</button>
+  <button class="tab" data-view="v-s2">S2 · The Machinery</button>
+  <button class="tab" data-view="v-s3">S3 · Install Day</button>
+  <button class="tab" data-view="v-chk">Checklist &amp; Graduation</button>
+</nav>
+
+<!-- ============ OVERVIEW ============ -->
+<div class="view on" id="v-ov">
+<section class="panel card">
+  <div class="card-hdr"><span class="card-label">Why this module exists</span><span class="tag tag-info">recurring &gt; one-time</span></div>
+  <div class="card-body">
+    <p style="margin-bottom:.8rem;color:var(--ink-soft);font-weight:300">Module 1 taught you to ship a site. Module 2 taught you to find what's broken and sell the fix honestly. Both end with a check that clears once. Module 3 is where the company gets born: <strong style="color:var(--ink)">a maintained client is worth 3–5× a launched one over two years</strong>, and the maintenance only makes money if it takes minutes, not hours.</p>
+    <p style="color:var(--ink-soft);font-weight:300">The trade you're making with the client is simple and you should say it out loud: <em style="color:var(--sky)">"You pay a flat monthly rate. In exchange, your site stays up, backed up, and updated, your reviews keep coming in, and no phone call goes unanswered — and every month I send you a report showing exactly what happened."</em></p>
+    <div class="callout co-info" style="margin-top:.9rem"><b>The one rule of care plans</b>Everything inside a tier is a checklist item you can point to. If a line on the plan can't be proven in the monthly report, it doesn't belong on the plan.</div>
+  </div>
+</section>
+
+<section class="panel card">
+  <div class="card-hdr"><span class="card-label">The review flywheel — what the machinery builds</span></div>
+  <div class="card-body">
+    <div class="diagram">
+      <svg viewBox="0 0 760 190" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Automation flywheel: job done leads to automatic review request, review posted, better local rank, more calls, more jobs">
+        <rect x="15" y="60" width="130" height="58" rx="12" fill="rgba(255,107,95,.1)" stroke="#FF6B5F"/>
+        <text x="80" y="83" fill="#FF6B5F" font-family="IBM Plex Mono" font-size="10" text-anchor="middle">JOB DONE</text>
+        <text x="80" y="99" fill="#D7E2F0" font-family="IBM Plex Sans" font-size="9.5" text-anchor="middle">client finishes work</text>
+        <text x="160" y="93" fill="#91A6C3" font-size="14" text-anchor="middle">→</text>
+        <rect x="175" y="60" width="140" height="58" rx="12" fill="rgba(143,215,255,.1)" stroke="#8FD7FF"/>
+        <text x="245" y="79" fill="#8FD7FF" font-family="IBM Plex Mono" font-size="10" text-anchor="middle">AUTO TEXT</text>
+        <text x="245" y="94" fill="#D7E2F0" font-family="IBM Plex Sans" font-size="9.5" text-anchor="middle">review ask fires</text>
+        <text x="245" y="107" fill="#91A6C3" font-family="IBM Plex Sans" font-size="8.5" text-anchor="middle">same day, direct link</text>
+        <text x="330" y="93" fill="#91A6C3" font-size="14" text-anchor="middle">→</text>
+        <rect x="345" y="60" width="130" height="58" rx="12" fill="rgba(34,197,94,.1)" stroke="#22C55E"/>
+        <text x="410" y="79" fill="#22C55E" font-family="IBM Plex Mono" font-size="10" text-anchor="middle">REVIEW POSTED</text>
+        <text x="410" y="96" fill="#D7E2F0" font-family="IBM Plex Sans" font-size="9.5" text-anchor="middle">stars + recency</text>
+        <text x="490" y="93" fill="#91A6C3" font-size="14" text-anchor="middle">→</text>
+        <rect x="505" y="60" width="115" height="58" rx="12" fill="rgba(245,158,11,.1)" stroke="#F59E0B"/>
+        <text x="562" y="79" fill="#F59E0B" font-family="IBM Plex Mono" font-size="10" text-anchor="middle">GBP RANK ↑</text>
+        <text x="562" y="96" fill="#D7E2F0" font-family="IBM Plex Sans" font-size="9.5" text-anchor="middle">map pack visibility</text>
+        <text x="635" y="93" fill="#91A6C3" font-size="14" text-anchor="middle">→</text>
+        <rect x="650" y="60" width="100" height="58" rx="12" fill="rgba(255,107,95,.1)" stroke="#FF6B5F"/>
+        <text x="700" y="83" fill="#FF6B5F" font-family="IBM Plex Mono" font-size="10" text-anchor="middle">MORE CALLS</text>
+        <text x="700" y="99" fill="#D7E2F0" font-family="IBM Plex Sans" font-size="9.5" text-anchor="middle">more jobs</text>
+        <path d="M 700 125 Q 700 168 380 168 Q 80 168 80 125" fill="none" stroke="#91A6C3" stroke-dasharray="4 4"/>
+        <text x="380" y="160" fill="#91A6C3" font-family="IBM Plex Mono" font-size="9" text-anchor="middle">THE LOOP RUNS WITHOUT ANYONE REMEMBERING TO RUN IT</text>
+        <text x="380" y="30" fill="#D7E2F0" font-family="IBM Plex Sans" font-size="10" text-anchor="middle">Your care plan sits in the middle of this loop — that's why it's worth $99–$299 every month.</text>
+      </svg>
+      <div class="diagram-cap">One automation, set up once, compounding monthly — the client sees new reviews; you see retention</div>
+    </div>
+  </div>
+</section>
+
+<section class="panel card">
+  <div class="card-hdr"><span class="card-label">Module map</span></div>
+  <div class="card-body">
+    <div class="tbl-scroll"><table class="ftable">
+      <tr><th>Session</th><th>What you leave with</th><th>Time</th></tr>
+      <tr><td><b>S1 · The Product</b></td><td>Three tiers you can recite with prices, the proof-of-work report, and scope walls</td><td>~2 hrs</td></tr>
+      <tr><td><b>S2 · The Machinery</b></td><td>Five automations installed on a test client: text-back, review engine, intake, backups, AI apprentice</td><td>~3 hrs</td></tr>
+      <tr><td><b>S3 · Install Day</b></td><td>The upgrade pitch, the install checklist, and baseline metrics for month-2 proof</td><td>~2 hrs</td></tr>
+    </table></div>
+  </div>
+</section>
+</div>
+
+<!-- ============ S1 ============ -->
+<div class="view" id="v-s1">
+<section class="panel card">
+  <div class="card-hdr">
+    <div><span class="session-tag">Session 1</span><span class="session-name">The Care Plan is a product, not a promise</span></div>
+    <span class="session-time">~2 hrs · whiteboard + laptop</span>
+  </div>
+
+  <div class="lesson" data-id="m1a">
+    <div class="lesson-hdr" onclick="toggleLesson(this)"><div class="chk" onclick="toggleDone(event,this)">✓</div>
+      <div class="lesson-info"><div class="lesson-title">1.1 — Anatomy of the three tiers</div><div class="lesson-meta">40 min · memorize the table</div></div><span class="caret">▶</span></div>
+    <div class="lesson-body">
+      <p>Every tier is a <strong>fixed checklist at a fixed price</strong>. No custom plans, no "we'll figure it out" — custom is where margin goes to die. You sell the tier, you deliver the checklist, the report proves it.</p>
+      <div class="tbl-scroll"><table class="ftable">
+        <tr><th>Tier</th><th>Monthly</th><th>What's on the checklist</th><th>Who it's for</th></tr>
+        <tr><td><b>Essentials</b></td><td><code>$99</code></td><td>Software updates · weekly backup + offsite copy · uptime monitor · SSL renewal watch · monthly proof-of-work report</td><td>Site's up, phone rings enough — they just don't want it breaking</td></tr>
+        <tr><td><b>Standard</b></td><td><code>$199</code></td><td>Everything above + review engine running · 2 GBP posts/mo · up to 30 min of content edits · security scan + blocklist check</td><td>Wants to grow reviews and stay visible without touching anything</td></tr>
+        <tr><td><b>Pro</b></td><td><code>$299</code></td><td>Everything above + missed-call text-back · intake routing + auto-reply · quarterly 15-min strategy call · priority response (same business day)</td><td>Misses calls on the ladder / behind the chair — every lead matters</td></tr>
+      </table></div>
+      <div class="callout co-warn"><b>Say the checklist, not the vibe</b>"Peace of mind" sells nothing. "Every Sunday night your site gets backed up to a second location, and if it ever goes down I know before you do" — that sells. Concrete beats comforting.</div>
+    </div>
+  </div>
+
+  <div class="lesson" data-id="m1b">
+    <div class="lesson-hdr" onclick="toggleLesson(this)"><div class="chk" onclick="toggleDone(event,this)">✓</div>
+      <div class="lesson-info"><div class="lesson-title">1.2 — The proof-of-work report (the report IS the product)</div><div class="lesson-meta">40 min · build your template</div></div><span class="caret">▶</span></div>
+    <div class="lesson-body">
+      <p>Clients don't cancel plans they can <em>see working</em>. They cancel invisible ones. The monthly report is five minutes of assembly and it is the single biggest driver of retention — treat it like the deliverable, because to the client, it is.</p>
+      <div class="codeblock"><button class="copy-btn" onclick="copyBlock(this)">copy</button><span class="m">Subject:</span> <span class="s">Your March report — Rosa's Bakery (all green)</span>
+
+Hi Rosa,
+
+Here's what happened on your plan this month:
+
+<span class="g">✓ Uptime: 100%</span> — zero outages
+<span class="g">✓ Backups: 4 of 4</span> ran clean (latest restore-tested Jan 12)
+<span class="g">✓ Updates: 6 applied</span> — no issues after
+<span class="g">✓ Reviews: 3 new</span> (you're at 47, avg 4.8★ — up from 44)
+<span class="g">✓ Google profile: 2 posts</span> published, 1,240 profile views (+9%)
+<span class="c">→ Heads up:</span> your domain renews April 30 — it's on auto-pay, nothing to do.
+
+One thing worth doing next month: your "wedding cakes" page gets the
+most views but has no photos from the last year. Send me 3 and I'll
+swap them in on your included edit time.
+
+— Myles · Next-Gen-IT · reply anytime</div>
+      <p><strong>The rules:</strong> every line is verifiable, one "heads up" so they know you're watching, one suggestion so the plan feels alive, never longer than one screen. <em>Numbers over adjectives.</em></p>
+    </div>
+  </div>
+
+  <div class="lesson" data-id="m1c">
+    <div class="lesson-hdr" onclick="toggleLesson(this)"><div class="chk" onclick="toggleDone(event,this)">✓</div>
+      <div class="lesson-info"><div class="lesson-title">1.3 — Scope walls &amp; the change-order script</div><div class="lesson-meta">40 min · roleplay</div></div><span class="caret">▶</span></div>
+    <div class="lesson-body">
+      <p>Care plans die from scope creep — "while you're in there, can you also…" Answer warmly, hold the wall. Included time is included; past that is a small quoted job. Clients respect walls that are explained <strong>before</strong> they hit them, so the walls go in the onboarding email, not the awkward moment.</p>
+      <div class="script"><b>The change-order script — warm, two sentences, a price</b>"Happy to do that — it's about two hours of work, so it falls outside the plan's included time. I can do it for $150 flat and have it live by Friday; want me to?"</div>
+      <div class="tbl-scroll"><table class="ftable">
+        <tr><th>Inside the plan</th><th>Outside → quote it</th></tr>
+        <tr><td>Text/photo swaps within included minutes</td><td>New pages, redesigns, new features</td></tr>
+        <tr><td>Fixing anything the plan maintains</td><td>Fixing things a third party broke (quote the rescue)</td></tr>
+        <tr><td>Questions, advice, "should I…" calls</td><td>Print design, logos, non-web projects</td></tr>
+      </table></div>
+      <div class="callout co-ok"><b>Never say "no" — say "that's a project"</b>Every out-of-scope ask is a compliment and a sales lead. Log it. Three logged asks from one client is a Pro-tier upgrade conversation.</div>
+    </div>
+  </div>
+</section>
+</div>
+
+<!-- ============ S2 ============ -->
+<div class="view" id="v-s2">
+<section class="panel card">
+  <div class="card-hdr">
+    <div><span class="session-tag">Session 2</span><span class="session-name">The five automations</span></div>
+    <span class="session-time">~3 hrs · hands on keyboard</span>
+  </div>
+
+  <div class="lesson" data-id="m2a">
+    <div class="lesson-hdr" onclick="toggleLesson(this)"><div class="chk" onclick="toggleDone(event,this)">✓</div>
+      <div class="lesson-info"><div class="lesson-title">2.1 — Missed-call text-back (the Pro-tier closer)</div><div class="lesson-meta">40 min · build + test</div></div><span class="caret">▶</span></div>
+    <div class="lesson-body">
+      <p>A plumber under a sink can't answer. The caller dials the next plumber. <strong>62% of calls to small businesses go unanswered</strong> at some point in the week — and an unanswered call is usually a lost job. Text-back turns a miss into a hold: within seconds the caller gets a text, and people who would never leave voicemail will answer a text.</p>
+      <div class="codeblock"><button class="copy-btn" onclick="copyBlock(this)">copy</button><span class="m">Auto-reply on missed call:</span>
+
+Hey — this is Dave's Plumbing. Sorry we missed you, we're on a job.
+<span class="s">Text us what you need + your address</span> and we'll get back to you
+within the hour. If it's an emergency, reply <span class="c">911JOB</span> and we'll
+call you right back.</div>
+      <ul>
+        <li><strong>How it's built:</strong> a business line that supports auto-text on missed calls (OpenPhone and similar VoIP tools do this natively; a Zapier/Make hook works too). The client's existing number can usually forward in — <em>never</em> make them change their number.</li>
+        <li><strong>The demo that closes it:</strong> at the pitch, call the client's phone, have them ignore it, watch the text land on their screen. Silence, then: "That customer just stayed yours."</li>
+        <li><strong>The trap to avoid:</strong> if nobody answers the text either, the automation becomes an insult. Set the expectation honestly — the reply window promised in the text must be one the owner will actually keep.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="lesson" data-id="m2b">
+    <div class="lesson-hdr" onclick="toggleLesson(this)"><div class="chk" onclick="toggleDone(event,this)">✓</div>
+      <div class="lesson-info"><div class="lesson-title">2.2 — The review engine on autopilot</div><div class="lesson-meta">35 min · you built this by hand in M2 — now automate it</div></div><span class="caret">▶</span></div>
+    <div class="lesson-body">
+      <p>Module 2 taught the manual ask. On a care plan, the ask fires itself: job marked done → same-day text with the <strong>direct review link</strong> (the short <code>g.page/r/…</code> link, not "search for us on Google").</p>
+      <div class="codeblock"><button class="copy-btn" onclick="copyBlock(this)">copy</button>Thanks for choosing Dave's Plumbing today! If we did right by you,
+a quick review helps other neighbors find us:
+<span class="s">g.page/r/XXXX/review</span> — takes about 60 seconds. Either way,
+thanks for the business. — Dave</div>
+      <div class="callout co-danger"><b>The ethics lines — same as Module 2, now with a robot involved</b>Automation makes it easier to do the wrong thing at scale, so recite it again: <strong>no review gating</strong> (you may not filter happy customers toward Google and unhappy ones away from it), <strong>no incentives for reviews</strong>, <strong>no fake reviews ever</strong>, and the ask goes to real customers after real jobs. An automated violation is still a violation — just a faster one.</div>
+      <p>Report line it feeds: <em>"Reviews: 3 new this month, 47 total, 4.8★ average."</em> That single line renews more plans than everything else combined.</p>
+    </div>
+  </div>
+
+  <div class="lesson" data-id="m2c">
+    <div class="lesson-hdr" onclick="toggleLesson(this)"><div class="chk" onclick="toggleDone(event,this)">✓</div>
+      <div class="lesson-info"><div class="lesson-title">2.3 — Intake → one inbox</div><div class="lesson-meta">30 min · forms that never get lost</div></div><span class="caret">▶</span></div>
+    <div class="lesson-body">
+      <p>Leads leak in three places: the form nobody checks, the inbox nobody labels, and the reply nobody sends. The fix is boring and beautiful:</p>
+      <ol>
+        <li><strong>One destination.</strong> Site form → the owner's email <em>and</em> a spreadsheet row (timestamp, name, phone, message). The sheet is the memory; the email is the alert.</li>
+        <li><strong>Instant auto-reply</strong> to the customer: "Got your message — we reply within one business day. If it's urgent, call 555-0142." A lead that hears back in seconds waits; one that hears nothing shops on.</li>
+        <li><strong>A label and a rule.</strong> "Website Lead" label, auto-applied, so Monday's check is one click.</li>
+      </ol>
+      <p>Test it like a customer: submit the form from your phone, time the auto-reply, confirm the sheet row. <em>If any leg fails silently, the client finds out weeks later — from a lost job.</em></p>
+    </div>
+  </div>
+
+  <div class="lesson" data-id="m2d">
+    <div class="lesson-hdr" onclick="toggleLesson(this)"><div class="chk" onclick="toggleDone(event,this)">✓</div>
+      <div class="lesson-info"><div class="lesson-title">2.4 — Backups, updates &amp; the restore test</div><div class="lesson-meta">35 min · the unsexy core of every tier</div></div><span class="caret">▶</span></div>
+    <div class="lesson-body">
+      <p>This is the part of the plan that's worthless right up until it's priceless. The standard:</p>
+      <ul>
+        <li><strong>Weekly backup, two locations.</strong> Host-side backup plus an offsite copy you control. One copy is zero copies.</li>
+        <li><strong>Quarterly restore test.</strong> A backup you've never restored is a rumor. Restore to a staging copy, click around, log the date — that date goes in the report.</li>
+        <li><strong>Updates on a schedule, not a whim.</strong> Batch them (Maintenance Monday, Module 5), snapshot first, check the site after. The snapshot-first habit is what separates "updated it" from "broke it at 5 pm Friday."</li>
+        <li><strong>Uptime monitor</strong> pinging every 5 min with alerts to you, not the client. The report line: "Uptime 100% — zero outages."</li>
+      </ul>
+      <div class="callout co-info"><b>Why the client can't DIY this</b>They can — the same way anyone can change their own oil. They pay because it's <em>reliably done</em>, provably, without them thinking about it. That's the honest pitch, and it survives "prove it": the report proves it every month.</div>
+    </div>
+  </div>
+
+  <div class="lesson" data-id="m2e">
+    <div class="lesson-hdr" onclick="toggleLesson(this)"><div class="chk" onclick="toggleDone(event,this)">✓</div>
+      <div class="lesson-info"><div class="lesson-title">2.5 — AI as apprentice, never as author of record</div><div class="lesson-meta">40 min · the leverage + the leash</div></div><span class="caret">▶</span></div>
+    <div class="lesson-body">
+      <p>AI is how one person maintains twenty clients without drowning. It drafts; <strong>a human reads and sends</strong>. Where it earns its keep:</p>
+      <ul>
+        <li><strong>GBP posts:</strong> feed it the business, the month, one real photo's context → 3 post drafts in a minute. You pick one, fix one detail, publish.</li>
+        <li><strong>Review replies:</strong> draft warm replies to every review — including the bad ones, where a calm drafted reply beats an owner typing angry at midnight.</li>
+        <li><strong>Report assembly:</strong> paste your raw numbers, get the client-friendly email. You verify every number against the source before sending.</li>
+        <li><strong>Service-page copy:</strong> first drafts from the owner's own words (record a 3-minute voice memo of them describing the job — that's your source material and it keeps the copy true).</li>
+      </ul>
+      <div class="callout co-danger"><b>The leash — recite it cold</b>AI never sends anything unreviewed. AI never invents facts, prices, credentials, or dates. AI never writes reviews or testimonials — not "sample" ones, not "placeholder" ones, none. If a claim came from the model and not from the client, it doesn't ship.</div>
+    </div>
+  </div>
+</section>
+</div>
+
+<!-- ============ S3 ============ -->
+<div class="view" id="v-s3">
+<section class="panel card">
+  <div class="card-hdr">
+    <div><span class="session-tag">Session 3</span><span class="session-name">Install day — turning a launch into a subscription</span></div>
+    <span class="session-time">~2 hrs · scripts + a real install</span>
+  </div>
+
+  <div class="lesson" data-id="m3a">
+    <div class="lesson-hdr" onclick="toggleLesson(this)"><div class="chk" onclick="toggleDone(event,this)">✓</div>
+      <div class="lesson-info"><div class="lesson-title">3.1 — The upgrade pitch (two moments it works)</div><div class="lesson-meta">40 min · roleplay until smooth</div></div><span class="caret">▶</span></div>
+    <div class="lesson-body">
+      <p><strong>Moment 1 — at launch,</strong> while they're happy and the site is on the screen:</p>
+      <div class="script"><b>Launch-day attach</b>"The site's yours — you own everything, like we agreed. From here you've got two options. Option one: I hand you the keys and you maintain it — updates, backups, the review asks — yourself. Totally fine. Option two: the care plan. $199 a month, and every month you get a report showing your backups ran, your updates applied, your new reviews, and your Google numbers. Most folks pick the plan because they didn't get into the bakery business to babysit software. Which way do you want to go?"</div>
+      <p><strong>Moment 2 — the 30-day check-in,</strong> for the ones who said "I'll handle it":</p>
+      <div class="script"><b>Day-30 check-in</b>"Quick check-in on the site — how's it going? When's the last backup you ran? … That's what usually happens, and it's exactly why the plan exists. No pressure — but if a month of maintaining it yourself was enough, I can take it off your plate starting today."</div>
+      <p>Both scripts share the DNA: <em>real choice offered, self-serve path genuinely respected, plan described as a checklist with proof.</em> Never fear-sell the plan ("hackers WILL get you") — Module 2 rules apply. The site being down for a weekend is scary enough when described accurately.</p>
+    </div>
+  </div>
+
+  <div class="lesson" data-id="m3b">
+    <div class="lesson-hdr" onclick="toggleLesson(this)"><div class="chk" onclick="toggleDone(event,this)">✓</div>
+      <div class="lesson-info"><div class="lesson-title">3.2 — Baseline day: screenshot everything</div><div class="lesson-meta">30 min · the month-2 report writes itself</div></div><span class="caret">▶</span></div>
+    <div class="lesson-body">
+      <p>The day a plan starts, capture the <strong>before</strong>: review count and average, GBP views/calls/direction-requests (last 30 days), site uptime status, current photo count on the profile. Save it in the client folder.</p>
+      <p>Month 2's report then opens with a delta — <em>"Reviews: 44 → 47. Profile views: +9%."</em> — instead of bare numbers. Deltas are what the client's spouse sees over their shoulder, and deltas are what renew plans. No baseline, no delta, no story.</p>
+    </div>
+  </div>
+
+  <div class="lesson" data-id="m3c">
+    <div class="lesson-hdr" onclick="toggleLesson(this)"><div class="chk" onclick="toggleDone(event,this)">✓</div>
+      <div class="lesson-info"><div class="lesson-title">3.3 — Run a real install (the checklist tab is your exam)</div><div class="lesson-meta">50 min · one real or demo client, end to end</div></div><span class="caret">▶</span></div>
+    <div class="lesson-body">
+      <p>Take one client — real if you have one, the demo site if not — and run the full install checklist on the next tab, top to bottom, checking items as they're <em>verified working</em>, not merely configured. Configured and verified are different religions. The graduation exam is Jeremiah picking three items at random and saying "show me."</p>
+    </div>
+  </div>
+</section>
+</div>
+
+<!-- ============ CHECKLIST + GRADUATION ============ -->
+<div class="view" id="v-chk">
+<section class="panel card">
+  <div class="card-hdr"><span class="card-label">The install checklist — every new care-plan client, no exceptions</span><span class="tag tag-info">verify, don't just configure</span></div>
+  <div class="check-group-label">Paper &amp; baseline</div>
+  <div class="check-item" data-id="c1" onclick="toggleCheck(this)"><div class="chk">✓</div><span class="check-text">Tier selected, price stated, plan agreement signed (with scope walls in writing)</span></div>
+  <div class="check-item" data-id="c2" onclick="toggleCheck(this)"><div class="chk">✓</div><span class="check-text">Baseline screenshots saved to client folder: reviews, GBP stats, photo count</span></div>
+  <div class="check-item" data-id="c3" onclick="toggleCheck(this)"><div class="chk">✓</div><span class="check-text">First monthly report date on the calendar (1st business day of next month)</span></div>
+  <div class="check-group-label">Core machinery (all tiers)</div>
+  <div class="check-item" data-id="c4" onclick="toggleCheck(this)"><div class="chk">✓</div><span class="check-text">Uptime monitor live · alert lands in YOUR inbox (tested with a fake outage)</span></div>
+  <div class="check-item" data-id="c5" onclick="toggleCheck(this)"><div class="chk">✓</div><span class="check-text">Weekly backup scheduled + offsite copy confirmed present</span></div>
+  <div class="check-item" data-id="c6" onclick="toggleCheck(this)"><div class="chk">✓</div><span class="check-text">Restore test performed once at install · date logged</span></div>
+  <div class="check-group-label">Standard tier adds</div>
+  <div class="check-item" data-id="c7" onclick="toggleCheck(this)"><div class="chk">✓</div><span class="check-text">Direct review link generated · tested from a phone that isn't yours</span></div>
+  <div class="check-item" data-id="c8" onclick="toggleCheck(this)"><div class="chk">✓</div><span class="check-text">Post-job review ask template loaded &amp; firing on job completion</span></div>
+  <div class="check-item" data-id="c9" onclick="toggleCheck(this)"><div class="chk">✓</div><span class="check-text">Two GBP posts drafted for month 1 · owner approved the voice</span></div>
+  <div class="check-group-label">Pro tier adds</div>
+  <div class="check-item" data-id="c10" onclick="toggleCheck(this)"><div class="chk">✓</div><span class="check-text">Missed-call text-back fires in live test · reply window promise is one the owner will keep</span></div>
+  <div class="check-item" data-id="c11" onclick="toggleCheck(this)"><div class="chk">✓</div><span class="check-text">Intake form → email + sheet + auto-reply, all three legs tested from a customer's seat</span></div>
+  <div class="check-item" data-id="c12" onclick="toggleCheck(this)"><div class="chk">✓</div><span class="check-text">Quarterly strategy call booked for month 3</span></div>
+</section>
+
+<section class="panel card">
+  <div class="card-hdr"><span class="card-label">Graduation exam — one full install, Jeremiah spot-checking</span><span class="tag tag-info">pass = all 8 · ethics is pass/fail</span></div>
+  <div class="card-body" style="padding-bottom:.4rem">
+    <p style="color:var(--ink-soft);font-weight:300;font-size:.9rem">Three random "show me" checks on the install, plus the recitals below. <strong style="color:var(--danger)">Any miss on the ethics recital fails the module regardless of everything else.</strong></p>
+  </div>
+  <div class="check-group-label">Graduation criteria — check as demonstrated</div>
+  <div class="check-item" data-id="x1" onclick="toggleCheck(this)"><div class="chk">✓</div><span class="check-text">All three tiers recited from memory — contents and prices, no notes</span></div>
+  <div class="check-item" data-id="x2" onclick="toggleCheck(this)"><div class="chk">✓</div><span class="check-text">Missed-call text-back demonstrated live on a real phone</span></div>
+  <div class="check-item" data-id="x3" onclick="toggleCheck(this)"><div class="chk">✓</div><span class="check-text">Review request sent in test · link opens the review box directly</span></div>
+  <div class="check-item" data-id="x4" onclick="toggleCheck(this)"><div class="chk">✓</div><span class="check-text">Backup restored to staging while observed · site works</span></div>
+  <div class="check-item" data-id="x5" onclick="toggleCheck(this)"><div class="chk">✓</div><span class="check-text">Proof-of-work report produced from real numbers · every line verifiable</span></div>
+  <div class="check-item" data-id="x6" onclick="toggleCheck(this)"><div class="chk">✓</div><span class="check-text">Upgrade pitch delivered cold · both options offered honestly</span></div>
+  <div class="check-item" data-id="x7" onclick="toggleCheck(this)"><div class="chk">✓</div><span class="check-text">Scope-wall objection ("while you're in there…") handled with the change-order script</span></div>
+  <div class="check-item" data-id="x8" onclick="toggleCheck(this)"><div class="chk">✓</div><span class="check-text">Ethics recital cold: no gating · no incentives · no fake reviews · AI never sends unreviewed · nothing ships that isn't true</span></div>
+</section>
+
+<section class="panel card" style="text-align:center;padding:2rem clamp(1.2rem,3vw,1.6rem)">
+  <p style="font-family:var(--display);font-weight:600;font-size:clamp(1.25rem,3vw,1.6rem);letter-spacing:-.02em;margin-bottom:.5rem">Machines do the work. <em style="color:var(--coral);text-shadow:0 0 30px var(--coral-glow)">You do the proving.</em></p>
+  <p style="color:var(--ink-soft);font-size:.9rem;font-weight:300;max-width:56ch;margin:0 auto">A care plan is a promise kept monthly, in writing, with numbers. Build it once, prove it forever — and the recurring revenue that makes this a company takes care of itself.</p>
+</section>
+</div>
+
+</div></main>
+
+<footer class="site-footer">
+  <p class="footer-meta">Next‑Gen‑<em>IT</em> · Module 3: Automate the Busywork · <a href="./module-2.html">← Module 2</a> · <a href="./module-4.html">Module 4 →</a> · progress stored locally</p>
+</footer>
+
+<script>
+var KEY='ngit-module3-v1';
+var state={};
+try{state=JSON.parse(localStorage.getItem(KEY))||{}}catch(e){state={}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){}}
+
+document.querySelectorAll('.tab').forEach(function(t){
+  t.addEventListener('click',function(){
+    document.querySelectorAll('.tab').forEach(function(x){x.classList.remove('active')});
+    document.querySelectorAll('.view').forEach(function(v){v.classList.remove('on')});
+    t.classList.add('active');
+    document.getElementById(t.dataset.view).classList.add('on');
+    window.scrollTo({top:0});
+  });
+});
+
+function toggleLesson(hdr){hdr.parentElement.classList.toggle('open')}
+function toggleDone(ev,chk){
+  ev.stopPropagation();
+  var l=chk.closest('.lesson');
+  l.classList.toggle('done');
+  state[l.dataset.id]=l.classList.contains('done');
+  save();render();
+}
+function toggleCheck(item){
+  item.classList.toggle('done');
+  state[item.dataset.id]=item.classList.contains('done');
+  save();render();
+}
+
+var G={
+  S1: ["m1a", "m1b", "m1c"],
+  S2: ["m2a", "m2b", "m2c", "m2d", "m2e"],
+  S3: ["m3a", "m3b", "m3c"],
+  CHK: ["c1", "c2", "c3", "c4", "c5", "c6", "c7", "c8", "c9", "c10", "c11", "c12"],
+  GRAD: ["x1", "x2", "x3", "x4", "x5", "x6", "x7", "x8"]
+};
+function gs(ids){var d=ids.filter(function(i){return state[i]}).length;return d===ids.length?'done':(d>0?'scanning':'')}
+function render(){
+  var all=[].concat.apply([],Object.keys(G).map(function(k){return G[k]}));
+  var done=all.filter(function(i){return state[i]}).length;
+  var pct=Math.round(done/all.length*100);
+  document.getElementById('pct').textContent=pct+'%';
+  document.getElementById('pfill').style.width=pct+'%';
+  [['ps1',G.S1],
+  ['ps2',G.S2],
+  ['ps3',G.S3],
+  ['ps4',G.CHK],
+  ['ps5',G.GRAD]].forEach(function(p){
+    var el=document.getElementById(p[0]);if(!el)return;
+    el.classList.remove('done','scanning');
+    var g=gs(p[1]);if(g)el.classList.add(g);
+  });
+}
+document.querySelectorAll('.lesson').forEach(function(l){if(state[l.dataset.id])l.classList.add('done')});
+document.querySelectorAll('.check-item').forEach(function(c){if(state[c.dataset.id])c.classList.add('done')});
+render();
+
+function resetProgress(){
+  if(!confirm('Clear all progress on this module?'))return;
+  state={};save();
+  document.querySelectorAll('.lesson,.check-item').forEach(function(e){e.classList.remove('done')});
+  render();
+}
+function copyBlock(btn){
+  var t=btn.parentElement.cloneNode(true);
+  t.querySelector('.copy-btn').remove();
+  navigator.clipboard.writeText(t.textContent.trim()).then(function(){
+    btn.textContent='copied';btn.classList.add('copied');
+    setTimeout(function(){btn.textContent='copy';btn.classList.remove('copied')},1500);
+  });
+}
+</script>
+</body>
+</html>

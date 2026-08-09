@@ -1,0 +1,6 @@
+Business,Contact,Phone,Email,Source,Stage,Domain,Snapshot Run,Snapshot Score,Package Interest,Quote Sent,Deposit Paid,Next Action,Next Action Date,Owner,Notes
+Example Barbershop,Joe Smith,512-555-0100,joe@example.com,Myles walk-in,Intake Complete,joesbarbershop.com,Yes,C+ (61/100),Standard,No,No,Return with snapshot report,2026-08-12,Myles,"No DMARC, unclaimed Google listing — strong pitch angle"
+,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,
+
+STAGES (use these values in the Stage column):,Lead,Intake Complete,Snapshot Sent,Quoted,Deposit Paid,In Build,Live,Care Plan,Dead
