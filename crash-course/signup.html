@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Sign Up — Field Training · Next‑Gen‑IT</title>
+<meta name="description" content="Reserve a seat in Next-Gen IT field training: Ship a Site (Module 1) and Secure & Seen (Module 2). Evening sessions, hands-on."/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --paper:#071A32; --paper-edge:#041326;
+  --panel:rgba(10,35,66,.82); --panel-strong:rgba(13,43,79,.94);
+  --ink:#FFFFFF; --ink-soft:#D7E2F0; --ink-muted:#91A6C3;
+  --rule:rgba(145,166,195,.22); --rule-soft:rgba(145,166,195,.12);
+  --coral:#FF6B5F; --coral-deep:#E4473A; --coral-soft:rgba(255,107,95,.14); --coral-glow:rgba(255,107,95,.38);
+  --sky:#8FD7FF; --sky-soft:rgba(143,215,255,.14); --sky-glow:rgba(143,215,255,.28);
+  --ok:#22C55E; --ok-soft:rgba(34,197,94,.14);
+  --danger:#EF4444; --danger-soft:rgba(239,68,68,.12);
+  --display:'Fraunces',Georgia,serif; --body:'IBM Plex Sans',sans-serif; --mono:'IBM Plex Mono',monospace;
+  --gutter:clamp(1rem,3vw,2rem); --radius:22px; --radius-sm:14px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{min-height:100vh;font-family:var(--body);color:var(--ink);line-height:1.6;font-size:15px;
+  background:radial-gradient(circle at 82% 12%,var(--coral-glow) 0%,transparent 30%),
+             radial-gradient(circle at 14% 22%,var(--sky-glow) 0%,transparent 34%),
+             linear-gradient(135deg,var(--paper-edge) 0%,var(--paper) 46%,#0B274D 100%);
+  background-attachment:fixed;-webkit-font-smoothing:antialiased;display:flex;flex-direction:column}
+a{color:var(--sky);text-decoration:none} a:hover{text-decoration:underline}
+:focus-visible{outline:2px solid var(--sky);outline-offset:2px}
+.container{width:100%;max-width:760px;margin:0 auto;padding:0 var(--gutter)}
+
+.site-nav{position:sticky;top:0;z-index:999;background:rgba(4,19,38,.82);border-bottom:1px solid var(--rule);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
+.site-nav-inner{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:.85rem var(--gutter);max-width:1020px;margin:0 auto;flex-wrap:wrap}
+.brand{font-family:var(--display);font-weight:700;font-size:1.05rem;color:var(--ink)}
+.brand em{font-style:italic;color:var(--coral)}
+.brand-sub{font-family:var(--mono);font-size:.68rem;color:var(--ink-muted);letter-spacing:.1em;text-transform:uppercase;margin-left:.6rem}
+.nav-link{font-family:var(--mono);font-size:.68rem;letter-spacing:.06em;border:1px solid var(--rule);border-radius:999px;padding:.4rem .9rem;color:var(--ink-muted)}
+.nav-link:hover{border-color:var(--sky);color:var(--sky);text-decoration:none}
+
+main{flex:1;padding:clamp(2rem,5vw,3rem) 0 2.5rem}
+.eyebrow{display:inline-flex;align-items:center;gap:.7rem;font-family:var(--mono);color:var(--sky);font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;margin-bottom:1rem}
+.eyebrow::before{content:"";width:34px;height:2px;background:linear-gradient(90deg,var(--coral),var(--sky));border-radius:2px}
+h1{font-family:var(--display);font-size:clamp(2.2rem,5.5vw,3.4rem);line-height:.98;letter-spacing:-.03em;margin-bottom:1rem;font-weight:600;text-wrap:balance}
+h1 em{font-style:italic;color:var(--coral);text-shadow:0 0 36px var(--coral-glow)}
+.lede{color:var(--ink-soft);font-size:1rem;max-width:56ch;font-weight:300;margin-bottom:1.6rem}
+
+.panel{background:linear-gradient(180deg,rgba(255,255,255,.08),rgba(255,255,255,.035)),var(--panel);border:1px solid var(--rule);border-radius:var(--radius);box-shadow:0 16px 55px rgba(0,0,0,.18);overflow:hidden;margin-bottom:1.3rem}
+.panel-hdr{padding:1rem clamp(1.2rem,3vw,1.5rem);border-bottom:1px solid var(--rule-soft)}
+.panel-label{font-family:var(--mono);font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-muted)}
+.panel-body{padding:1.2rem clamp(1.2rem,3vw,1.5rem)}
+
+label.f-label{display:block;font-family:var(--mono);font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-muted);margin-bottom:.35rem}
+.req{color:var(--coral)}
+input[type=text],input[type=email],input[type=tel],select,textarea{
+  width:100%;background:rgba(4,19,38,.6);border:1px solid var(--rule);border-radius:var(--radius-sm);
+  color:var(--ink);font-family:var(--body);font-size:.95rem;padding:.7rem .9rem;margin-bottom:1rem;transition:border-color .15s}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--sky)}
+textarea{min-height:90px;resize:vertical}
+select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%238FD7FF'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right .9rem center}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:0 1rem}
+@media(max-width:560px){.row2{grid-template-columns:1fr}}
+
+.choice{display:flex;gap:.8rem;align-items:flex-start;border:1px solid var(--rule);border-radius:var(--radius-sm);padding:.85rem 1rem;margin-bottom:.6rem;cursor:pointer;transition:all .15s;background:rgba(4,19,38,.4)}
+.choice:hover{border-color:var(--sky)}
+.choice input{margin-top:.28rem;accent-color:var(--coral);width:15px;height:15px;flex-shrink:0}
+.choice.picked{border-color:var(--coral);background:var(--coral-soft)}
+.c-title{font-weight:600;font-size:.93rem;color:var(--ink)}
+.c-title .mono{font-family:var(--mono);font-size:.68rem;color:var(--sky);letter-spacing:.08em;text-transform:uppercase;margin-right:.45rem}
+.c-desc{font-size:.8rem;color:var(--ink-muted);font-weight:300;margin-top:.1rem}
+.c-slot{font-family:var(--mono);font-size:.7rem;color:var(--ink-muted);margin-top:.1rem}
+.c-slot b{color:var(--ok);font-weight:600}
+
+.btn{display:inline-block;width:100%;text-align:center;background:linear-gradient(135deg,var(--coral),var(--coral-deep));border:none;border-radius:999px;color:#fff;font-family:var(--body);font-weight:700;font-size:1rem;letter-spacing:.01em;padding:.95rem 2rem;cursor:pointer;box-shadow:0 12px 36px rgba(228,71,58,.3);transition:transform .15s,box-shadow .15s}
+.btn:hover{transform:translateY(-1px);box-shadow:0 16px 44px rgba(228,71,58,.4)}
+.btn:disabled{opacity:.55;cursor:wait;transform:none}
+.fineprint{font-family:var(--mono);font-size:.66rem;color:var(--ink-muted);text-align:center;margin-top:.8rem;letter-spacing:.03em}
+
+.msg{border-radius:var(--radius-sm);padding:.95rem 1.1rem;font-size:.9rem;margin-bottom:1rem;display:none}
+.msg.show{display:block}
+.msg-ok{background:var(--ok-soft);border:1px solid rgba(34,197,94,.4);color:var(--ink-soft)}
+.msg-ok b{color:var(--ok)}
+.msg-err{background:var(--danger-soft);border:1px solid rgba(239,68,68,.4);color:var(--ink-soft)}
+.msg-err b{color:var(--danger)}
+.hidden-field{display:none}
+
+.site-footer{border-top:1px solid var(--rule);background:rgba(4,19,38,.6);padding:1.2rem var(--gutter);text-align:center}
+.footer-meta{font-family:var(--mono);font-size:.68rem;color:var(--ink-muted)}
+.footer-meta em{font-style:italic;color:var(--coral)}
+</style>
+</head>
+<body>
+
+<nav class="site-nav">
+  <div class="site-nav-inner">
+    <div class="brand">Next‑Gen‑<em>IT</em><span class="brand-sub">Field Training · Sign Up</span></div>
+    <div style="display:flex;gap:.5rem">
+      <a class="nav-link" href="./index.html">Module 1</a>
+      <a class="nav-link" href="./module-2.html">Module 2</a>
+    </div>
+  </div>
+</nav>
+
+<main><div class="container">
+
+<div class="eyebrow">Fall cohort · evenings · hands‑on · bring a laptop</div>
+<h1>Reserve your seat at <em>the table.</em></h1>
+<p class="lede">Small‑group field training: build and sell real websites, then add security and presence services on top. You leave every session with something live — not notes.</p>
+
+<div class="msg msg-ok" id="ok-msg"><b>You're on the list.</b> Watch your email for the session confirmation and the pre‑work (it's short). See you there.</div>
+<div class="msg msg-err" id="err-msg"><b>That didn't go through.</b> Give it another try, or text/email us directly and we'll add you by hand.</div>
+
+<form id="signup" action="https://formspree.io/f/YOUR_FORM_ID" method="POST">
+  <input type="hidden" name="_subject" value="New training signup — Next-Gen IT"/>
+  <input type="text" name="_gotcha" class="hidden-field" tabindex="-1" autocomplete="off"/>
+
+  <section class="panel">
+    <div class="panel-hdr"><span class="panel-label">01 · About you</span></div>
+    <div class="panel-body">
+      <div class="row2">
+        <div><label class="f-label" for="name">Name <span class="req">*</span></label>
+          <input type="text" id="name" name="name" required autocomplete="name"/></div>
+        <div><label class="f-label" for="email">Email <span class="req">*</span></label>
+          <input type="email" id="email" name="email" required autocomplete="email"/></div>
+      </div>
+      <div class="row2">
+        <div><label class="f-label" for="phone">Phone (for session reminders)</label>
+          <input type="tel" id="phone" name="phone" autocomplete="tel"/></div>
+        <div><label class="f-label" for="exp">Where are you starting from?</label>
+          <select id="exp" name="experience">
+            <option value="brand-new">Brand new — never touched code</option>
+            <option value="some">Some exposure — I've poked around</option>
+            <option value="comfortable">Comfortable — I build things already</option>
+          </select></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel">
+    <div class="panel-hdr"><span class="panel-label">02 · Pick your module(s)</span></div>
+    <div class="panel-body">
+      <label class="choice"><input type="checkbox" name="modules" value="Module 1 — Ship a Site"/>
+        <span><span class="c-title"><span class="mono">Module 1</span>Ship a Site</span>
+        <span class="c-desc">GitHub + AI + Cloudflare. Go from handshake to a live client website on a custom domain. 3 sessions.</span></span></label>
+      <label class="choice"><input type="checkbox" name="modules" value="Module 2 — Secure &amp; Seen"/>
+        <span><span class="c-title"><span class="mono">Module 2</span>Secure &amp; Seen</span>
+        <span class="c-desc">Email security (SPF/DKIM/DMARC), Google Business Profile, the review engine, and the audit as a product. Prereq: one live site. 3 sessions.</span></span></label>
+    </div>
+  </section>
+
+  <section class="panel">
+    <div class="panel-hdr"><span class="panel-label">03 · Session times — week of Aug 10</span></div>
+    <div class="panel-body">
+      <label class="choice"><input type="radio" name="session_block" value="Mon Aug 10, 6:00-9:00 PM"/>
+        <span><span class="c-title">Monday, Aug 10</span><span class="c-slot"><b>6:00 – 9:00 PM</b> · Session 1</span></span></label>
+      <label class="choice"><input type="radio" name="session_block" value="Wed Aug 12, 6:00-9:00 PM"/>
+        <span><span class="c-title">Wednesday, Aug 12</span><span class="c-slot"><b>6:00 – 9:00 PM</b> · Session 2</span></span></label>
+      <label class="choice"><input type="radio" name="session_block" value="Fri Aug 14, 6:00-8:30 PM"/>
+        <span><span class="c-title">Friday, Aug 14</span><span class="c-slot"><b>6:00 – 8:30 PM</b> · Session 3</span></span></label>
+      <label class="choice"><input type="radio" name="session_block" value="Flexible — any weekday evening 5-11pm" checked/>
+        <span><span class="c-title">Flexible</span><span class="c-slot">Any weekday evening, 5 – 11 PM window — schedule me</span></span></label>
+    </div>
+  </section>
+
+  <section class="panel">
+    <div class="panel-hdr"><span class="panel-label">04 · Anything else</span></div>
+    <div class="panel-body">
+      <label class="f-label" for="notes">A business you'd want to build for · questions · scheduling constraints</label>
+      <textarea id="notes" name="notes" placeholder="Optional"></textarea>
+      <button type="submit" class="btn" id="submit-btn">Reserve my seat →</button>
+      <p class="fineprint">No spam, no list‑selling — this goes straight to the instructor's inbox.</p>
+    </div>
+  </section>
+</form>
+
+</div></main>
+
+<footer class="site-footer">
+  <p class="footer-meta">Next‑Gen‑<em>IT</em> · field training · <a href="./index.html">Ship a Site</a> · <a href="./module-2.html">Secure &amp; Seen</a></p>
+</footer>
+
+<script>
+// picked styling
+document.querySelectorAll('.choice input').forEach(function(inp){
+  inp.addEventListener('change',function(){
+    if(inp.type==='radio'){
+      document.querySelectorAll('input[name="'+inp.name+'"]').forEach(function(r){r.closest('.choice').classList.toggle('picked',r.checked)});
+    }else{
+      inp.closest('.choice').classList.toggle('picked',inp.checked);
+    }
+  });
+});
+document.querySelectorAll('.choice input:checked').forEach(function(i){i.closest('.choice').classList.add('picked')});
+
+// AJAX submit with graceful fallback (if fetch fails, native POST still works on retry)
+var form=document.getElementById('signup');
+form.addEventListener('submit',function(e){
+  e.preventDefault();
+  var btn=document.getElementById('submit-btn');
+  var okM=document.getElementById('ok-msg'),errM=document.getElementById('err-msg');
+  okM.classList.remove('show');errM.classList.remove('show');
+  if(!form.querySelector('input[name="modules"]:checked')){
+    errM.innerHTML='<b>Pick at least one module</b> so we know what to prep for you.';
+    errM.classList.add('show');window.scrollTo({top:0,behavior:'smooth'});return;
+  }
+  btn.disabled=true;btn.textContent='Sending…';
+  fetch(form.action,{method:'POST',body:new FormData(form),headers:{'Accept':'application/json'}})
+    .then(function(r){
+      if(r.ok){okM.classList.add('show');form.reset();
+        document.querySelectorAll('.choice').forEach(function(c){c.classList.remove('picked')});
+        document.querySelectorAll('.choice input:checked').forEach(function(i){i.closest('.choice').classList.add('picked')});
+      }else{errM.classList.add('show');}
+    })
+    .catch(function(){errM.classList.add('show');})
+    .finally(function(){btn.disabled=false;btn.textContent='Reserve my seat →';window.scrollTo({top:0,behavior:'smooth'});});
+});
+</script>
+</body>
+</html>

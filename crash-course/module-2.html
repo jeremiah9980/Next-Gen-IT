@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Secure &amp; Seen — Module 2 · Next‑Gen‑IT</title>
+<meta name="description" content="Module 2 field manual: security + presence for small business. SPF/DKIM/DMARC, Google Business Profile, the audit as a product, and the company wrapper."/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --paper:#071A32; --paper-deep:#0A2342; --paper-edge:#041326;
+  --panel:rgba(10,35,66,.82); --panel-strong:rgba(13,43,79,.94);
+  --ink:#FFFFFF; --ink-soft:#D7E2F0; --ink-muted:#91A6C3;
+  --rule:rgba(145,166,195,.22); --rule-soft:rgba(145,166,195,.12);
+  --coral:#FF6B5F; --coral-deep:#E4473A; --coral-soft:rgba(255,107,95,.14); --coral-glow:rgba(255,107,95,.38);
+  --sky:#8FD7FF; --sky-deep:#1B8BD6; --sky-soft:rgba(143,215,255,.14); --sky-glow:rgba(143,215,255,.28);
+  --ok:#22C55E; --ok-soft:rgba(34,197,94,.14);
+  --warn:#F59E0B; --warn-soft:rgba(245,158,11,.12);
+  --danger:#EF4444; --danger-soft:rgba(239,68,68,.12);
+  --display:'Fraunces',Georgia,serif; --body:'IBM Plex Sans',sans-serif; --mono:'IBM Plex Mono',monospace;
+  --gutter:clamp(1rem,3vw,2rem); --page-max:1020px;
+  --radius:22px; --radius-sm:14px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{min-height:100vh;font-family:var(--body);color:var(--ink);line-height:1.6;font-size:15px;
+  background:radial-gradient(circle at 82% 12%,var(--coral-glow) 0%,transparent 30%),
+             radial-gradient(circle at 14% 22%,var(--sky-glow) 0%,transparent 34%),
+             linear-gradient(135deg,var(--paper-edge) 0%,var(--paper) 46%,#0B274D 100%);
+  background-attachment:fixed;-webkit-font-smoothing:antialiased;display:flex;flex-direction:column}
+a{color:var(--sky);text-decoration:none} a:hover{text-decoration:underline}
+button{font-family:inherit}
+:focus-visible{outline:2px solid var(--sky);outline-offset:2px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+.container{width:100%;max-width:var(--page-max);margin:0 auto;padding:0 var(--gutter)}
+
+.site-nav{position:sticky;top:0;z-index:999;background:rgba(4,19,38,.82);border-bottom:1px solid var(--rule);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
+.site-nav-inner{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:.85rem var(--gutter);max-width:var(--page-max);margin:0 auto;flex-wrap:wrap}
+.brand{font-family:var(--display);font-weight:700;font-size:1.05rem;letter-spacing:-.01em;color:var(--ink)}
+.brand em{font-style:italic;color:var(--coral)}
+.brand-sub{font-family:var(--mono);font-size:.68rem;color:var(--ink-muted);letter-spacing:.1em;text-transform:uppercase;margin-left:.6rem}
+.nav-right{display:flex;gap:.5rem;align-items:center}
+.nav-link{font-family:var(--mono);font-size:.68rem;letter-spacing:.06em;border:1px solid var(--rule);border-radius:999px;padding:.4rem .9rem;color:var(--ink-muted)}
+.nav-link:hover{border-color:var(--sky);color:var(--sky);text-decoration:none}
+.reset-btn{background:none;border:1px solid var(--rule);border-radius:999px;color:var(--ink-muted);font-family:var(--mono);font-size:.7rem;padding:.42rem .95rem;cursor:pointer;transition:all .18s}
+.reset-btn:hover{border-color:var(--coral);color:var(--coral)}
+
+main{flex:1;padding:clamp(2rem,5vw,3.2rem) 0 2.5rem}
+.eyebrow{display:inline-flex;align-items:center;gap:.7rem;font-family:var(--mono);color:var(--sky);font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;margin-bottom:1rem}
+.eyebrow::before{content:"";width:34px;height:2px;background:linear-gradient(90deg,var(--coral),var(--sky));border-radius:2px}
+.hero{padding-bottom:clamp(1.4rem,4vw,2.2rem)}
+.hero h1{font-family:var(--display);font-size:clamp(2.4rem,6vw,4.1rem);line-height:.95;letter-spacing:-.035em;margin-bottom:1.1rem;font-weight:600;text-wrap:balance}
+.hero h1 em{font-style:italic;color:var(--coral);text-shadow:0 0 36px var(--coral-glow)}
+.lede{color:var(--ink-soft);font-size:clamp(.96rem,1.6vw,1.06rem);max-width:64ch;font-weight:300}
+.lede strong{font-weight:600;color:var(--ink)}
+
+.panel{position:relative;background:linear-gradient(180deg,rgba(255,255,255,.08),rgba(255,255,255,.035)),var(--panel);border:1px solid var(--rule);border-radius:var(--radius);box-shadow:0 16px 55px rgba(0,0,0,.18);overflow:hidden}
+.pipeline{padding:clamp(1.1rem,3vw,1.5rem) clamp(1.2rem,3vw,1.8rem);margin:1.3rem 0 1.4rem}
+.pipeline-hdr{display:flex;align-items:baseline;justify-content:space-between;gap:1rem;margin-bottom:.9rem;flex-wrap:wrap}
+.pipeline-title{font-family:var(--mono);font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-muted)}
+.pipeline-pct{font-family:var(--display);font-weight:700;font-size:1.9rem;line-height:1;color:var(--coral);text-shadow:0 0 28px var(--coral-glow)}
+.steps{display:flex;gap:.5rem;margin-bottom:.85rem;flex-wrap:wrap}
+.step{display:flex;align-items:center;gap:.45rem;padding:.42rem .85rem;background:rgba(4,19,38,.5);border:1px solid var(--rule);border-radius:999px;font-family:var(--mono);font-size:.7rem;color:var(--ink-muted);transition:all .25s}
+.step.scanning{border-color:var(--warn);color:var(--warn);background:var(--warn-soft)}
+.step.done{border-color:var(--ok);color:var(--ok);background:var(--ok-soft)}
+.progress{height:4px;background:var(--rule-soft);border-radius:4px;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--coral),var(--sky));transition:width .5s ease;width:0}
+.pipeline-note{font-family:var(--mono);font-size:.68rem;color:var(--ink-muted);margin-top:.75rem}
+
+.tabs{display:flex;gap:.5rem;margin-bottom:1.4rem;flex-wrap:wrap}
+.tab{background:rgba(4,19,38,.5);border:1px solid var(--rule);border-radius:999px;color:var(--ink-soft);font-family:var(--mono);font-size:.72rem;letter-spacing:.04em;padding:.55rem 1.05rem;cursor:pointer;transition:all .18s;min-height:38px}
+.tab:hover{border-color:var(--sky);color:var(--sky)}
+.tab.active{background:linear-gradient(135deg,var(--coral),var(--coral-deep));border-color:transparent;color:#fff;font-weight:600;box-shadow:0 10px 32px rgba(228,71,58,.28)}
+
+.card{margin-bottom:1.4rem}
+.card-hdr{padding:1rem clamp(1.2rem,3vw,1.6rem);border-bottom:1px solid var(--rule-soft);display:flex;align-items:baseline;justify-content:space-between;gap:1rem;flex-wrap:wrap}
+.card-label{font-family:var(--mono);font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-muted)}
+.card-body{padding:1.2rem clamp(1.2rem,3vw,1.6rem)}
+.session-tag{font-family:var(--mono);font-weight:600;font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;color:var(--sky)}
+.session-name{font-family:var(--display);font-weight:600;font-size:1.32rem;letter-spacing:-.01em;display:block;margin-top:.15rem}
+.session-time{font-family:var(--mono);font-size:.68rem;color:var(--ink-muted);letter-spacing:.08em;text-transform:uppercase}
+
+.lesson{border-bottom:1px solid var(--rule-soft)}
+.lesson:last-child{border-bottom:none}
+.lesson-hdr{display:flex;align-items:flex-start;gap:.9rem;padding:1rem clamp(1.2rem,3vw,1.6rem);cursor:pointer;transition:background .15s;user-select:none}
+.lesson-hdr:hover{background:rgba(255,255,255,.03)}
+.chk{width:21px;height:21px;border:1.5px solid var(--rule);border-radius:7px;flex-shrink:0;margin-top:2px;display:flex;align-items:center;justify-content:center;font-size:.75rem;color:transparent;transition:all .18s;background:rgba(4,19,38,.5)}
+.lesson.done .chk{background:var(--ok-soft);border-color:var(--ok);color:var(--ok)}
+.lesson-info{flex:1;min-width:0}
+.lesson-title{font-size:.98rem;font-weight:600}
+.lesson.done .lesson-title{color:var(--ink-muted)}
+.lesson-meta{font-family:var(--mono);font-size:.68rem;color:var(--ink-muted);margin-top:.15rem}
+.caret{color:var(--coral);font-size:.7rem;transition:transform .2s;margin-top:.35rem}
+.lesson.open .caret{transform:rotate(90deg)}
+.lesson-body{display:none;padding:0 clamp(1.2rem,3vw,1.6rem) 1.3rem calc(clamp(1.2rem,3vw,1.6rem) + 30px);color:var(--ink-soft);font-size:.9rem;font-weight:300}
+.lesson.open .lesson-body{display:block}
+.lesson-body p{margin-bottom:.75rem}
+.lesson-body ul,.lesson-body ol{margin:0 0 .75rem 1.2rem}
+.lesson-body li{margin-bottom:.35rem}
+.lesson-body strong{color:var(--ink);font-weight:600}
+.lesson-body em{color:var(--sky)}
+.lesson-body code{font-family:var(--mono);color:var(--sky);font-size:.8rem;background:rgba(143,215,255,.1);padding:.08rem .4rem;border-radius:5px}
+@media (max-width:640px){.lesson-body{padding-left:clamp(1.2rem,3vw,1.6rem)}}
+
+.codeblock{position:relative;background:rgba(4,19,38,.72);border:1px solid var(--rule);border-radius:var(--radius-sm);padding:.95rem 1.05rem;font-family:var(--mono);font-size:.75rem;line-height:1.6;color:var(--ink-soft);white-space:pre-wrap;word-break:break-word;margin-bottom:.8rem}
+.codeblock .c{color:var(--coral)} .codeblock .s{color:var(--sky)} .codeblock .g{color:var(--ok)} .codeblock .m{color:var(--ink-muted)}
+.copy-btn{position:absolute;top:.6rem;right:.6rem;background:var(--panel-strong);border:1px solid var(--rule);border-radius:999px;color:var(--ink-muted);font-family:var(--mono);font-size:.65rem;padding:.25rem .7rem;cursor:pointer}
+.copy-btn:hover{border-color:var(--sky);color:var(--sky)}
+.copy-btn.copied{border-color:var(--ok);color:var(--ok)}
+
+.callout{border-radius:var(--radius-sm);padding:.85rem 1.05rem;font-size:.85rem;margin-bottom:.8rem;line-height:1.6;font-weight:300;color:var(--ink-soft)}
+.callout b{display:block;margin-bottom:.2rem;font-family:var(--mono);font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;font-weight:600}
+.co-warn{background:var(--warn-soft);border:1px solid rgba(245,158,11,.3)} .co-warn b{color:var(--warn)}
+.co-danger{background:var(--danger-soft);border:1px solid rgba(239,68,68,.3)} .co-danger b{color:var(--danger)}
+.co-ok{background:var(--ok-soft);border:1px solid rgba(34,197,94,.3)} .co-ok b{color:var(--ok)}
+.co-info{background:var(--sky-soft);border:1px solid rgba(143,215,255,.3)} .co-info b{color:var(--sky)}
+
+.ftable{width:100%;border-collapse:collapse;font-size:.84rem}
+.ftable th{padding:.55rem .75rem;font-family:var(--mono);font-size:.64rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-muted);border-bottom:1px solid var(--rule);text-align:left;font-weight:500}
+.ftable td{padding:.55rem .75rem;border-bottom:1px solid var(--rule-soft);vertical-align:top;color:var(--ink-soft);font-weight:300}
+.ftable tr:last-child td{border-bottom:none}
+.ftable code{font-family:var(--mono);color:var(--sky);font-size:.76rem}
+.ftable td b{color:var(--ink);font-weight:600}
+.tbl-scroll{overflow-x:auto}
+
+.diagram{margin:.4rem 0 1rem;background:rgba(4,19,38,.45);border:1px solid var(--rule-soft);border-radius:var(--radius-sm);padding:.8rem}
+.diagram svg{width:100%;height:auto;display:block}
+.diagram-cap{font-family:var(--mono);font-size:.62rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-muted);text-align:center;margin-top:.5rem}
+
+.objection{border-bottom:1px solid var(--rule-soft)}
+.objection:last-child{border-bottom:none}
+.obj-q{display:flex;gap:.7rem;align-items:flex-start;padding:.75rem clamp(1.2rem,3vw,1.6rem);cursor:pointer;user-select:none}
+.obj-q:hover{background:rgba(255,255,255,.03)}
+.obj-num{font-family:var(--display);font-style:italic;font-weight:700;color:var(--coral);font-size:1rem;width:1.4rem;flex-shrink:0;text-shadow:0 0 18px var(--coral-glow)}
+.obj-text{flex:1;font-size:.9rem;font-weight:600;color:var(--ink)}
+.obj-a{display:none;padding:0 clamp(1.2rem,3vw,1.6rem) .9rem calc(clamp(1.2rem,3vw,1.6rem) + 2.1rem);color:var(--ink-soft);font-size:.86rem;font-weight:300}
+.objection.open .obj-a{display:block}
+.obj-a em{color:var(--sky)}
+
+.check-item{display:flex;align-items:flex-start;gap:.8rem;padding:.6rem clamp(1.2rem,3vw,1.6rem);border-bottom:1px solid var(--rule-soft);cursor:pointer;user-select:none}
+.check-item:hover{background:rgba(255,255,255,.03)}
+.check-item:last-child{border-bottom:none}
+.check-item .chk{width:18px;height:18px;font-size:.68rem;border-radius:6px;margin-top:1px}
+.check-item.done .chk{background:var(--ok-soft);border-color:var(--ok);color:var(--ok)}
+.check-text{font-size:.86rem;color:var(--ink-soft);font-weight:300}
+.check-item.done .check-text{color:var(--ink-muted);text-decoration:line-through}
+.check-group-label{font-family:var(--mono);font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--sky);padding:.7rem clamp(1.2rem,3vw,1.6rem) .2rem}
+.tag{font-family:var(--mono);font-size:.62rem;font-weight:600;letter-spacing:.08em;padding:.2rem .6rem;border-radius:999px;text-transform:uppercase;display:inline-block}
+.tag-info{background:var(--sky-soft);color:var(--sky)}
+.tag-fail{background:var(--danger-soft);color:var(--danger)}
+
+.script{border-left:3px solid var(--coral);background:rgba(255,107,95,.06);border-radius:0 var(--radius-sm) var(--radius-sm) 0;padding:.85rem 1rem;margin-bottom:.8rem;font-size:.88rem;color:var(--ink-soft);font-weight:300;font-style:italic}
+.script b{display:block;font-style:normal;font-family:var(--mono);font-size:.64rem;letter-spacing:.1em;text-transform:uppercase;color:var(--coral);margin-bottom:.3rem;font-weight:600}
+
+.view{display:none} .view.on{display:block}
+.site-footer{border-top:1px solid var(--rule);background:rgba(4,19,38,.6);padding:1.3rem var(--gutter);text-align:center}
+.footer-meta{font-family:var(--mono);font-size:.68rem;color:var(--ink-muted)}
+.footer-meta em{font-style:italic;color:var(--coral)}
+</style>
+</head>
+<body>
+
+<nav class="site-nav">
+  <div class="site-nav-inner">
+    <div class="brand">Next‑Gen‑<em>IT</em><span class="brand-sub">Module 2 · Secure &amp; Seen</span></div>
+    <div class="nav-right">
+      <a class="nav-link" href="./signup.html" style="border-color:rgba(255,107,95,.55);color:#FF6B5F">Sign up</a><a class="nav-link" href="./index.html">← Module 1 · Ship a Site</a>
+      <button class="reset-btn" onclick="resetProgress()">Reset progress</button>
+    </div>
+  </div>
+</nav>
+
+<main><div class="container">
+
+<section class="hero">
+  <div class="eyebrow">Field training · Module 2 of 3 · Prereq: one live client site</div>
+  <h1>From website guy<br>to <em>technology company.</em></h1>
+  <p class="lede">A website is bought once. Security and presence are <strong>maintained</strong> — and maintained means monthly, and monthly means a company instead of a gig. This module teaches the mechanisms behind the 30‑point audit well enough to explain them at a counter: <strong>honestly, in plain words, with evidence on the table.</strong></p>
+</section>
+
+<section class="panel pipeline">
+  <div class="pipeline-hdr"><span class="pipeline-title">Module 2 pipeline</span><span class="pipeline-pct" id="pct">0%</span></div>
+  <div class="steps">
+    <div class="step" id="ps1">◆ S1 · Security</div>
+    <div class="step" id="ps2">◆ S2 · Presence</div>
+    <div class="step" id="ps3">◆ S3 · Product &amp; Company</div>
+    <div class="step" id="ps4">◆ GBP 18‑point</div>
+    <div class="step" id="ps5">◆ Graduation</div>
+  </div>
+  <div class="progress"><div class="progress-fill" id="pfill"></div></div>
+  <p class="pipeline-note">Progress saves in this browser · integrity below 5 fails the exam regardless of total.</p>
+</section>
+
+<nav class="tabs">
+  <button class="tab active" data-view="v-ov">Overview</button>
+  <button class="tab" data-view="v-s1">S1 · Security</button>
+  <button class="tab" data-view="v-s2">S2 · Presence</button>
+  <button class="tab" data-view="v-s3">S3 · Product &amp; Co.</button>
+  <button class="tab" data-view="v-ramp">Ramp &amp; Exam</button>
+</nav>
+
+<!-- ================= OVERVIEW ================= -->
+<div class="view on" id="v-ov">
+
+<section class="panel card">
+  <div class="card-hdr"><span class="card-label">The model — why recurring beats projects</span></div>
+  <div class="card-body">
+    <div class="diagram">
+      <svg viewBox="0 0 760 250" role="img" aria-label="Revenue stacking chart: project fees vs care plans over 12 months">
+        <line x1="50" y1="210" x2="740" y2="210" stroke="rgba(145,166,195,.35)" stroke-width="1"/>
+        <line x1="50" y1="20" x2="50" y2="210" stroke="rgba(145,166,195,.35)" stroke-width="1"/>
+        <text x="40" y="215" fill="#91A6C3" font-family="IBM Plex Mono" font-size="9" text-anchor="end">$0</text>
+        <text x="40" y="120" fill="#91A6C3" font-family="IBM Plex Mono" font-size="9" text-anchor="end">$1.5k/mo</text>
+        <text x="40" y="35" fill="#91A6C3" font-family="IBM Plex Mono" font-size="9" text-anchor="end">$3k/mo</text>
+        <!-- care plan stacking area (0 -> $1500/mo by m12, 10 clients x 150) -->
+        <path d="M60,210 L117,204 L174,198 L231,190 L288,181 L345,172 L402,161 L459,150 L516,138 L573,126 L630,116 L687,105 L687,210 Z" fill="rgba(143,215,255,.22)" stroke="#8FD7FF" stroke-width="2"/>
+        <!-- project bars (lumpy) -->
+        <g fill="rgba(255,107,95,.75)">
+          <rect x="66" y="150" width="20" height="60" rx="3"/>
+          <rect x="123" y="185" width="20" height="25" rx="3"/>
+          <rect x="180" y="130" width="20" height="80" rx="3"/>
+          <rect x="237" y="195" width="20" height="15" rx="3"/>
+          <rect x="294" y="155" width="20" height="55" rx="3"/>
+          <rect x="351" y="175" width="20" height="35" rx="3"/>
+          <rect x="408" y="140" width="20" height="70" rx="3"/>
+          <rect x="465" y="188" width="20" height="22" rx="3"/>
+          <rect x="522" y="158" width="20" height="52" rx="3"/>
+          <rect x="579" y="172" width="20" height="38" rx="3"/>
+          <rect x="636" y="146" width="20" height="64" rx="3"/>
+          <rect x="693" y="180" width="20" height="30" rx="3"/>
+        </g>
+        <g font-family="IBM Plex Mono" font-size="9" fill="#91A6C3">
+          <text x="76" y="228" text-anchor="middle">M1</text><text x="304" y="228" text-anchor="middle">M5</text>
+          <text x="532" y="228" text-anchor="middle">M9</text><text x="703" y="228" text-anchor="middle">M12</text>
+        </g>
+        <rect x="480" y="26" width="12" height="12" rx="3" fill="rgba(255,107,95,.75)"/>
+        <text x="498" y="36" fill="#D7E2F0" font-family="IBM Plex Mono" font-size="10">project fees — lumpy, restart at zero</text>
+        <rect x="480" y="46" width="12" height="12" rx="3" fill="rgba(143,215,255,.5)" stroke="#8FD7FF"/>
+        <text x="498" y="56" fill="#D7E2F0" font-family="IBM Plex Mono" font-size="10">care plans — stack &amp; renew (10 × $150 = $18k/yr)</text>
+      </svg>
+      <div class="diagram-cap">The sky curve is the company · the coral bars are the gig</div>
+    </div>
+    <div class="tbl-scroll"><table class="ftable">
+      <tr><th>Offer</th><th>Price</th><th>Delivery time</th><th>Myles' cut (Option B)</th></tr>
+      <tr><td><b>Security Starter</b></td><td>$400–700</td><td>3–4 hrs</td><td>20% (J executes DNS)</td></tr>
+      <tr><td><b>Presence Pack</b></td><td>$350–600</td><td>3–5 hrs</td><td>50% (his build) ≈ $60–75/hr</td></tr>
+      <tr><td><b>Care Plan upgraded</b></td><td>$100–250/mo</td><td>1–2 hrs/mo</td><td>10% month‑one spiff</td></tr>
+      <tr><td><b>Full Audit + Remediation</b></td><td>$750–2,500</td><td>6–15 hrs</td><td>20% sourced</td></tr>
+    </table></div>
+  </div>
+</section>
+
+<section class="panel card">
+  <div class="card-hdr"><span class="card-label">The offer ladder — no conversation ends at zero</span></div>
+  <div class="card-body">
+    <div class="diagram">
+      <svg viewBox="0 0 760 240" role="img" aria-label="Offer ladder staircase from free snapshot to full audit">
+        <g font-family="IBM Plex Mono">
+          <rect x="20"  y="185" width="130" height="40" rx="9" fill="rgba(143,215,255,.12)" stroke="rgba(143,215,255,.5)"/>
+          <text x="85" y="202" fill="#8FD7FF" font-size="10" text-anchor="middle">FREE SNAPSHOT</text>
+          <text x="85" y="216" fill="#91A6C3" font-size="9" text-anchor="middle">$0 · opens the door</text>
+          <rect x="168" y="150" width="130" height="40" rx="9" fill="rgba(255,107,95,.12)" stroke="rgba(255,107,95,.55)"/>
+          <text x="233" y="167" fill="#FF6B5F" font-size="10" text-anchor="middle">WEBSITE</text>
+          <text x="233" y="181" fill="#91A6C3" font-size="9" text-anchor="middle">$500–1.8k · wedge</text>
+          <rect x="316" y="115" width="130" height="40" rx="9" fill="rgba(255,107,95,.12)" stroke="rgba(255,107,95,.55)"/>
+          <text x="381" y="132" fill="#FF6B5F" font-size="10" text-anchor="middle">SECURITY STARTER</text>
+          <text x="381" y="146" fill="#91A6C3" font-size="9" text-anchor="middle">$400–700</text>
+          <rect x="464" y="80" width="130" height="40" rx="9" fill="rgba(255,107,95,.12)" stroke="rgba(255,107,95,.55)"/>
+          <text x="529" y="97" fill="#FF6B5F" font-size="10" text-anchor="middle">PRESENCE PACK</text>
+          <text x="529" y="111" fill="#91A6C3" font-size="9" text-anchor="middle">$350–600</text>
+          <rect x="612" y="45" width="130" height="40" rx="9" fill="rgba(34,197,94,.12)" stroke="rgba(34,197,94,.6)"/>
+          <text x="677" y="62" fill="#22C55E" font-size="10" text-anchor="middle">CARE PLAN</text>
+          <text x="677" y="76" fill="#91A6C3" font-size="9" text-anchor="middle">$100–250/mo · renews</text>
+          <rect x="612" y="8" width="130" height="26" rx="9" fill="none" stroke="rgba(145,166,195,.4)" stroke-dasharray="4 3"/>
+          <text x="677" y="25" fill="#91A6C3" font-size="9" text-anchor="middle">FULL AUDIT $750–2.5k</text>
+        </g>
+        <g stroke="#8FD7FF" stroke-width="1.5" fill="none" opacity=".6">
+          <path d="M150,200 C160,200 160,170 168,170"/>
+          <path d="M298,165 C308,165 308,135 316,135"/>
+          <path d="M446,130 C456,130 456,100 464,100"/>
+          <path d="M594,95 C604,95 604,65 612,65"/>
+        </g>
+        <text x="20" y="30" fill="#D7E2F0" font-family="IBM Plex Mono" font-size="10">Starter + Pack bundle ≈ $999 →</text>
+        <text x="20" y="44" fill="#91A6C3" font-family="IBM Plex Mono" font-size="9">exists to give the care plan substance</text>
+      </svg>
+      <div class="diagram-cap">Every rung sells the next · the green rung is the business</div>
+    </div>
+  </div>
+</section>
+
+<section class="panel card">
+  <div class="card-hdr"><span class="card-label">One product, two faces — where security meets presence</span></div>
+  <div class="card-body">
+    <div class="diagram">
+      <svg viewBox="0 0 760 230" role="img" aria-label="Venn diagram of security and presence overlap">
+        <circle cx="290" cy="115" r="98" fill="rgba(255,107,95,.1)" stroke="#FF6B5F" stroke-width="1.5"/>
+        <circle cx="470" cy="115" r="98" fill="rgba(143,215,255,.1)" stroke="#8FD7FF" stroke-width="1.5"/>
+        <text x="235" y="60" fill="#FF6B5F" font-family="IBM Plex Mono" font-size="11" text-anchor="middle">SECURITY</text>
+        <g fill="#D7E2F0" font-family="IBM Plex Sans" font-size="10.5" text-anchor="middle">
+          <text x="228" y="95">SPF · DKIM · DMARC</text>
+          <text x="228" y="115">password manager</text>
+          <text x="228" y="135">2FA money paths</text>
+          <text x="228" y="155">backups</text>
+        </g>
+        <text x="525" y="60" fill="#8FD7FF" font-family="IBM Plex Mono" font-size="11" text-anchor="middle">PRESENCE</text>
+        <g fill="#D7E2F0" font-family="IBM Plex Sans" font-size="10.5" text-anchor="middle">
+          <text x="532" y="95">Google profile</text>
+          <text x="532" y="115">NAP sweep</text>
+          <text x="532" y="135">review engine</text>
+          <text x="532" y="155">local SEO</text>
+        </g>
+        <g fill="#FFFFFF" font-family="IBM Plex Sans" font-size="10.5" font-weight="600" text-anchor="middle">
+          <text x="380" y="98">"your emails</text>
+          <text x="380" y="112">go to spam"</text>
+          <text x="380" y="132">look‑alike domains</text>
+          <text x="380" y="150">who admins the listing?</text>
+        </g>
+        <text x="380" y="205" fill="#91A6C3" font-family="IBM Plex Mono" font-size="9.5" text-anchor="middle">the overlap is the pitch — each half sells the other</text>
+      </svg>
+      <div class="diagram-cap">Deliverability is presence powered by a security fix</div>
+    </div>
+    <div class="callout co-danger"><b>The ethics rail — every session, every pitch</b>We sell protection, never fear. Every claim is true, specific to <em>their</em> domain, and demonstrable on the report. One inflated finding costs more reputation than ten lost sales. Evidence is the close.</div>
+  </div>
+</section>
+</div>
+
+<!-- ================= SESSION 1 ================= -->
+<div class="view" id="v-s1">
+<section class="panel card">
+  <div class="card-hdr">
+    <div><span class="session-tag">Session 01</span><span class="session-name">Security a small business actually needs</span></div>
+    <span class="session-time">2.5 hrs · graded drill at end</span>
+  </div>
+
+  <div class="lesson" data-id="m1a">
+    <div class="lesson-hdr" onclick="toggleLesson(this)"><div class="chk" onclick="toggleDone(event,this)">✓</div>
+      <div class="lesson-info"><div class="lesson-title">1.1 — Threat model + the wire‑fraud story</div><div class="lesson-meta">35 min · whiteboard</div></div><span class="caret">▶</span></div>
+    <div class="lesson-body">
+      <p><strong>What actually hits five‑person businesses</strong> — boring things, not hoodie hackers:</p>
+      <div class="diagram">
+        <svg viewBox="0 0 760 210" role="img" aria-label="Threat frequency bars">
+          <g font-family="IBM Plex Sans" font-size="11" fill="#D7E2F0">
+            <text x="8" y="36">1 · Email compromise / wire fraud</text>
+            <text x="8" y="72">2 · Account takeover</text>
+            <text x="8" y="108">3 · Phishing</text>
+            <text x="8" y="144">4 · Data loss (no backup)</text>
+            <text x="8" y="180">5 · Reputation hijack</text>
+          </g>
+          <g>
+            <rect x="255" y="24" width="470" height="16" rx="8" fill="rgba(239,68,68,.7)"/>
+            <rect x="255" y="60" width="400" height="16" rx="8" fill="rgba(255,107,95,.7)"/>
+            <rect x="255" y="96" width="360" height="16" rx="8" fill="rgba(245,158,11,.7)"/>
+            <rect x="255" y="132" width="270" height="16" rx="8" fill="rgba(143,215,255,.55)"/>
+            <rect x="255" y="168" width="200" height="16" rx="8" fill="rgba(145,166,195,.5)"/>
+          </g>
+          <g font-family="IBM Plex Mono" font-size="9" fill="#91A6C3">
+            <text x="732" y="36" text-anchor="end">$5k–$100k+</text>
+            <text x="662" y="72">locked out</text>
+            <text x="622" y="108">on‑ramp to 1&amp;2</text>
+            <text x="532" y="144">files gone</text>
+            <text x="462" y="180">customers rerouted</text>
+          </g>
+        </svg>
+        <div class="diagram-cap">Frequency‑ordered · note what's absent: nation‑states, zero‑days, firewalls</div>
+      </div>
+      <p><strong>The wire‑fraud story — memorize as a story, ~90 seconds:</strong></p>
+      <div class="diagram">
+        <svg viewBox="0 0 760 150" role="img" aria-label="Wire fraud timeline in four steps">
+          <line x1="40" y1="75" x2="720" y2="75" stroke="rgba(145,166,195,.35)" stroke-width="2"/>
+          <g font-family="IBM Plex Mono">
+            <circle cx="90" cy="75" r="17" fill="rgba(143,215,255,.15)" stroke="#8FD7FF" stroke-width="1.5"/><text x="90" y="80" fill="#8FD7FF" font-size="12" text-anchor="middle">1</text>
+            <circle cx="290" cy="75" r="17" fill="rgba(245,158,11,.15)" stroke="#F59E0B" stroke-width="1.5"/><text x="290" y="80" fill="#F59E0B" font-size="12" text-anchor="middle">2</text>
+            <circle cx="490" cy="75" r="17" fill="rgba(239,68,68,.15)" stroke="#EF4444" stroke-width="1.5"/><text x="490" y="80" fill="#EF4444" font-size="12" text-anchor="middle">3</text>
+            <circle cx="670" cy="75" r="17" fill="rgba(239,68,68,.25)" stroke="#EF4444" stroke-width="2"/><text x="670" y="80" fill="#EF4444" font-size="12" text-anchor="middle">4</text>
+          </g>
+          <g font-family="IBM Plex Sans" font-size="10.5" fill="#D7E2F0" text-anchor="middle">
+            <text x="90" y="35">$40k patio job</text><text x="90" y="49" fill="#91A6C3">finishing up</text>
+            <text x="290" y="35">"new banking info"</text><text x="290" y="49" fill="#91A6C3">spoofed email, perfect logo</text>
+            <text x="490" y="115">customer wires $18k</text><text x="490" y="129" fill="#91A6C3">to the wrong account</text>
+            <text x="670" y="115">money gone</text><text x="670" y="129" fill="#91A6C3">relationship destroyed</text>
+          </g>
+          <text x="380" y="12" fill="#22C55E" font-family="IBM Plex Mono" font-size="9.5" text-anchor="middle">THE DOOR WAS A SETTINGS PROBLEM · ~1 HOUR TO CLOSE</text>
+        </svg>
+        <div class="diagram-cap">Three beats: convincing email → gone money → the door that was always closable</div>
+      </div>
+      <div class="callout co-info"><b>Teaching check</b>Myles tells it back cold, own words, three beats intact. If he can tell it at a counter, this session sells itself.</div>
+    </div>
+  </div>
+
+  <div class="lesson" data-id="m1b">
+    <div class="lesson-hdr" onclick="toggleLesson(this)"><div class="chk" onclick="toggleDone(event,this)">✓</div>
+      <div class="lesson-info"><div class="lesson-title">1.2 — Email security: SPF · DKIM · DMARC</div><div class="lesson-meta">55 min · the crown jewel skill</div></div><span class="caret">▶</span></div>
+    <div class="lesson-body">
+      <div class="diagram">
+        <svg viewBox="0 0 760 260" role="img" aria-label="Email authentication flow through SPF DKIM DMARC checks">
+          <rect x="15" y="95" width="120" height="60" rx="12" fill="rgba(143,215,255,.12)" stroke="#8FD7FF" stroke-width="1.5"/>
+          <text x="75" y="120" fill="#8FD7FF" font-family="IBM Plex Mono" font-size="10" text-anchor="middle">INCOMING</text>
+          <text x="75" y="136" fill="#D7E2F0" font-family="IBM Plex Sans" font-size="10" text-anchor="middle">"from @theirbiz.com"</text>
+          <line x1="135" y1="125" x2="185" y2="125" stroke="#8FD7FF" stroke-width="1.5"/>
+          <g>
+            <rect x="185" y="20" width="180" height="58" rx="12" fill="rgba(10,35,66,.8)" stroke="rgba(255,107,95,.6)"/>
+            <text x="275" y="42" fill="#FF6B5F" font-family="IBM Plex Mono" font-size="10" text-anchor="middle">SPF — the guest list</text>
+            <text x="275" y="58" fill="#91A6C3" font-family="IBM Plex Sans" font-size="9.5" text-anchor="middle">is this server allowed to</text>
+            <text x="275" y="70" fill="#91A6C3" font-family="IBM Plex Sans" font-size="9.5" text-anchor="middle">send as this domain?</text>
+            <rect x="185" y="96" width="180" height="58" rx="12" fill="rgba(10,35,66,.8)" stroke="rgba(255,107,95,.6)"/>
+            <text x="275" y="118" fill="#FF6B5F" font-family="IBM Plex Mono" font-size="10" text-anchor="middle">DKIM — the seal</text>
+            <text x="275" y="134" fill="#91A6C3" font-family="IBM Plex Sans" font-size="9.5" text-anchor="middle">signature valid?</text>
+            <text x="275" y="146" fill="#91A6C3" font-family="IBM Plex Sans" font-size="9.5" text-anchor="middle">message unaltered?</text>
+            <rect x="185" y="172" width="180" height="58" rx="12" fill="rgba(10,35,66,.8)" stroke="rgba(255,107,95,.6)"/>
+            <text x="275" y="194" fill="#FF6B5F" font-family="IBM Plex Mono" font-size="10" text-anchor="middle">DMARC — the rule</text>
+            <text x="275" y="210" fill="#91A6C3" font-family="IBM Plex Sans" font-size="9.5" text-anchor="middle">what do we DO when</text>
+            <text x="275" y="222" fill="#91A6C3" font-family="IBM Plex Sans" font-size="9.5" text-anchor="middle">checks fail? + reports</text>
+          </g>
+          <g stroke="rgba(143,215,255,.5)" stroke-width="1.2" fill="none">
+            <path d="M365,49 L430,49 L430,110"/><path d="M365,125 L430,125"/><path d="M365,201 L430,201 L430,140"/>
+          </g>
+          <rect x="430" y="100" width="110" height="50" rx="12" fill="rgba(10,35,66,.9)" stroke="rgba(145,166,195,.5)"/>
+          <text x="485" y="122" fill="#D7E2F0" font-family="IBM Plex Mono" font-size="9.5" text-anchor="middle">RECEIVER</text>
+          <text x="485" y="137" fill="#91A6C3" font-family="IBM Plex Mono" font-size="9.5" text-anchor="middle">DECIDES</text>
+          <g stroke-width="1.5" fill="none">
+            <path d="M540,110 L610,55" stroke="#22C55E"/><path d="M540,125 L610,125" stroke="#F59E0B"/><path d="M540,140 L610,195" stroke="#EF4444"/>
+          </g>
+          <rect x="612" y="35" width="132" height="38" rx="10" fill="rgba(34,197,94,.12)" stroke="#22C55E"/>
+          <text x="678" y="58" fill="#22C55E" font-family="IBM Plex Mono" font-size="10" text-anchor="middle">✓ INBOX</text>
+          <rect x="612" y="106" width="132" height="38" rx="10" fill="rgba(245,158,11,.12)" stroke="#F59E0B"/>
+          <text x="678" y="129" fill="#F59E0B" font-family="IBM Plex Mono" font-size="10" text-anchor="middle">? SPAM / QUARANTINE</text>
+          <rect x="612" y="177" width="132" height="38" rx="10" fill="rgba(239,68,68,.12)" stroke="#EF4444"/>
+          <text x="678" y="200" fill="#EF4444" font-family="IBM Plex Mono" font-size="10" text-anchor="middle">✕ REJECTED</text>
+        </svg>
+        <div class="diagram-cap">No records published = the receiver has nothing to check = spoofers ride free</div>
+      </div>
+      <p><strong>Record anatomy — annotated:</strong></p>
+      <div class="codeblock"><button class="copy-btn" onclick="copyBlock(this)">copy</button><span class="m"># SPF</span>
+v=spf1 <span class="s">include:_spf.google.com</span> <span class="s">include:sendgrid.net</span> <span class="c">-all</span>
+<span class="m">        └ mail provider          └ invoice tool        └ hard-fail rest</span>
+<span class="m"># endings: </span><span class="g">-all</span><span class="m"> strict · </span><span class="s">~all</span><span class="m"> softfail (safe default) · </span><span class="c">+all</span><span class="m"> = allows EVERYONE, flag it</span>
+<span class="m"># gotcha: max 10 DNS lookups — tool-bloat silently breaks SPF; audit catches it</span>
+
+<span class="m"># DMARC (_dmarc.theirbiz.com)</span>
+v=DMARC1; <span class="c">p=quarantine</span>; <span class="s">rua=mailto:dmarc@theirbiz.com</span>; pct=100
+<span class="m">           └ none→quarantine→reject   └ where the spy reports go</span></div>
+      <p><strong>The staged rollout — professional judgment, taught hard:</strong></p>
+      <div class="diagram">
+        <svg viewBox="0 0 760 120" role="img" aria-label="DMARC rollout stages from none to reject">
+          <line x1="40" y1="60" x2="720" y2="60" stroke="rgba(145,166,195,.35)" stroke-width="2"/>
+          <rect x="60" y="38" width="170" height="44" rx="10" fill="rgba(143,215,255,.12)" stroke="#8FD7FF"/>
+          <text x="145" y="56" fill="#8FD7FF" font-family="IBM Plex Mono" font-size="10" text-anchor="middle">p=none</text>
+          <text x="145" y="72" fill="#91A6C3" font-family="IBM Plex Sans" font-size="9" text-anchor="middle">observe · read reports 2–4 wks</text>
+          <rect x="295" y="38" width="170" height="44" rx="10" fill="rgba(245,158,11,.12)" stroke="#F59E0B"/>
+          <text x="380" y="56" fill="#F59E0B" font-family="IBM Plex Mono" font-size="10" text-anchor="middle">p=quarantine</text>
+          <text x="380" y="72" fill="#91A6C3" font-family="IBM Plex Sans" font-size="9" text-anchor="middle">after legit senders align</text>
+          <rect x="530" y="38" width="170" height="44" rx="10" fill="rgba(34,197,94,.12)" stroke="#22C55E"/>
+          <text x="615" y="56" fill="#22C55E" font-family="IBM Plex Mono" font-size="10" text-anchor="middle">p=reject</text>
+          <text x="615" y="72" fill="#91A6C3" font-family="IBM Plex Sans" font-size="9" text-anchor="middle">door closed</text>
+          <text x="380" y="18" fill="#EF4444" font-family="IBM Plex Mono" font-size="9" text-anchor="middle">JUMPING STRAIGHT TO REJECT CAN VAPORIZE THE CLIENT'S OWN INVOICES</text>
+          <path d="M230,60 L295,60" stroke="#8FD7FF" stroke-width="1.5"/><path d="M465,60 L530,60" stroke="#8FD7FF" stroke-width="1.5"/>
+        </svg>
+        <div class="diagram-cap">Locks first (SPF/DKIM) · then observe · then enforce</div>
+      </div>
+      <p><strong>Verification — Myles runs these himself, and at the counter when an owner says "prove it":</strong></p>
+      <div class="codeblock"><button class="copy-btn" onclick="copyBlock(this)">copy</button>dig TXT theirbiz.com                      <span class="m"># SPF among TXT records</span>
+dig TXT _dmarc.theirbiz.com               <span class="m"># DMARC — nothing = unprotected</span>
+dig TXT google._domainkey.theirbiz.com    <span class="m"># DKIM (selector varies by provider)</span>
+nslookup -type=TXT theirbiz.com           <span class="m"># same on Windows</span></div>
+      <div class="script"><b>The pitch, verbatim</b>"Right now, anyone on earth can send an email that says it's from you — to your customers, your bank, your vendors — and most inboxes will deliver it. I'm not guessing; here's the check on your actual domain, and here's how you verify it yourself. Closing this is a settings fix, not a construction project. About an hour — and afterward you get a monthly report of anyone who tries."</div>
+      <div class="callout co-warn"><b>Lane rule</b>Myles diagnoses and pitches. The record changes are Jeremiah's until sign‑off — a wrong DMARC policy stops a business's real mail.</div>
+    </div>
+  </div>
+
+  <div class="lesson" data-id="m1c">
+    <div class="lesson-hdr" onclick="toggleLesson(this)"><div class="chk" onclick="toggleDone(event,this)">✓</div>
+      <div class="lesson-info"><div class="lesson-title">1.3 — The account hygiene package</div><div class="lesson-meta">30 min · cheapest most valuable hour they'll buy</div></div><span class="caret">▶</span></div>
+    <div class="lesson-body">
+      <ol>
+        <li><strong>Password manager</strong> — owner + staff, shared business vault. Kills reuse, solves the sticky note, survives employee turnover. Know one manager cold; don't comparison‑shop in front of clients.</li>
+        <li><strong>2FA on the money paths, in order:</strong> email first (it resets everything else) → bank → registrar → Google Business → payments → socials. App/hardware over SMS where allowed.</li>
+        <li><strong>The Access Inventory</strong> — the quiet masterstroke. One page: every account, who holds it, how it's recovered. We author it → Next‑Gen IT becomes the system of record.</li>
+        <li><strong>The backup answer</strong> — "if this laptop dies today, what's gone?" Usually fixed by turning on the sync they already pay for.</li>
+      </ol>
+      <div class="codeblock"><button class="copy-btn" onclick="copyBlock(this)">copy</button>ACCESS INVENTORY — [Business] — maintained by Next-Gen IT — [date]
+─────────────────────────────────────────────────────────
+Account          Where        Owner login     2FA   Recovery
+Domain           Cloudflare   owner@biz.com   ✓app  owner cell
+Email            Google WS    owner@biz.com   ✓app  codes in vault
+Website          GitHub       (NGIT managed)  ✓     J. Cargill
+Google Business  google.com   owner@biz.com   ✓     owner cell
+Bank             [bank]       (NOT stored)    ✓     client-held only
+Facebook page    Admins: owner + [REMOVE: ex-employee J.D.]
+─────────────────────────────────────────────────────────
+Rule: bank credentials are NEVER stored by us.
+Findings in [brackets] = action items.</div>
+      <div class="callout co-ok"><b>Hands‑on tonight</b>Myles builds his own vault, 2FAs his own money paths, writes his own inventory. Owners ask "do you do this yourself?" more than you'd think.</div>
+    </div>
+  </div>
+
+  <div class="lesson" data-id="m1d">
+    <div class="lesson-hdr" onclick="toggleLesson(this)"><div class="chk" onclick="toggleDone(event,this)">✓</div>
+      <div class="lesson-info"><div class="lesson-title">1.4 — What we do NOT sell <span class="tag tag-fail">test‑gated</span></div><div class="lesson-meta">15 min · recited cold at graduation</div></div><span class="caret">▶</span></div>
+    <div class="lesson-body">
+      <ul>
+        <li>No "hack‑proof." Nothing is. We sell <em>dramatically harder to hurt</em> — measurably.</li>
+        <li>No compliance attestations (HIPAA/PCI/SOC 2). We <em>prepare</em> a business for the specialist; the referral builds more trust than fake expertise.</li>
+        <li>Nothing mid‑incident. Active compromise = isolate, preserve evidence, call Jeremiah. Field reps never improvise forensics — cleanup destroys what insurers and investigators need.</li>
+        <li>No software we can't explain. No mystery antivirus resold for margin.</li>
+        <li>Bank credentials are never stored. Documented on the inventory itself.</li>
+        <li>No exaggerated findings. The report says what it says.</li>
+      </ul>
+      <div class="callout co-info"><b>Session 1 drill (graded /20)</b>Two real audit findings pitched to Jeremiah‑as‑owner. Accuracy · translation · evidence · close, 5 pts each. 16 to pass; below = re‑drill before new content.</div>
+    </div>
+  </div>
+</section>
+</div>
+
+<!-- ================= SESSION 2 ================= -->
+<div class="view" id="v-s2">
+<section class="panel card">
+  <div class="card-hdr">
+    <div><span class="session-tag">Session 02</span><span class="session-name">Presence: found, chosen, believed</span></div>
+    <span class="session-time">2.5 hrs · surprise teardown drill</span>
+  </div>
+
+  <div class="lesson" data-id="m2a">
+    <div class="lesson-hdr" onclick="toggleLesson(this)"><div class="chk" onclick="toggleDone(event,this)">✓</div>
+      <div class="lesson-info"><div class="lesson-title">2.1 — The local search reality</div><div class="lesson-meta">20 min</div></div><span class="caret">▶</span></div>
+    <div class="lesson-body">
+      <div class="diagram">
+        <svg viewBox="0 0 760 150" role="img" aria-label="Local search funnel from need to door">
+          <g font-family="IBM Plex Mono" font-size="9.5" text-anchor="middle">
+            <rect x="15" y="45" width="105" height="46" rx="10" fill="rgba(143,215,255,.12)" stroke="#8FD7FF"/>
+            <text x="67" y="65" fill="#8FD7FF">NEED</text><text x="67" y="80" fill="#91A6C3" font-family="IBM Plex Sans">"barber near me"</text>
+            <rect x="140" y="45" width="105" height="46" rx="10" fill="rgba(143,215,255,.12)" stroke="#8FD7FF"/>
+            <text x="192" y="65" fill="#8FD7FF">SEARCH/MAPS</text><text x="192" y="80" fill="#91A6C3" font-family="IBM Plex Sans">Google decides</text>
+            <rect x="265" y="45" width="105" height="46" rx="10" fill="rgba(255,107,95,.14)" stroke="#FF6B5F" stroke-width="2"/>
+            <text x="317" y="65" fill="#FF6B5F">PROFILE</text><text x="317" y="80" fill="#91A6C3" font-family="IBM Plex Sans">usually broken</text>
+            <rect x="390" y="45" width="105" height="46" rx="10" fill="rgba(255,107,95,.14)" stroke="#FF6B5F" stroke-width="2"/>
+            <text x="442" y="65" fill="#FF6B5F">REVIEWS</text><text x="442" y="80" fill="#91A6C3" font-family="IBM Plex Sans">#1 conversion</text>
+            <rect x="515" y="45" width="105" height="46" rx="10" fill="rgba(143,215,255,.12)" stroke="#8FD7FF"/>
+            <text x="567" y="65" fill="#8FD7FF">WEBSITE</text><text x="567" y="80" fill="#91A6C3" font-family="IBM Plex Sans">Module 1</text>
+            <rect x="640" y="45" width="105" height="46" rx="10" fill="rgba(34,197,94,.12)" stroke="#22C55E"/>
+            <text x="692" y="65" fill="#22C55E">CALL / DOOR</text><text x="692" y="80" fill="#91A6C3" font-family="IBM Plex Sans">revenue</text>
+          </g>
+          <g stroke="rgba(143,215,255,.5)" stroke-width="1.5" fill="none">
+            <path d="M120,68 L140,68"/><path d="M245,68 L265,68"/><path d="M370,68 L390,68"/><path d="M495,68 L515,68"/><path d="M620,68 L640,68"/>
+          </g>
+          <text x="380" y="122" fill="#FF6B5F" font-family="IBM Plex Mono" font-size="9.5" text-anchor="middle">MOST BUSINESSES ARE BROKEN AT THE CORAL LINKS — BEFORE THE WEBSITE EVER LOADS</text>
+        </svg>
+        <div class="diagram-cap">Fixing the first links often moves revenue more than the website — say that to clients; honesty differentiates</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="lesson" data-id="m2b">
+    <div class="lesson-hdr" onclick="toggleLesson(this)"><div class="chk" onclick="toggleDone(event,this)">✓</div>
+      <div class="lesson-info"><div class="lesson-title">2.2 — Google Business Profile: the 18‑point build</div><div class="lesson-meta">55 min · live on a real consenting business</div></div><span class="caret">▶</span></div>
+    <div class="lesson-body">
+      <p>Work the interactive checklist below (it counts toward module progress). Before/after screenshots of the live build become standing sales collateral.</p>
+      <div class="callout co-warn"><b>Two traps</b>Keyword‑stuffing the business name risks suspension — exact name only. And NAP (Name/Address/Phone) must match <em>to the character</em> everywhere: "Suite 200" vs "#200" counts.</div>
+    </div>
+  </div>
+
+  <!-- GBP interactive checklist -->
+  <div style="border-top:1px solid var(--rule-soft)">
+    <div class="card-hdr"><span class="card-label">GBP 18‑point checklist — interactive</span><span class="tag tag-info" id="gbp-count">0 / 18</span></div>
+    <div class="check-group-label">Claim &amp; control</div>
+    <div class="check-item" data-id="g1" onclick="toggleCheck(this)"><div class="chk">✓</div><span class="check-text">Profile claimed &amp; verified · ownership on the Access Inventory</span></div>
+    <div class="check-item" data-id="g2" onclick="toggleCheck(this)"><div class="chk">✓</div><span class="check-text">All managers reviewed · stale admins removed</span></div>
+    <div class="check-item" data-id="g3" onclick="toggleCheck(this)"><div class="chk">✓</div><span class="check-text">Owning Google account: recovery confirmed, 2FA on</span></div>
+    <div class="check-group-label">Core data</div>
+    <div class="check-item" data-id="g4" onclick="toggleCheck(this)"><div class="chk">✓</div><span class="check-text">Exact name — no keyword stuffing (suspension risk)</span></div>
+    <div class="check-item" data-id="g5" onclick="toggleCheck(this)"><div class="chk">✓</div><span class="check-text">Primary category precise · all valid subcategories</span></div>
+    <div class="check-item" data-id="g6" onclick="toggleCheck(this)"><div class="chk">✓</div><span class="check-text">Hours + holiday hours + special hours</span></div>
+    <div class="check-item" data-id="g7" onclick="toggleCheck(this)"><div class="chk">✓</div><span class="check-text">Phone = the number they actually answer</span></div>
+    <div class="check-item" data-id="g8" onclick="toggleCheck(this)"><div class="chk">✓</div><span class="check-text">Website + appointment links set</span></div>
+    <div class="check-item" data-id="g9" onclick="toggleCheck(this)"><div class="chk">✓</div><span class="check-text">Service area correct for mobile businesses</span></div>
+    <div class="check-group-label">Rich content</div>
+    <div class="check-item" data-id="g10" onclick="toggleCheck(this)"><div class="chk">✓</div><span class="check-text">~750‑char description, owner's voice, keywords natural</span></div>
+    <div class="check-item" data-id="g11" onclick="toggleCheck(this)"><div class="chk">✓</div><span class="check-text">10+ real photos: storefront · interior · team · work</span></div>
+    <div class="check-item" data-id="g12" onclick="toggleCheck(this)"><div class="chk">✓</div><span class="check-text">Logo + cover image set</span></div>
+    <div class="check-item" data-id="g13" onclick="toggleCheck(this)"><div class="chk">✓</div><span class="check-text">Products/services with prices where supported</span></div>
+    <div class="check-item" data-id="g14" onclick="toggleCheck(this)"><div class="chk">✓</div><span class="check-text">Attributes set (accessible, veteran‑owned, wifi…)</span></div>
+    <div class="check-item" data-id="g15" onclick="toggleCheck(this)"><div class="chk">✓</div><span class="check-text">Q&amp;A seeded: 5 common questions asked &amp; answered as the business</span></div>
+    <div class="check-group-label">Ongoing</div>
+    <div class="check-item" data-id="g16" onclick="toggleCheck(this)"><div class="chk">✓</div><span class="check-text">Messaging on only if owner answers within hours</span></div>
+    <div class="check-item" data-id="g17" onclick="toggleCheck(this)"><div class="chk">✓</div><span class="check-text">First Google Post published</span></div>
+    <div class="check-item" data-id="g18" onclick="toggleCheck(this)"><div class="chk">✓</div><span class="check-text">Photo cadence set: 2–3/month (care‑plan material)</span></div>
+  </div>
+
+  <div class="lesson" data-id="m2c">
+    <div class="lesson-hdr" onclick="toggleLesson(this)"><div class="chk" onclick="toggleDone(event,this)">✓</div>
+      <div class="lesson-info"><div class="lesson-title">2.3 — The review engine</div><div class="lesson-meta">30 min · link · habit · reply · monitor</div></div><span class="caret">▶</span></div>
+    <div class="lesson-body">
+      <div class="diagram">
+        <svg viewBox="0 0 760 130" role="img" aria-label="Review engine loop">
+          <g font-family="IBM Plex Mono" font-size="9.5" text-anchor="middle">
+            <rect x="30" y="40" width="150" height="50" rx="10" fill="rgba(143,215,255,.12)" stroke="#8FD7FF"/>
+            <text x="105" y="60" fill="#8FD7FF">1 · THE LINK</text><text x="105" y="76" fill="#91A6C3" font-family="IBM Plex Sans">QR at register + invoices</text>
+            <rect x="215" y="40" width="150" height="50" rx="10" fill="rgba(143,215,255,.12)" stroke="#8FD7FF"/>
+            <text x="290" y="60" fill="#8FD7FF">2 · THE HABIT</text><text x="290" y="76" fill="#91A6C3" font-family="IBM Plex Sans">ask at the compliment</text>
+            <rect x="400" y="40" width="150" height="50" rx="10" fill="rgba(255,107,95,.14)" stroke="#FF6B5F"/>
+            <text x="475" y="60" fill="#FF6B5F">3 · THE REPLY</text><text x="475" y="76" fill="#91A6C3" font-family="IBM Plex Sans">every review, ≤1 week</text>
+            <rect x="585" y="40" width="150" height="50" rx="10" fill="rgba(34,197,94,.12)" stroke="#22C55E"/>
+            <text x="660" y="60" fill="#22C55E">4 · MONITOR</text><text x="660" y="76" fill="#91A6C3" font-family="IBM Plex Sans">care‑plan sweep</text>
+          </g>
+          <g stroke="rgba(143,215,255,.5)" stroke-width="1.5" fill="none">
+            <path d="M180,65 L215,65"/><path d="M365,65 L400,65"/><path d="M550,65 L585,65"/>
+            <path d="M660,90 C660,115 105,115 105,90" stroke-dasharray="4 3"/>
+          </g>
+          <text x="380" y="20" fill="#91A6C3" font-family="IBM Plex Mono" font-size="9" text-anchor="middle">REPLIES ARE WRITTEN FOR THE NEXT HUNDRED READERS, NOT THE REVIEWER</text>
+        </svg>
+        <div class="diagram-cap">A machine, not a hope — installed once, maintained on the care plan</div>
+      </div>
+      <div class="script"><b>5‑star reply</b>"Thanks [name] — the [specific thing they mentioned] means a lot to us. See you next time." <em style="font-style:normal;color:var(--ink-muted)">(echo one detail: proves a human read it)</em></div>
+      <div class="script"><b>Negative reply — acknowledge · own · offline · never argue publicly</b>"[Name], thanks for the honest feedback — a [wait time] like that isn't the experience we want anyone to have. I'd like to make it right: call me directly at [number] and ask for [owner]."</div>
+      <div class="script"><b>Fake / malicious</b>One neutral line ("We have no record of this visit and would welcome the chance to verify — please contact us"), flag via the platform's removal process, document. Never flame.</div>
+      <div class="callout co-danger"><b>The line, said to every client in these words</b>Never write fake reviews, never buy reviews, never review‑gate (filtering unhappy customers away violates platform rules and risks the listing). We build the asking machine; customers supply the truth. Clients will ask for the shady version — the answer is the same every time, and the reason lands better than the ethics alone.</div>
+    </div>
+  </div>
+
+  <div class="lesson" data-id="m2d">
+    <div class="lesson-hdr" onclick="toggleLesson(this)"><div class="chk" onclick="toggleDone(event,this)">✓</div>
+      <div class="lesson-info"><div class="lesson-title">2.4 — The spoofing surface: where the halves meet</div><div class="lesson-meta">25 min</div></div><span class="caret">▶</span></div>
+    <div class="lesson-body">
+      <ul>
+        <li><strong>Look‑alike domains:</strong> is <code>theirbiz.co</code> / the common typo / the hyphenated variant registered — by whom? Clear → defensive registration ~$12/yr, pointed at the real site. Taken by someone suspicious → Jeremiah finding, not a field fix.</li>
+        <li><strong>Deliverability as presence:</strong> their SPF/DMARC posture decides whether their own quotes land in spam. "Your emails go to spam" = a presence complaint powered by a security fix.</li>
+        <li><strong>Profile takeover surface:</strong> who admins the listing, Facebook, Instagram? Ex‑employee still there? Found doing presence work, filed as hygiene, fixed in the Starter. One walkthrough, three products.</li>
+      </ul>
+      <div class="callout co-info"><b>Session 2 drill (graded /20)</b>Surprise business, 10 minutes, laptop: GBP state · review count/reply rate · NAP spot‑check · look‑alike check · SPF/DMARC dig. Then a 2‑minute teardown: three worst findings in counter‑language, priced.</div>
+    </div>
+  </div>
+</section>
+</div>
+
+<!-- ================= SESSION 3 ================= -->
+<div class="view" id="v-s3">
+<section class="panel card">
+  <div class="card-hdr">
+    <div><span class="session-tag">Session 03</span><span class="session-name">The audit as a product · the company around it</span></div>
+    <span class="session-time">2.5 hrs · exam briefing at end</span>
+  </div>
+
+  <div class="lesson" data-id="m3a">
+    <div class="lesson-hdr" onclick="toggleLesson(this)"><div class="chk" onclick="toggleDone(event,this)">✓</div>
+      <div class="lesson-info"><div class="lesson-title">3.1 — Audit end‑to‑end → the findings page</div><div class="lesson-meta">45 min · the page IS the quote</div></div><span class="caret">▶</span></div>
+    <div class="lesson-body">
+      <p>Everything in S1–S2 is what the 30‑point audit <em>measures</em>. Now operate the machine: run the portal → read every section → convert to a one‑page findings page → deliver it across the counter.</p>
+      <div class="codeblock"><button class="copy-btn" onclick="copyBlock(this)">copy</button>DOMAIN HEALTH FINDINGS — [Business] — [date] — Next-Gen IT
+Overall: 61/100 (C+)     Verify any item yourself — ask us how.
+──────────────────────────────────────────────────────────
+#  FINDING                WHAT IT MEANS FOR YOU           FIX IN
+1  No DMARC record        Anyone can send email as you;   Security
+   [HIGH]                 you'd never know                Starter
+2  Google listing         Anyone can edit your hours,     Presence
+   unclaimed [HIGH]       photos, phone number            Pack
+3  SPF ends in +all       Your allowed-senders list       Security
+   [HIGH]                 allows EVERYONE                 Starter
+4  0 replies to 37        Reads as "nobody's home"        Presence
+   reviews [MED]                                          Pack
+5  theirbiz.co open       $12/yr closes the door before   Presence
+   [LOW]                  someone impersonates you        Pack
+──────────────────────────────────────────────────────────
+Security Starter $XXX · Presence Pack $XXX
+Both + Care Plan: $XXX + $XXX/mo · done within one week</div>
+      <div class="callout co-info"><b>Rules of the page</b>Max 6 findings (more numbs) · severity‑ordered · every line survives "prove it" · every line maps to a purchasable fix · one page total. Lead delivery with the two scariest <em>true</em> findings; close on fix + price + "done in a week."</div>
+    </div>
+  </div>
+
+  <div class="lesson" data-id="m3b">
+    <div class="lesson-hdr" onclick="toggleLesson(this)"><div class="chk" onclick="toggleDone(event,this)">✓</div>
+      <div class="lesson-info"><div class="lesson-title">3.2 — Pitch scripts: three doors</div><div class="lesson-meta">role‑played until boring</div></div><span class="caret">▶</span></div>
+    <div class="lesson-body">
+      <div class="script"><b>Door 1 · has a decent website</b>"I'm not here to sell you a website — yours is actually fine. I run a local IT shop and we ran a free health check on your domain — the same public‑records check a bank or insurer would run. Two things came up I'd want to know about if I owned this place. Got two minutes? …If not, here's the page; my number's on it."</div>
+      <div class="script"><b>Door 2 · bought the website from us</b>"Everything I built you is healthy — site's fast, cert's clean. While I was in there I checked the stuff around the site: your Google listing and your email security. Couple of open doors. Here's the one‑pager; the whole thing's about a week of work."</div>
+      <div class="script"><b>Door 3 · cold, no website</b>Module 1 pitch leads. The free snapshot seeds Module 2 findings for the follow‑up; the website closes the deal; security and presence build the relationship.</div>
+      <div class="callout co-ok"><b>The tone rule over everything</b>Calm, unhurried, evidence‑forward. The rep who needs the sale loses it. We have a pipeline; any single "no" is fine — and it shows.</div>
+    </div>
+  </div>
+
+  <!-- objection bank -->
+  <div style="border-top:1px solid var(--rule-soft)">
+    <div class="card-hdr"><span class="card-label">The objection bank — tap to reveal the answer</span></div>
+    <div class="objection"><div class="obj-q" onclick="this.parentElement.classList.toggle('open')"><span class="obj-num">1</span><span class="obj-text">"My nephew handles our computers."</span></div>
+      <div class="obj-a">"Great — this report will make his job easier. Want me to send it to him? Happy to walk him through it." <em>Never fight the nephew. Recruit the nephew — half the time he becomes the internal champion.</em></div></div>
+    <div class="objection"><div class="obj-q" onclick="this.parentElement.classList.toggle('open')"><span class="obj-num">2</span><span class="obj-text">"We're too small to be a target."</span></div>
+      <div class="obj-a">"The fraud that hits businesses your size is automated — it doesn't know how small you are. It just found your open door. This report is it finding you."</div></div>
+    <div class="objection"><div class="obj-q" onclick="this.parentElement.classList.toggle('open')"><span class="obj-num">3</span><span class="obj-text">"We've never been hacked."</span></div>
+      <div class="obj-a">"Most businesses who get hit said the same thing the week before. But honestly — you might be right, and that's why everything here is prevention priced like prevention, not disaster recovery priced like disaster."</div></div>
+    <div class="objection"><div class="obj-q" onclick="this.parentElement.classList.toggle('open')"><span class="obj-num">4</span><span class="obj-text">"How do I know this is real?"</span></div>
+      <div class="obj-a">"Every line comes from public records about your own domain. Here — verify this one yourself right now." <em>Open the terminal. This objection is a gift.</em></div></div>
+    <div class="objection"><div class="obj-q" onclick="this.parentElement.classList.toggle('open')"><span class="obj-num">5</span><span class="obj-text">"Sounds expensive."</span></div>
+      <div class="obj-a">"The whole starter is less than one no‑show weekend costs you. And the wire‑fraud version of this conversation starts at five figures."</div></div>
+    <div class="objection"><div class="obj-q" onclick="this.parentElement.classList.toggle('open')"><span class="obj-num">6</span><span class="obj-text">"I don't have time."</span></div>
+      <div class="obj-a">"You need about twenty minutes total across the whole thing. We do the work; you approve it."</div></div>
+    <div class="objection"><div class="obj-q" onclick="this.parentElement.classList.toggle('open')"><span class="obj-num">7</span><span class="obj-text">"Can you just do the Google listing part?"</span></div>
+      <div class="obj-a">"Absolutely." <em>Unbundling is fine. A $400 client who trusts you becomes a $150/mo client. Never guilt the smaller yes.</em></div></div>
+    <div class="objection"><div class="obj-q" onclick="this.parentElement.classList.toggle('open')"><span class="obj-num">8</span><span class="obj-text">"My website company said they handle security."</span></div>
+      <div class="obj-a">"They might handle the website's security — this is about your email and your listing, which usually aren't theirs. Easy to check: ask them what your DMARC policy is. If they answer, you're in good hands and I'll shake yours."</div></div>
+    <div class="objection"><div class="obj-q" onclick="this.parentElement.classList.toggle('open')"><span class="obj-num">9</span><span class="obj-text">"Send me something."</span></div>
+      <div class="obj-a">"This page is the something." <em>The findings page exists so "send me something" is a close, not an exit.</em></div></div>
+    <div class="objection"><div class="obj-q" onclick="this.parentElement.classList.toggle('open')"><span class="obj-num">10</span><span class="obj-text">"Is this a scam?"</span></div>
+      <div class="obj-a">Respect it — their instincts work. "Fair question, and honestly the fact that you ask is a good sign. Here's who I am, here's the local businesses we've done this for, and nothing here requires a password or a payment today. Verify the findings first."</div></div>
+  </div>
+
+  <div class="lesson" data-id="m3c">
+    <div class="lesson-hdr" onclick="toggleLesson(this)"><div class="chk" onclick="toggleDone(event,this)">✓</div>
+      <div class="lesson-info"><div class="lesson-title">3.3 — The company wrapper</div><div class="lesson-meta">35 min · verify with TX SOS / IRS / CPA before acting</div></div><span class="caret">▶</span></div>
+    <div class="lesson-body">
+      <ul>
+        <li><strong>Entity:</strong> Texas LLC — liability separation matters the day you touch a client's DNS. Filing + operating agreement (even single‑member) + EIN + <em>separate business bank account day one</em>. Commingling is how small operators pierce their own shield.</li>
+        <li><strong>Insurance:</strong> general liability <em>plus</em> <strong>tech E&amp;O</strong> — the one that answers for "the DNS change broke our email for a day." Quotes before the first Starter ships.</li>
+        <li><strong>Paper:</strong> every engagement on a signed one‑pager — scope, price, deposit, timeline, the ownership promise, the not‑included fence, an attorney‑reviewed liability clause.</li>
+        <li><strong>Books:</strong> real invoicing from client one · every expense logged · fixed % of every payment moved to a tax account on receipt · CPA before the first $10k.</li>
+      </ul>
+      <div class="codeblock"><button class="copy-btn" onclick="copyBlock(this)">copy</button>SERVICE AGREEMENT — one page
+Client: ____   Provider: ____   Date: ____
+SCOPE (exactly what's included): ...
+NOT INCLUDED (the scope-creep fence): ...
+PRICE: $___ · 50% deposit to begin · balance at completion
+TIMELINE: __ business days from deposit + client materials
+OWNERSHIP: Client owns their domain, website, and all accounts.
+  Provider manages them under this agreement and hands over
+  full credentials at completion or termination.
+LIABILITY: [attorney-reviewed limitation clause]
+Signatures: ____________    ____________</div>
+      <p><strong>The relationship decision — explicit, written, signed at module end:</strong></p>
+      <div class="diagram">
+        <svg viewBox="0 0 760 210" role="img" aria-label="Decision tree: rep inside Next-Gen IT vs own LLC subcontracting">
+          <rect x="280" y="12" width="200" height="42" rx="11" fill="rgba(255,107,95,.14)" stroke="#FF6B5F" stroke-width="1.5"/>
+          <text x="380" y="30" fill="#FF6B5F" font-family="IBM Plex Mono" font-size="10" text-anchor="middle">THE STRUCTURE DECISION</text>
+          <text x="380" y="45" fill="#91A6C3" font-family="IBM Plex Sans" font-size="9.5" text-anchor="middle">ambiguity is the only wrong answer</text>
+          <g stroke="rgba(143,215,255,.55)" stroke-width="1.5" fill="none">
+            <path d="M330,54 C330,75 190,70 190,90"/><path d="M430,54 C430,75 570,70 570,90"/>
+            <path d="M340,150 L420,150" stroke="#22C55E" stroke-dasharray="5 3"/>
+          </g>
+          <rect x="60" y="90" width="260" height="86" rx="12" fill="rgba(143,215,255,.1)" stroke="#8FD7FF"/>
+          <text x="190" y="110" fill="#8FD7FF" font-family="IBM Plex Mono" font-size="10" text-anchor="middle">(a) REP INSIDE NEXT‑GEN IT</text>
+          <g fill="#D7E2F0" font-family="IBM Plex Sans" font-size="9.5" text-anchor="middle">
+            <text x="190" y="128">launch‑plan agreement · Option B comp</text>
+            <text x="190" y="143">NGIT entity + insurance cover the work</text>
+            <text x="190" y="158">clients are Next‑Gen IT's</text>
+            <text x="190" y="172" fill="#22C55E" font-family="IBM Plex Mono" font-size="9">← START HERE</text>
+          </g>
+          <rect x="440" y="90" width="260" height="86" rx="12" fill="rgba(34,197,94,.08)" stroke="#22C55E"/>
+          <text x="570" y="110" fill="#22C55E" font-family="IBM Plex Mono" font-size="10" text-anchor="middle">(b) OWN LLC, SUBCONTRACTING</text>
+          <g fill="#D7E2F0" font-family="IBM Plex Sans" font-size="9.5" text-anchor="middle">
+            <text x="570" y="128">his entity · his E&amp;O</text>
+            <text x="570" y="143">subcontractor agreement: brand use,</text>
+            <text x="570" y="158">pricing floors, client ownership</text>
+            <text x="570" y="172" fill="#91A6C3" font-family="IBM Plex Mono" font-size="9">CONVERT AT ~10 CLOSED DEALS</text>
+          </g>
+          <text x="380" y="142" fill="#22C55E" font-family="IBM Plex Mono" font-size="9" text-anchor="middle">written option</text>
+          <text x="380" y="200" fill="#91A6C3" font-family="IBM Plex Mono" font-size="9" text-anchor="middle">EITHER VERSION: MUTUAL NON‑SOLICITATION · THE CONVERSION OPTION GOES IN THE ORIGINAL AGREEMENT</text>
+        </svg>
+        <div class="diagram-cap">(a) now with a written (b) option at a milestone — data decides, not vibes</div>
+      </div>
+    </div>
+  </div>
+</section>
+</div>
+
+<!-- ================= RAMP & EXAM ================= -->
+<div class="view" id="v-ramp">
+<section class="panel card">
+  <div class="card-hdr"><span class="card-label">The 90‑day post‑module ramp</span></div>
+  <div class="card-body">
+    <div class="diagram">
+      <svg viewBox="0 0 760 170" role="img" aria-label="90 day ramp timeline in three phases">
+        <line x1="40" y1="85" x2="720" y2="85" stroke="rgba(145,166,195,.35)" stroke-width="2"/>
+        <rect x="55" y="55" width="200" height="60" rx="12" fill="rgba(143,215,255,.1)" stroke="#8FD7FF"/>
+        <text x="155" y="76" fill="#8FD7FF" font-family="IBM Plex Mono" font-size="10" text-anchor="middle">DAYS 1–30 · REPS</text>
+        <text x="155" y="92" fill="#D7E2F0" font-family="IBM Plex Sans" font-size="9.5" text-anchor="middle">10 findings pages delivered</text>
+        <text x="155" y="106" fill="#D7E2F0" font-family="IBM Plex Sans" font-size="9.5" text-anchor="middle">3 closes · every pitch debriefed</text>
+        <rect x="285" y="55" width="200" height="60" rx="12" fill="rgba(255,107,95,.1)" stroke="#FF6B5F"/>
+        <text x="385" y="76" fill="#FF6B5F" font-family="IBM Plex Mono" font-size="10" text-anchor="middle">DAYS 31–60 · BUNDLES</text>
+        <text x="385" y="92" fill="#D7E2F0" font-family="IBM Plex Sans" font-size="9.5" text-anchor="middle">2 bundle closes · 3 care plans</text>
+        <text x="385" y="106" fill="#D7E2F0" font-family="IBM Plex Sans" font-size="9.5" text-anchor="middle">first quarterly re‑audit run</text>
+        <rect x="515" y="55" width="200" height="60" rx="12" fill="rgba(34,197,94,.1)" stroke="#22C55E"/>
+        <text x="615" y="76" fill="#22C55E" font-family="IBM Plex Mono" font-size="10" text-anchor="middle">DAYS 61–90 · THE DECISION</text>
+        <text x="615" y="92" fill="#D7E2F0" font-family="IBM Plex Sans" font-size="9.5" text-anchor="middle">close rate · rev by rung · hrs/delivery</text>
+        <text x="615" y="106" fill="#D7E2F0" font-family="IBM Plex Sans" font-size="9.5" text-anchor="middle">(a)→(b) talk with data, not vibes</text>
+        <g fill="#91A6C3" font-family="IBM Plex Mono" font-size="9" text-anchor="middle">
+          <text x="155" y="140">volume builds skill</text><text x="385" y="140">recurring takes root</text><text x="615" y="140">structure follows numbers</text>
+        </g>
+      </svg>
+      <div class="diagram-cap">Weekly pipeline call unchanged throughout · every "no" debriefed in two minutes</div>
+    </div>
+  </div>
+</section>
+
+<section class="panel card">
+  <div class="card-hdr"><span class="card-label">Graduation exam — one real business, Jeremiah observing silently</span><span class="tag tag-info">pass = 34/40</span></div>
+  <div class="card-body" style="padding-bottom:.4rem">
+    <p style="color:var(--ink-soft);font-weight:300;font-size:.9rem;margin-bottom:.9rem">Audit run → findings page authored → bundle quoted → pitch delivered live, objections included. <strong style="color:var(--danger)">Any Integrity score below 5 is an automatic fail regardless of total.</strong></p>
+    <div class="tbl-scroll"><table class="ftable">
+      <tr><th>Dimension</th><th>/5</th><th>What 5 looks like</th></tr>
+      <tr><td><b>Technical accuracy</b></td><td>5</td><td>Every claim on the findings page is true and correctly explained</td></tr>
+      <tr><td><b>Translation</b></td><td>5</td><td>Zero unexplained jargon; a barber follows every sentence</td></tr>
+      <tr><td><b>Evidence</b></td><td>5</td><td>Offered live verification unprompted at least once</td></tr>
+      <tr><td><b>Findings page craft</b></td><td>5</td><td>One page · ≤6 findings · severity‑ordered · every line priced</td></tr>
+      <tr><td><b>Pitch delivery</b></td><td>5</td><td>Story‑led open, calm tone, clean close on fix + price</td></tr>
+      <tr><td><b>Objection handling</b></td><td>5</td><td>Two curveballs handled without flinching or overreaching</td></tr>
+      <tr><td><b>Do‑not‑sell recital</b></td><td>5</td><td>The 1.4 list, cold, plus <em>why</em> for each line</td></tr>
+      <tr><td><b>Integrity</b></td><td>5</td><td>No exaggeration anywhere, even under pressure to close</td></tr>
+    </table></div>
+  </div>
+  <div class="check-group-label" style="padding-top:.9rem">Graduation criteria — check as demonstrated</div>
+  <div class="check-item" data-id="x1" onclick="toggleCheck(this)"><div class="chk">✓</div><span class="check-text">Wire‑fraud story told cold, three beats intact</span></div>
+  <div class="check-item" data-id="x2" onclick="toggleCheck(this)"><div class="chk">✓</div><span class="check-text">SPF/DKIM/DMARC explained + dig‑verified live</span></div>
+  <div class="check-item" data-id="x3" onclick="toggleCheck(this)"><div class="chk">✓</div><span class="check-text">18‑point GBP build + NAP sweep executed</span></div>
+  <div class="check-item" data-id="x4" onclick="toggleCheck(this)"><div class="chk">✓</div><span class="check-text">Review engine installed · ethical lines from memory</span></div>
+  <div class="check-item" data-id="x5" onclick="toggleCheck(this)"><div class="chk">✓</div><span class="check-text">Audit → findings page in under an hour</span></div>
+  <div class="check-item" data-id="x6" onclick="toggleCheck(this)"><div class="chk">✓</div><span class="check-text">Do‑not‑sell list recited with reasons</span></div>
+  <div class="check-item" data-id="x7" onclick="toggleCheck(this)"><div class="chk">✓</div><span class="check-text">Company structure named — on signed paper</span></div>
+  <div class="check-item" data-id="x8" onclick="toggleCheck(this)"><div class="chk">✓</div><span class="check-text">Graduation pitch passed (34/40, Integrity = 5)</span></div>
+</section>
+
+<section class="panel card" style="text-align:center;padding:2rem clamp(1.2rem,3vw,1.6rem)">
+  <p style="font-family:var(--display);font-weight:600;font-size:clamp(1.25rem,3vw,1.6rem);letter-spacing:-.02em;margin-bottom:.5rem">Evidence. Ownership. <em style="color:var(--coral);text-shadow:0 0 30px var(--coral-glow)">Honesty.</em></p>
+  <p style="color:var(--ink-soft);font-size:.9rem;font-weight:300;max-width:56ch;margin:0 auto">We show our findings, the client owns their assets, and every claim survives "prove it." That's the moat a small technology company actually has — and it compounds, because every honest report makes the next door easier to walk through.</p>
+</section>
+</div>
+
+</div></main>
+
+<footer class="site-footer">
+  <p class="footer-meta">Next‑Gen‑<em>IT</em> · Module 2: Secure &amp; Seen · <a href="./index.html">Module 1: Ship a Site</a> · progress stored locally</p>
+</footer>
+
+<script>
+var KEY='ngit-module2-v1';
+var state={};
+try{state=JSON.parse(localStorage.getItem(KEY))||{}}catch(e){state={}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){}}
+
+document.querySelectorAll('.tab').forEach(function(t){
+  t.addEventListener('click',function(){
+    document.querySelectorAll('.tab').forEach(function(x){x.classList.remove('active')});
+    document.querySelectorAll('.view').forEach(function(v){v.classList.remove('on')});
+    t.classList.add('active');
+    document.getElementById(t.dataset.view).classList.add('on');
+    window.scrollTo({top:0});
+  });
+});
+
+function toggleLesson(hdr){hdr.parentElement.classList.toggle('open')}
+function toggleDone(ev,chk){
+  ev.stopPropagation();
+  var l=chk.closest('.lesson');
+  l.classList.toggle('done');
+  state[l.dataset.id]=l.classList.contains('done');
+  save();render();
+}
+function toggleCheck(item){
+  item.classList.toggle('done');
+  state[item.dataset.id]=item.classList.contains('done');
+  save();render();
+}
+
+var S1=['m1a','m1b','m1c','m1d'],S2=['m2a','m2b','m2c','m2d'],S3=['m3a','m3b','m3c'];
+var GBP=['g1','g2','g3','g4','g5','g6','g7','g8','g9','g10','g11','g12','g13','g14','g15','g16','g17','g18'];
+var GRAD=['x1','x2','x3','x4','x5','x6','x7','x8'];
+function gs(ids){var d=ids.filter(function(i){return state[i]}).length;return d===ids.length?'done':(d>0?'scanning':'')}
+function render(){
+  var all=S1.concat(S2,S3,GBP,GRAD);
+  var done=all.filter(function(i){return state[i]}).length;
+  var pct=Math.round(done/all.length*100);
+  document.getElementById('pct').textContent=pct+'%';
+  document.getElementById('pfill').style.width=pct+'%';
+  [['ps1',S1],['ps2',S2],['ps3',S3],['ps4',GBP],['ps5',GRAD]].forEach(function(p){
+    var el=document.getElementById(p[0]);
+    el.classList.remove('done','scanning');
+    var g=gs(p[1]);if(g)el.classList.add(g);
+  });
+  document.getElementById('gbp-count').textContent=GBP.filter(function(i){return state[i]}).length+' / 18';
+}
+document.querySelectorAll('.lesson').forEach(function(l){if(state[l.dataset.id])l.classList.add('done')});
+document.querySelectorAll('.check-item').forEach(function(c){if(state[c.dataset.id])c.classList.add('done')});
+render();
+
+function resetProgress(){
+  if(!confirm('Clear all Module 2 progress?'))return;
+  state={};save();
+  document.querySelectorAll('.lesson,.check-item').forEach(function(e){e.classList.remove('done')});
+  render();
+}
+function copyBlock(btn){
+  var t=btn.parentElement.cloneNode(true);
+  t.querySelector('.copy-btn').remove();
+  navigator.clipboard.writeText(t.textContent.trim()).then(function(){
+    btn.textContent='copied';btn.classList.add('copied');
+    setTimeout(function(){btn.textContent='copy';btn.classList.remove('copied')},1500);
+  });
+}
+</script>
+</body>
+</html>
