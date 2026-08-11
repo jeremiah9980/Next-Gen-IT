@@ -1,0 +1,45 @@
+name: Presence Refresh
+
+on:
+  schedule:
+    - cron: "0 */6 * * *"       # every 6 hours (UTC)
+  workflow_dispatch:              # "run scan now" button on the dashboard
+  push:
+    paths:
+      - "targets.csv"             # re-scan when the prospect list changes
+
+concurrency:
+  group: presence
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install httpx dnspython
+
+      - name: Run presence scan
+        run: python scripts/presence_scan.py --targets targets.csv --out data/presence.json
+
+      - name: Commit if changed
+        run: |
+          git config user.name "presence-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add data/presence.json
+          if git diff --cached --quiet; then
+            echo "No changes to commit."
+          else
+            git commit -m "presence: $(date -u +%FT%TZ)"
+            git push
+          fi
