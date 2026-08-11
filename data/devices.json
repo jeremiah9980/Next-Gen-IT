@@ -1,0 +1,114 @@
+{
+  "generated_at": "2026-08-11T16:50:43Z",
+  "network": {
+    "subnet": "192.168.4.0/24",
+    "scanner_ip": "192.168.4.131",
+    "redacted": true
+  },
+  "summary": {
+    "total": 9,
+    "online": 6,
+    "new_this_scan": 9
+  },
+  "devices": [
+    {
+      "mac": "24:f3:e3:xx:xx:xx",
+      "ip": "192.168.0.1",
+      "hostname": null,
+      "vendor": null,
+      "online": false,
+      "self": false,
+      "first_seen": "2026-08-11T16:50:43Z",
+      "last_seen": "2026-08-11T16:50:43Z",
+      "new": true
+    },
+    {
+      "mac": "e8:aa:cb:xx:xx:xx",
+      "ip": "192.168.4.28",
+      "hostname": null,
+      "vendor": null,
+      "online": true,
+      "self": false,
+      "first_seen": "2026-08-11T16:50:43Z",
+      "last_seen": "2026-08-11T16:50:43Z",
+      "new": true
+    },
+    {
+      "mac": "b8:2c:a0:xx:xx:xx",
+      "ip": "192.168.4.32",
+      "hostname": null,
+      "vendor": null,
+      "online": true,
+      "self": false,
+      "first_seen": "2026-08-11T16:50:43Z",
+      "last_seen": "2026-08-11T16:50:43Z",
+      "new": true
+    },
+    {
+      "mac": "ca:6a:10:xx:xx:xx",
+      "ip": "192.168.4.34",
+      "hostname": null,
+      "vendor": null,
+      "online": true,
+      "self": false,
+      "first_seen": "2026-08-11T16:50:43Z",
+      "last_seen": "2026-08-11T16:50:43Z",
+      "new": true
+    },
+    {
+      "mac": "f0:b6:61:xx:xx:xx",
+      "ip": "192.168.4.35",
+      "hostname": null,
+      "vendor": null,
+      "online": true,
+      "self": false,
+      "first_seen": "2026-08-11T16:50:43Z",
+      "last_seen": "2026-08-11T16:50:43Z",
+      "new": true
+    },
+    {
+      "mac": "ae:43:d7:xx:xx:xx",
+      "ip": "192.168.4.94",
+      "hostname": null,
+      "vendor": null,
+      "online": true,
+      "self": false,
+      "first_seen": "2026-08-11T16:50:43Z",
+      "last_seen": "2026-08-11T16:50:43Z",
+      "new": true
+    },
+    {
+      "mac": "70:ae:d5:xx:xx:xx",
+      "ip": "192.168.4.131",
+      "hostname": null,
+      "vendor": null,
+      "online": true,
+      "self": true,
+      "first_seen": "2026-08-11T16:50:43Z",
+      "last_seen": "2026-08-11T16:50:43Z",
+      "new": true
+    },
+    {
+      "mac": "01:00:5e:xx:xx:xx",
+      "ip": "224.0.0.251",
+      "hostname": "mdns.mcast.net",
+      "vendor": null,
+      "online": false,
+      "self": false,
+      "first_seen": "2026-08-11T16:50:43Z",
+      "last_seen": "2026-08-11T16:50:43Z",
+      "new": true
+    },
+    {
+      "mac": "ff:ff:ff:xx:xx:xx",
+      "ip": "192.168.255.255",
+      "hostname": null,
+      "vendor": null,
+      "online": false,
+      "self": false,
+      "first_seen": "2026-08-11T16:50:43Z",
+      "last_seen": "2026-08-11T16:50:43Z",
+      "new": true
+    }
+  ]
+}
