@@ -1,0 +1,65 @@
+{
+  "generated_at": "2026-08-11T16:11:01Z",
+  "pipeline": {
+    "status": "ok",
+    "last_run_id": "31510939032",
+    "duration_sec": 0.2,
+    "scanned": 1,
+    "errors": 0
+  },
+  "domains": [
+    {
+      "domain": "example.com",
+      "company": "Example Inc",
+      "last_scanned": "2026-08-11T16:11:01Z",
+      "error": null,
+      "score": 100,
+      "prev_score": null,
+      "email": {
+        "spf": {
+          "status": "pass",
+          "record": "v=spf1 -all"
+        },
+        "dkim": {
+          "status": "found",
+          "selectors": [
+            "default",
+            "selector1",
+            "selector2",
+            "google",
+            "k1",
+            "s1",
+            "s2",
+            "mail",
+            "smtp",
+            "dkim",
+            "mandrill",
+            "everlytickey1",
+            "zmail"
+          ]
+        },
+        "dmarc": {
+          "status": "enforcing",
+          "policy": "reject",
+          "record": "v=DMARC1;p=reject;sp=reject;adkim=s;aspf=s"
+        },
+        "mx": {
+          "status": "present",
+          "hosts": [
+            ""
+          ],
+          "provider": null
+        }
+      },
+      "website": {
+        "up": true,
+        "https": true,
+        "status_code": 200,
+        "response_ms": 110,
+        "final_url": "https://example.com/"
+      },
+      "flags": [],
+      "report_url": null
+    }
+  ]
+}
