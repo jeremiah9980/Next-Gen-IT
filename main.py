@@ -3,7 +3,7 @@ from __future__ import annotations
 import shutil
 from pathlib import Path
 
-from fastapi import FastAPI, File, HTTPException, UploadFile
+from fastapi import FastAPI, File, HTTPException, Query, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 
@@ -136,8 +136,8 @@ def generate_targets_endpoint(payload: TargetListRequest | None = None) -> Targe
 
 @app.get("/api/targets", response_model=TargetListResponse)
 def get_targets_endpoint(
-    primary_count: int = 20,
-    secondary_count: int = 15,
+    primary_count: int = Query(20, ge=1, le=50),
+    secondary_count: int = Query(15, ge=1, le=50),
     use_ai: bool = True,
 ) -> TargetListResponse:
     target_list = generate_target_list(
