@@ -52,3 +52,33 @@ class NoteCreateRequest(BaseModel):
 class AuditCreateResponse(BaseModel):
     audit_id: str
     status: AuditStatus
+
+
+class TargetModel(BaseModel):
+    name: str
+    category: str
+    tier: str
+    city: str
+    state: str = "TX"
+    region: str = "Central Texas"
+    domain: str | None = None
+    website: str | None = None
+    estimated_size: str | None = None
+    notes: str | None = None
+    source: str = "seed"
+
+
+class TargetListRequest(BaseModel):
+    primary_count: int = Field(default=20, ge=1, le=50)
+    secondary_count: int = Field(default=15, ge=1, le=50)
+    use_ai: bool = True
+
+
+class TargetListResponse(BaseModel):
+    generated_at: str
+    region: str
+    model: str | None = None
+    source: str
+    primary_targets: list[TargetModel] = []
+    secondary_targets: list[TargetModel] = []
+    counts: dict[str, int] = {}
