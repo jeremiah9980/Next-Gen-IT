@@ -1,422 +1,565 @@
-#!/usr/bin/env python3
-"""
-presence_scan.py — Quick-mode presence scanner for the Next-Gen-IT dashboard.
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Presence Watch · Next-Gen IT</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;0,9..144,800;1,9..144,800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0e1220;
+    --bg-card: #171c30;
+    --bg-card-hover: #1c2239;
+    --border: #262d49;
+    --text: #e8eaf2;
+    --text-dim: #9aa1bd;
+    --text-faint: #6b7290;
+    --coral: #E06B4A;
+    --coral-soft: rgba(224,107,74,.14);
+    --green: #4ec98a;
+    --green-soft: rgba(78,201,138,.13);
+    --amber: #e2b34a;
+    --amber-soft: rgba(226,179,74,.13);
+    --red: #e05a5a;
+    --red-soft: rgba(224,90,90,.13);
+    --mono: "IBM Plex Mono", ui-monospace, monospace;
+    --sans: "IBM Plex Sans", system-ui, sans-serif;
+    --serif: "Fraunces", Georgia, serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+  }
+  body {
+    font-family: var(--sans);
+    background: var(--bg);
+    background-image:
+      radial-gradient(ellipse 900px 600px at 85% -10%, rgba(147,84,142,.28), transparent 60%),
+      radial-gradient(ellipse 700px 500px at -5% 15%, rgba(224,107,74,.10), transparent 55%);
+    background-attachment: fixed;
+    color: var(--text);
+    min-height: 100vh;
+    line-height: 1.55;
+  }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 0 24px; }
 
-Reads targets.csv, runs concurrent DNS + HTTP posture checks per domain,
-computes score deltas against the previous presence.json, and atomically
-writes data/presence.json for the dashboard to poll.
+  /* ---------- header ---------- */
+  header { padding: 44px 0 8px; }
+  .eyebrow {
+    font-family: var(--mono); font-size: 12px; letter-spacing: .18em;
+    text-transform: uppercase; color: var(--coral); margin-bottom: 10px;
+  }
+  h1 {
+    font-family: var(--serif); font-weight: 800; font-size: clamp(34px, 5vw, 52px);
+    letter-spacing: -.01em; line-height: 1.05;
+  }
+  h1 em { font-style: italic; color: var(--coral); }
+  .header-row {
+    display: flex; flex-wrap: wrap; align-items: flex-end; gap: 18px;
+    justify-content: space-between;
+  }
+  .header-status { display: flex; flex-direction: column; gap: 8px; align-items: flex-end; padding-bottom: 6px; }
+  .pill {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-family: var(--mono); font-size: 12.5px;
+    border: 1px solid var(--border); border-radius: 999px;
+    padding: 6px 14px; background: rgba(255,255,255,.02); color: var(--text-dim);
+  }
+  .pill .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--text-faint); flex: 0 0 auto; }
+  .pill.fresh .dot { background: var(--green); box-shadow: 0 0 8px rgba(78,201,138,.7); }
+  .pill.aging .dot { background: var(--amber); }
+  .pill.stale .dot { background: var(--red); }
+  .pill.fresh { color: var(--green); border-color: rgba(78,201,138,.3); }
+  .pill.aging { color: var(--amber); border-color: rgba(226,179,74,.3); }
+  .pill.stale { color: var(--red); border-color: rgba(224,90,90,.35); }
 
-Usage:
-    python scripts/presence_scan.py --targets targets.csv --out data/presence.json
-    python scripts/presence_scan.py --targets targets.csv --out data/presence.json --limit 5
+  /* ---------- summary strip ---------- */
+  .summary {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 12px; margin: 30px 0 24px;
+  }
+  .stat {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 16px 18px;
+  }
+  .stat .num {
+    font-family: var(--serif); font-weight: 800; font-size: 30px; line-height: 1.1;
+  }
+  .stat .lbl {
+    font-family: var(--mono); font-size: 11px; letter-spacing: .1em;
+    text-transform: uppercase; color: var(--text-faint); margin-top: 4px;
+  }
+  .stat.accent .num { color: var(--coral); }
+  .stat.good .num { color: var(--green); }
+  .stat.warn .num { color: var(--amber); }
+  .stat.bad .num { color: var(--red); }
 
-Dependencies:
-    pip install httpx dnspython
+  /* ---------- controls ---------- */
+  .controls {
+    display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-bottom: 22px;
+  }
+  .controls input[type=search], .controls select {
+    font-family: var(--mono); font-size: 13px; color: var(--text);
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: 9px; padding: 9px 13px; outline: none;
+  }
+  .controls input[type=search] { flex: 1 1 220px; min-width: 180px; }
+  .controls input[type=search]:focus, .controls select:focus,
+  button:focus-visible {
+    border-color: var(--coral); box-shadow: 0 0 0 3px rgba(224,107,74,.22);
+  }
+  .toggle {
+    font-family: var(--mono); font-size: 12.5px; color: var(--text-dim);
+    display: inline-flex; align-items: center; gap: 8px;
+    border: 1px solid var(--border); border-radius: 9px;
+    background: var(--bg-card); padding: 9px 13px; cursor: pointer; user-select: none;
+  }
+  .toggle input { accent-color: var(--coral); }
+  .btn {
+    font-family: var(--mono); font-size: 13px; cursor: pointer;
+    border: 1px solid rgba(224,107,74,.5); border-radius: 9px;
+    background: var(--coral-soft); color: var(--coral);
+    padding: 9px 16px; transition: background .15s;
+  }
+  .btn:hover { background: rgba(224,107,74,.24); }
+  .btn:disabled { opacity: .5; cursor: default; }
+  .btn.ghost { border-color: var(--border); background: var(--bg-card); color: var(--text-dim); }
 
-Compatible with Python 3.9+.
-"""
+  /* ---------- cards ---------- */
+  .grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
+    gap: 14px; padding-bottom: 40px;
+  }
+  .card {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: 14px; padding: 18px 18px 15px;
+    display: flex; flex-direction: column; gap: 12px;
+    transition: border-color .15s, background .15s;
+  }
+  .card:hover { background: var(--bg-card-hover); border-color: #333c61; }
+  .card.errored { border-color: rgba(224,90,90,.4); }
+  .card-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+  .card .domain {
+    font-family: var(--mono); font-size: 15px; font-weight: 500; color: var(--text);
+    word-break: break-all;
+  }
+  .card .company { font-size: 12.5px; color: var(--text-faint); margin-top: 2px; }
+  .scorebox { text-align: right; flex: 0 0 auto; }
+  .score {
+    font-family: var(--serif); font-weight: 800; font-size: 34px; line-height: 1;
+  }
+  .score.s-good { color: var(--green); }
+  .score.s-mid  { color: var(--amber); }
+  .score.s-bad  { color: var(--red); }
+  .score.s-none { color: var(--text-faint); font-size: 22px; }
+  .delta { font-family: var(--mono); font-size: 12px; margin-top: 3px; }
+  .delta.up { color: var(--green); }
+  .delta.down { color: var(--red); }
+  .delta.flat { color: var(--text-faint); }
 
-from __future__ import annotations  # allows `str | None` hints on Python 3.9
+  /* auth rail — chips echo real DNS record syntax */
+  .rail { display: flex; flex-wrap: wrap; gap: 6px; }
+  .chip {
+    font-family: var(--mono); font-size: 11.5px; border-radius: 6px;
+    padding: 4px 9px; border: 1px solid transparent; white-space: nowrap;
+  }
+  .chip b { font-weight: 500; opacity: .65; margin-right: 5px; }
+  .chip.ok   { background: var(--green-soft); color: var(--green); border-color: rgba(78,201,138,.25); }
+  .chip.warn { background: var(--amber-soft); color: var(--amber); border-color: rgba(226,179,74,.25); }
+  .chip.bad  { background: var(--red-soft);   color: var(--red);   border-color: rgba(224,90,90,.25); }
+  .chip.dim  { background: rgba(255,255,255,.04); color: var(--text-faint); border-color: var(--border); }
 
-import argparse
-import asyncio
-import csv
-import json
-import os
-import re
-import sys
-import tempfile
-import time
-from datetime import datetime, timezone
-from pathlib import Path
-from typing import Optional
+  .siteline {
+    display: flex; align-items: center; gap: 8px;
+    font-family: var(--mono); font-size: 12px; color: var(--text-dim);
+  }
+  .siteline .dot { width: 8px; height: 8px; border-radius: 50%; flex: 0 0 auto; }
+  .dot.up { background: var(--green); }
+  .dot.down { background: var(--red); }
+  .flags { display: flex; flex-wrap: wrap; gap: 5px; }
+  .flag {
+    font-family: var(--mono); font-size: 10.5px; letter-spacing: .03em;
+    color: var(--text-faint); background: rgba(255,255,255,.03);
+    border: 1px solid var(--border); border-radius: 5px; padding: 2px 7px;
+  }
+  .flag.hot { color: var(--coral); border-color: rgba(224,107,74,.35); background: var(--coral-soft); }
+  .card-foot {
+    display: flex; justify-content: space-between; align-items: center;
+    border-top: 1px solid var(--border); padding-top: 10px; margin-top: auto;
+  }
+  .scanned { font-family: var(--mono); font-size: 11px; color: var(--text-faint); }
+  .report-link {
+    font-family: var(--mono); font-size: 12px; color: var(--coral);
+    text-decoration: none;
+  }
+  .report-link:hover { text-decoration: underline; }
+  .err-msg {
+    font-family: var(--mono); font-size: 11.5px; color: var(--red);
+    background: var(--red-soft); border-radius: 7px; padding: 7px 10px;
+    word-break: break-word;
+  }
 
-import httpx
-import dns.asyncresolver
-import dns.resolver
-import dns.exception
+  /* ---------- empty / banner ---------- */
+  .banner {
+    display: none; font-family: var(--mono); font-size: 13px;
+    background: var(--amber-soft); color: var(--amber);
+    border: 1px solid rgba(226,179,74,.3); border-radius: 10px;
+    padding: 12px 16px; margin-bottom: 20px;
+  }
+  .banner.show { display: block; }
+  .empty {
+    text-align: center; padding: 80px 20px; color: var(--text-dim);
+  }
+  .empty h2 { font-family: var(--serif); font-weight: 600; font-size: 26px; margin-bottom: 12px; color: var(--text); }
+  .empty code {
+    font-family: var(--mono); font-size: 13px; background: var(--bg-card);
+    border: 1px solid var(--border); border-radius: 8px; padding: 10px 16px;
+    display: inline-block; margin-top: 14px; color: var(--coral);
+  }
 
-# ---------------------------------------------------------------- config
+  footer {
+    border-top: 1px solid var(--border); padding: 26px 0 40px;
+    font-size: 12.5px; color: var(--text-faint); text-align: center;
+  }
+  footer .brand { font-family: var(--serif); font-style: italic; color: var(--coral); }
+</style>
+</head>
+<body>
+<div class="wrap">
 
-CONCURRENCY = 10          # simultaneous domains
-DNS_TIMEOUT = 5.0         # seconds per DNS query
-HTTP_TIMEOUT = 10.0       # seconds for site check
-DOMAIN_TIMEOUT = 90.0     # hard cap per domain (all checks combined)
-DKIM_SELECTORS = [        # common selectors to probe when none is known
-    "default", "selector1", "selector2", "google", "k1", "s1", "s2",
-    "mail", "smtp", "dkim", "mandrill", "everlytickey1", "zmail",
-]
-SCORE_DROP_ALERT = 10     # flag domains whose score fell by this much
+  <header>
+    <div class="header-row">
+      <div>
+        <div class="eyebrow">Next-Gen IT · Live Monitoring</div>
+        <h1>Presence <em>watch</em></h1>
+      </div>
+      <div class="header-status">
+        <span class="pill" id="staleness"><span class="dot"></span><span id="staleness-text">loading…</span></span>
+        <span class="pill" id="pipeline" style="display:none"><span class="dot"></span><span id="pipeline-text"></span></span>
+      </div>
+    </div>
+  </header>
 
+  <div class="banner" id="banner"></div>
 
-def utcnow() -> str:
-    return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+  <div class="summary" id="summary" style="display:none">
+    <div class="stat"><div class="num" id="st-count">–</div><div class="lbl">Domains watched</div></div>
+    <div class="stat accent"><div class="num" id="st-avg">–</div><div class="lbl">Avg score</div></div>
+    <div class="stat good"><div class="num" id="st-dmarc">–</div><div class="lbl">DMARC enforcing</div></div>
+    <div class="stat" id="st-up-wrap"><div class="num" id="st-up">–</div><div class="lbl">Sites up</div></div>
+    <div class="stat" id="st-issues-wrap"><div class="num" id="st-issues">–</div><div class="lbl">Needs attention</div></div>
+  </div>
 
+  <div class="controls" id="controls" style="display:none">
+    <input type="search" id="q" placeholder="filter domains…" aria-label="Filter domains">
+    <select id="sort" aria-label="Sort order">
+      <option value="score">sort: score ↓</option>
+      <option value="delta">sort: biggest drop</option>
+      <option value="name">sort: a–z</option>
+    </select>
+    <label class="toggle"><input type="checkbox" id="issues-only"> issues only</label>
+    <button class="btn ghost" id="reload" title="Re-fetch presence.json">↻ reload data</button>
+    <button class="btn" id="run-scan" title="Dispatch the GitHub Actions scan workflow">▸ run scan now</button>
+  </div>
 
-# ---------------------------------------------------------------- DNS checks
+  <div class="grid" id="grid"></div>
 
-def make_resolver() -> dns.asyncresolver.Resolver:
-    r = dns.asyncresolver.Resolver()
-    r.timeout = DNS_TIMEOUT
-    r.lifetime = DNS_TIMEOUT
-    # Cloudflare + Google, matching what the client-side DoH scanners see
-    r.nameservers = ["1.1.1.1", "8.8.8.8"]
-    return r
+  <div class="empty" id="empty" style="display:none">
+    <h2>No presence data yet</h2>
+    <p>Run the scanner once to populate the dashboard:</p>
+    <code>python3 scripts/presence_scan.py --targets targets.csv --out data/presence.json</code>
+  </div>
 
+  <footer>
+    © 2026 Jeremiah Cargill / Built in production · Portfolio &amp; practice.
+    <span class="brand">Presence Watch</span>
+  </footer>
+</div>
 
-async def query_txt(resolver, name: str) -> list:
-    """TXT record strings for name; [] on NXDOMAIN/NoAnswer; raises on timeout."""
-    try:
-        ans = await resolver.resolve(name, "TXT")
-        out = []
-        for rr in ans:
-            out.append("".join(
-                s.decode() if isinstance(s, bytes) else s for s in rr.strings
-            ))
-        return out
-    except (dns.resolver.NXDOMAIN, dns.resolver.NoAnswer):
-        return []
+<script>
+/* ================= config ================= */
+const CONFIG = {
+  // Where the dashboard reads state from. Relative path works on GitHub Pages
+  // and via `python3 -m http.server`. To bypass Pages CDN lag, switch to the
+  // raw URL once the repo is set:
+  // dataUrl: "https://raw.githubusercontent.com/OWNER/REPO/main/data/presence.json",
+  dataUrl: "https://raw.githubusercontent.com/jeremiah9980/Next-Gen-IT/main/data/presence.json",
+  pollMs: 60_000,
+  // "Run scan now" — GitHub workflow dispatch (needs a fine-grained PAT with
+  // Actions:write on the repo; stored in localStorage like the portal's).
+  github: {
+    owner: "jeremiah9980",
+    repo: "Next-Gen-IT",
+    workflow: "presence-refresh.yml",
+    ref: "main",
+    patKey: "ngit_pat",   // localStorage key
+  },
+};
 
+/* ================= state ================= */
+let DATA = null;
 
-async def check_spf(resolver, domain: str) -> dict:
-    txts = await query_txt(resolver, domain)
-    spf_records = [t for t in txts if t.lower().startswith("v=spf1")]
-    if not spf_records:
-        return {"status": "missing", "record": None}
-    if len(spf_records) > 1:
-        # multiple SPF records = permanent error per RFC 7208
-        return {"status": "invalid_multiple", "record": spf_records[0]}
-    rec = spf_records[0]
-    if re.search(r"[?+]all\b", rec):
-        status = "weak"            # neutral/pass-all: effectively no protection
-    elif "~all" in rec:
-        status = "softfail"
-    elif "-all" in rec:
-        status = "pass"
-    else:
-        status = "no_all_mechanism"
-    return {"status": status, "record": rec}
+/* ================= fetch loop ================= */
+async function loadPresence() {
+  const sep = CONFIG.dataUrl.includes("?") ? "&" : "?";
+  const res = await fetch(`${CONFIG.dataUrl}${sep}t=${Date.now()}`, { cache: "no-store" });
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  return res.json();
+}
 
+async function refresh(manual = false) {
+  try {
+    DATA = await loadPresence();
+    hideBanner();
+    render();
+  } catch (e) {
+    if (!DATA) showEmpty();
+    else showBanner("Presence feed unavailable — showing last known state (" + e.message + ")");
+  }
+}
 
-async def check_dmarc(resolver, domain: str) -> dict:
-    txts = await query_txt(resolver, "_dmarc." + domain)
-    recs = [t for t in txts if t.lower().startswith("v=dmarc1")]
-    if not recs:
-        return {"status": "missing", "policy": None, "record": None}
-    rec = recs[0]
-    m = re.search(r"\bp\s*=\s*(none|quarantine|reject)", rec, re.I)
-    policy = m.group(1).lower() if m else "unparseable"
-    status = {"reject": "enforcing", "quarantine": "enforcing",
-              "none": "monitoring"}.get(policy, "invalid")
-    return {"status": status, "policy": policy, "record": rec}
+function startLoop() {
+  refresh();
+  setInterval(refresh, CONFIG.pollMs);
+}
 
+/* ================= rendering ================= */
+function esc(s) {
+  return String(s ?? "").replace(/[&<>"']/g, c =>
+    ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[c]));
+}
 
-async def check_dkim(resolver, domain: str, extra_selector: Optional[str] = None) -> dict:
-    """Probe common selectors. Absence of all probes != proof DKIM is absent."""
-    selectors = list(DKIM_SELECTORS)
-    if extra_selector and extra_selector not in selectors:
-        selectors.insert(0, extra_selector)
-    found = []
+function scoreClass(s) {
+  if (s == null) return "s-none";
+  if (s >= 80) return "s-good";
+  if (s >= 55) return "s-mid";
+  return "s-bad";
+}
 
-    async def probe(sel: str) -> Optional[str]:
-        try:
-            txts = await query_txt(resolver, sel + "._domainkey." + domain)
-        except dns.exception.Timeout:
-            return None
-        if any("v=dkim1" in t.lower() or "k=rsa" in t.lower() for t in txts):
-            return sel
-        return None
+function chip(label, text, tone) {
+  return `<span class="chip ${tone}"><b>${label}</b>${esc(text)}</span>`;
+}
 
-    results = await asyncio.gather(*[probe(s) for s in selectors])
-    found = [s for s in results if s]
-    if found:
-        return {"status": "found", "selectors": found}
-    # honest evidence language: we can only say no common selector responded
-    return {"status": "not_detected", "selectors": []}
+function authRail(email) {
+  if (!email) return `<span class="chip dim">no email data</span>`;
+  const parts = [];
+  const spf = email.spf?.status;
+  parts.push(
+    spf === "pass"     ? chip("SPF", "-all", "ok") :
+    spf === "softfail" ? chip("SPF", "~all", "warn") :
+    spf === "missing"  ? chip("SPF", "missing", "bad") :
+    spf                ? chip("SPF", spf, "warn") :
+                         chip("SPF", "?", "dim"));
+  const dk = email.dkim?.status;
+  parts.push(
+    dk === "found" ? chip("DKIM", email.dkim.selectors?.[0] || "found", "ok")
+                   : chip("DKIM", "not detected", "warn"));
+  const dm = email.dmarc;
+  parts.push(
+    dm?.status === "enforcing"  ? chip("DMARC", "p=" + dm.policy, "ok") :
+    dm?.status === "monitoring" ? chip("DMARC", "p=none", "warn") :
+                                  chip("DMARC", "missing", "bad"));
+  if (email.mx?.provider) parts.push(chip("MX", email.mx.provider.replace(/_/g, " "), "dim"));
+  else if (email.mx?.status === "missing") parts.push(chip("MX", "none", "bad"));
+  return parts.join("");
+}
 
+function deltaHtml(score, prev) {
+  if (score == null || prev == null || score === prev)
+    return `<div class="delta flat">${prev == null ? "first scan" : "no change"}</div>`;
+  const d = score - prev;
+  return d > 0
+    ? `<div class="delta up">▲ +${d}</div>`
+    : `<div class="delta down">▼ ${d}</div>`;
+}
 
-async def check_mx(resolver, domain: str) -> dict:
-    try:
-        ans = await resolver.resolve(domain, "MX")
-        hosts = sorted(str(rr.exchange).rstrip(".") for rr in ans)
-        provider = infer_mail_provider(hosts)
-        return {"status": "present", "hosts": hosts, "provider": provider}
-    except (dns.resolver.NXDOMAIN, dns.resolver.NoAnswer):
-        return {"status": "missing", "hosts": [], "provider": None}
+function timeAgo(iso) {
+  if (!iso) return "";
+  const ms = Date.now() - new Date(iso).getTime();
+  const m = Math.floor(ms / 60000);
+  if (m < 1) return "just now";
+  if (m < 60) return m + "m ago";
+  const h = Math.floor(m / 60);
+  if (h < 48) return h + "h ago";
+  return Math.floor(h / 24) + "d ago";
+}
 
+function card(d) {
+  const site = d.website || {};
+  const hotFlags = new Set(["score_dropped", "site_down", "dmarc_missing", "spf_missing", "spf_invalid_multiple"]);
+  const flags = (d.flags || []).map(f =>
+    `<span class="flag ${hotFlags.has(f) ? "hot" : ""}">${esc(f.replace(/_/g, " "))}</span>`).join("");
+  const siteline = site.up != null ? `
+    <div class="siteline">
+      <span class="dot ${site.up ? "up" : "down"}"></span>
+      ${site.up ? (site.https ? "https" : "http") + " · " + (site.status_code ?? "?") +
+        (site.response_ms != null ? " · " + site.response_ms + "ms" : "") : "site unreachable"}
+    </div>` : "";
+  return `
+  <article class="card ${d.error ? "errored" : ""}" data-domain="${esc(d.domain)}">
+    <div class="card-top">
+      <div>
+        <div class="domain">${esc(d.domain)}</div>
+        ${d.company ? `<div class="company">${esc(d.company)}</div>` : ""}
+      </div>
+      <div class="scorebox">
+        <div class="score ${scoreClass(d.score)}">${d.score ?? "—"}</div>
+        ${deltaHtml(d.score, d.prev_score)}
+      </div>
+    </div>
+    ${d.error ? `<div class="err-msg">scan error: ${esc(d.error)}</div>` : ""}
+    <div class="rail">${authRail(d.email)}</div>
+    ${siteline}
+    ${flags ? `<div class="flags">${flags}</div>` : ""}
+    <div class="card-foot">
+      <span class="scanned">scanned ${timeAgo(d.last_scanned)}</span>
+      ${d.report_url ? `<a class="report-link" href="${esc(d.report_url)}">full report →</a>` : ""}
+    </div>
+  </article>`;
+}
 
-def infer_mail_provider(hosts: list) -> Optional[str]:
-    joined = " ".join(hosts).lower()
-    if "google" in joined:
-        return "google_workspace"
-    if "outlook" in joined or "protection.office" in joined:
-        return "microsoft_365"
-    if "secureserver" in joined:
-        return "godaddy"
-    if "zoho" in joined:
-        return "zoho"
-    return None
+function hasIssues(d) {
+  return d.error || (d.flags || []).length > 0 || (d.score != null && d.score < 80);
+}
 
+function render() {
+  if (!DATA || !Array.isArray(DATA.domains)) { showEmpty(); return; }
+  document.getElementById("empty").style.display = "none";
+  document.getElementById("summary").style.display = "";
+  document.getElementById("controls").style.display = "";
 
-# ---------------------------------------------------------------- HTTP check
+  // staleness pill
+  const gen = new Date(DATA.generated_at).getTime();
+  const hrs = (Date.now() - gen) / 3.6e6;
+  const pill = document.getElementById("staleness");
+  pill.className = "pill " + (hrs < 8 ? "fresh" : hrs < 24 ? "aging" : "stale");
+  document.getElementById("staleness-text").textContent = "updated " + timeAgo(DATA.generated_at);
 
-async def check_site(client: httpx.AsyncClient, domain: str) -> dict:
-    """HEAD (fallback GET) against https:// then http://."""
-    for scheme in ("https", "http"):
-        url = scheme + "://" + domain + "/"
-        try:
-            t0 = time.monotonic()
-            resp = await client.head(url, follow_redirects=True)
-            if resp.status_code in (405, 501):  # some servers reject HEAD
-                resp = await client.get(url, follow_redirects=True)
-            ms = int((time.monotonic() - t0) * 1000)
-            return {
-                "up": resp.status_code < 500,
-                "https": str(resp.url).startswith("https://"),
-                "status_code": resp.status_code,
-                "response_ms": ms,
-                "final_url": str(resp.url),
-            }
-        except httpx.HTTPError:
-            continue
-    return {"up": False, "https": False, "status_code": None,
-            "response_ms": None, "final_url": None}
+  // pipeline pill
+  const p = DATA.pipeline || {};
+  const pp = document.getElementById("pipeline");
+  pp.style.display = "";
+  pp.className = "pill " + (p.status === "ok" ? "fresh" : "aging");
+  document.getElementById("pipeline-text").textContent =
+    `pipeline ${p.status || "?"} · ${p.scanned ?? "?"} scanned · ${p.errors ?? 0} err · ${p.duration_sec ?? "?"}s`;
 
+  // summary
+  const ds = DATA.domains;
+  const scored = ds.filter(d => d.score != null);
+  const avg = scored.length ? Math.round(scored.reduce((a, d) => a + d.score, 0) / scored.length) : "–";
+  const enforcing = ds.filter(d => d.email?.dmarc?.status === "enforcing").length;
+  const up = ds.filter(d => d.website?.up).length;
+  const issues = ds.filter(hasIssues).length;
+  document.getElementById("st-count").textContent = ds.length;
+  document.getElementById("st-avg").textContent = avg;
+  document.getElementById("st-dmarc").textContent = `${enforcing}/${ds.length}`;
+  document.getElementById("st-up").textContent = `${up}/${ds.length}`;
+  document.getElementById("st-up-wrap").className = "stat " + (up === ds.length ? "good" : "bad");
+  document.getElementById("st-issues").textContent = issues;
+  document.getElementById("st-issues-wrap").className = "stat " + (issues ? "warn" : "good");
 
-# ---------------------------------------------------------------- scoring
+  // filter + sort
+  const q = document.getElementById("q").value.trim().toLowerCase();
+  const sort = document.getElementById("sort").value;
+  const issuesOnly = document.getElementById("issues-only").checked;
+  let list = ds.filter(d =>
+    (!q || d.domain.includes(q) || (d.company || "").toLowerCase().includes(q)) &&
+    (!issuesOnly || hasIssues(d)));
+  if (sort === "score") list.sort((a, b) => (b.score ?? -1) - (a.score ?? -1));
+  else if (sort === "name") list.sort((a, b) => a.domain.localeCompare(b.domain));
+  else if (sort === "delta") list.sort((a, b) =>
+    ((a.score ?? 0) - (a.prev_score ?? a.score ?? 0)) -
+    ((b.score ?? 0) - (b.prev_score ?? b.score ?? 0)));
 
-def compute_score(email: dict, website: dict) -> tuple:
-    """
-    Quick-mode score out of 100, weighted toward email auth
-    (the wire-fraud angle). This is a presence heartbeat,
-    not the full 30-point audit report.
-    """
-    score = 0
-    flags = []
+  document.getElementById("grid").innerHTML = list.map(card).join("") ||
+    `<p style="color:var(--text-faint);font-family:var(--mono);font-size:13px">no domains match.</p>`;
+}
 
-    # SPF — 20
-    spf = email["spf"]["status"]
-    if spf == "pass":
-        score += 20
-    elif spf == "softfail":
-        score += 15
-    elif spf in ("weak", "no_all_mechanism"):
-        score += 8
-        flags.append("spf_weak")
-    elif spf == "invalid_multiple":
-        flags.append("spf_invalid_multiple")
-    else:
-        flags.append("spf_missing")
+function showEmpty() {
+  document.getElementById("empty").style.display = "";
+  document.getElementById("summary").style.display = "none";
+  document.getElementById("controls").style.display = "none";
+  document.getElementById("staleness-text").textContent = "no data";
+}
 
-    # DKIM — 20 (probe-based, so absence is soft evidence)
-    if email["dkim"]["status"] == "found":
-        score += 20
-    else:
-        score += 5   # benefit of the doubt: selector may be nonstandard
-        flags.append("dkim_not_detected")
+function showBanner(msg) {
+  const b = document.getElementById("banner");
+  b.textContent = msg; b.classList.add("show");
+}
+function hideBanner() { document.getElementById("banner").classList.remove("show"); }
 
-    # DMARC — 30, the heavyweight
-    dmarc = email["dmarc"]
-    if dmarc["status"] == "enforcing":
-        score += 30
-    elif dmarc["status"] == "monitoring":
-        score += 15
-        flags.append("dmarc_not_enforcing")
-    else:
-        flags.append("dmarc_missing")
-
-    # MX sanity — 5
-    if email["mx"]["status"] == "present":
-        score += 5
-    else:
-        flags.append("no_mx")
-
-    # Website — 25
-    if website["up"]:
-        score += 15
-        if website["https"]:
-            score += 10
-        else:
-            flags.append("no_https")
-        if website.get("response_ms") and website["response_ms"] > 3000:
-            flags.append("slow_site")
-    else:
-        flags.append("site_down")
-
-    return score, flags
-
-
-# ---------------------------------------------------------------- per-domain
-
-async def scan_domain(domain: str, company: str, dkim_selector: Optional[str],
-                      sem: asyncio.Semaphore, client: httpx.AsyncClient,
-                      prev: dict) -> dict:
-    async with sem:
-        resolver = make_resolver()
-        entry = {
-            "domain": domain,
-            "company": company or None,
-            "last_scanned": utcnow(),
-            "error": None,
-        }
-        try:
-            spf, dmarc, dkim, mx, site = await asyncio.wait_for(
-                asyncio.gather(
-                    check_spf(resolver, domain),
-                    check_dmarc(resolver, domain),
-                    check_dkim(resolver, domain, dkim_selector),
-                    check_mx(resolver, domain),
-                    check_site(client, domain),
-                ),
-                timeout=DOMAIN_TIMEOUT,
-            )
-            email = {"spf": spf, "dkim": dkim, "dmarc": dmarc, "mx": mx}
-            score, flags = compute_score(email, site)
-            entry.update({
-                "score": score,
-                "prev_score": prev.get("score"),
-                "email": email,
-                "website": site,
-                "flags": flags,
-                "report_url": prev.get("report_url"),  # preserve full-report link
-            })
-            if prev.get("score") is not None and prev["score"] - score >= SCORE_DROP_ALERT:
-                entry["flags"].append("score_dropped")
-        except asyncio.TimeoutError:
-            entry["error"] = "timeout"
-            # carry forward last known state rather than blanking the card
-            for k in ("score", "email", "website", "flags", "report_url"):
-                if k in prev:
-                    entry[k] = prev[k]
-            entry["prev_score"] = prev.get("prev_score")
-        except Exception as e:  # one bad domain must not kill the run
-            entry["error"] = ("%s: %s" % (type(e).__name__, e))[:200]
-            entry["prev_score"] = prev.get("score")
-        return entry
-
-
-# ---------------------------------------------------------------- I/O
-
-def load_targets(path: Path, limit: Optional[int]) -> list:
-    """CSV with a 'domain' column (company / dkim_selector optional),
-    or one domain per line."""
-    rows = []
-    with path.open(newline="", encoding="utf-8-sig") as f:
-        sample = f.read(2048)
-        f.seek(0)
-        first_line = sample.splitlines()[0].lower() if sample.strip() else ""
-        if "," in sample and "domain" in first_line:
-            for row in csv.DictReader(f):
-                lowered = {(k or "").strip().lower(): (v or "").strip()
-                           for k, v in row.items()}
-                d = lowered.get("domain", "")
-                if d:
-                    rows.append((normalize(d),
-                                 lowered.get("company", ""),
-                                 lowered.get("dkim_selector") or None))
-        else:
-            for line in f:
-                d = line.strip().lower()
-                if d and not d.startswith("#"):
-                    rows.append((normalize(d), "", None))
-    seen, out = set(), []
-    for d, c, sel in rows:
-        if d not in seen:
-            seen.add(d)
-            out.append((d, c, sel))
-    return out[:limit] if limit else out
-
-
-def normalize(domain: str) -> str:
-    domain = re.sub(r"^https?://", "", domain.strip().lower())
-    domain = domain.split("/")[0]
-    if domain.startswith("www."):
-        domain = domain[4:]
-    return domain
-
-
-def load_previous(path: Path) -> dict:
-    if not path.exists():
-        return {}
-    try:
-        data = json.loads(path.read_text())
-        return {d["domain"]: d for d in data.get("domains", [])}
-    except (json.JSONDecodeError, KeyError, TypeError):
-        return {}
-
-
-def atomic_write(path: Path, payload: dict) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    fd, tmp = tempfile.mkstemp(dir=str(path.parent), suffix=".tmp")
-    try:
-        with os.fdopen(fd, "w") as f:
-            json.dump(payload, f, indent=2)
-            f.write("\n")
-        os.replace(tmp, str(path))
-    except BaseException:
-        os.unlink(tmp)
-        raise
-
-
-# ---------------------------------------------------------------- main
-
-async def run(targets_path: Path, out_path: Path, limit: Optional[int]) -> int:
-    t0 = time.monotonic()
-    if not targets_path.exists():
-        print("Targets file not found: %s" % targets_path, file=sys.stderr)
-        return 1
-    targets = load_targets(targets_path, limit)
-    if not targets:
-        print("No targets found in %s" % targets_path, file=sys.stderr)
-        return 1
-    prev = load_previous(out_path)
-    print("Scanning %d domains (concurrency=%d)..." % (len(targets), CONCURRENCY))
-
-    sem = asyncio.Semaphore(CONCURRENCY)
-    headers = {"User-Agent":
-               "NextGenIT-PresenceBot/1.0 (+https://nextgenitpros.com)"}
-    async with httpx.AsyncClient(timeout=HTTP_TIMEOUT, headers=headers) as client:
-        results = await asyncio.gather(*[
-            scan_domain(d, c, sel, sem, client, prev.get(d, {}))
-            for d, c, sel in targets
-        ])
-
-    results.sort(key=lambda r: (r.get("score") is None, -(r.get("score") or 0)))
-    errors = [r for r in results if r.get("error")]
-    duration = round(time.monotonic() - t0, 1)
-
-    payload = {
-        "generated_at": utcnow(),
-        "pipeline": {
-            "status": "degraded" if errors else "ok",
-            "last_run_id": os.environ.get("GITHUB_RUN_ID"),
-            "duration_sec": duration,
-            "scanned": len(results),
-            "errors": len(errors),
+/* ================= run scan (workflow dispatch) ================= */
+async function runScan() {
+  const g = CONFIG.github;
+  let pat = localStorage.getItem(g.patKey);
+  if (!pat) {
+    pat = prompt("GitHub fine-grained PAT with Actions:write on " + g.owner + "/" + g.repo +
+                 "\n(stored in this browser only)");
+    if (!pat) return;
+    localStorage.setItem(g.patKey, pat.trim());
+    pat = pat.trim();
+  }
+  const btn = document.getElementById("run-scan");
+  btn.disabled = true; btn.textContent = "dispatching…";
+  try {
+    const res = await fetch(
+      `https://api.github.com/repos/${g.owner}/${g.repo}/actions/workflows/${g.workflow}/dispatches`,
+      {
+        method: "POST",
+        headers: {
+          "Authorization": "Bearer " + pat,
+          "Accept": "application/vnd.github+json",
+          "Content-Type": "application/json",
         },
-        "domains": results,
+        body: JSON.stringify({ ref: g.ref }),
+      });
+    if (res.status === 204) {
+      btn.textContent = "scan queued ✓";
+      watchForUpdate();
+    } else if (res.status === 401 || res.status === 403) {
+      localStorage.removeItem(g.patKey);
+      throw new Error("token rejected (" + res.status + ") — cleared saved token, try again");
+    } else {
+      throw new Error("dispatch failed: HTTP " + res.status);
     }
-    atomic_write(out_path, payload)
+  } catch (e) {
+    showBanner("Run scan: " + e.message);
+    btn.textContent = "▸ run scan now";
+  } finally {
+    setTimeout(() => { btn.disabled = false; btn.textContent = "▸ run scan now"; }, 4000);
+  }
+}
 
-    print("Done in %ss — %d domains, %d errors → %s"
-          % (duration, len(results), len(errors), out_path))
-    for r in errors:
-        print("  ! %s: %s" % (r["domain"], r["error"]), file=sys.stderr)
-    for r in results:
-        if "score_dropped" in (r.get("flags") or []):
-            print("  v %s: %s → %s" % (r["domain"], r["prev_score"], r["score"]))
-    return 0
+/* poll for generated_at change after a dispatch (handles CDN lag) */
+function watchForUpdate() {
+  const before = DATA?.generated_at;
+  let tries = 0;
+  const timer = setInterval(async () => {
+    tries++;
+    try {
+      const fresh = await loadPresence();
+      if (fresh.generated_at !== before) {
+        DATA = fresh; render();
+        showBanner("Scan complete — data refreshed.");
+        setTimeout(hideBanner, 5000);
+        clearInterval(timer);
+      }
+    } catch (_) { /* keep trying */ }
+    if (tries > 40) clearInterval(timer);  // give up after ~10 min
+  }, 15_000);
+}
 
-
-def main():
-    ap = argparse.ArgumentParser(description="Next-Gen-IT presence scanner")
-    ap.add_argument("--targets", type=Path, default=Path("targets.csv"))
-    ap.add_argument("--out", type=Path, default=Path("data/presence.json"))
-    ap.add_argument("--limit", type=int, default=None,
-                    help="scan only first N domains (smoke test)")
-    args = ap.parse_args()
-    sys.exit(asyncio.run(run(args.targets, args.out, args.limit)))
-
-
-if __name__ == "__main__":
-    main()
+/* ================= wire up ================= */
+document.getElementById("q").addEventListener("input", render);
+document.getElementById("sort").addEventListener("change", render);
+document.getElementById("issues-only").addEventListener("change", render);
+document.getElementById("reload").addEventListener("click", () => refresh(true));
+document.getElementById("run-scan").addEventListener("click", runScan);
+startLoop();
+</script>
+</body>
+</html>
