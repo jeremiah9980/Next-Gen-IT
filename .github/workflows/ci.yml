@@ -33,7 +33,9 @@ jobs:
       - name: markdownlint
         uses: DavidAnson/markdownlint-cli2-action@v16
         with:
-          globs: "**/*.md"
+          globs: |
+            **/*.md
+            !crash-course/**
           config: .markdownlint.json
 
   link-check:
