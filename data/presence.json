@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-10-02T00:30:49Z",
+  "generated_at": "2026-10-02T06:18:25Z",
   "pipeline": {
     "status": "ok",
-    "last_run_id": "36946353460",
-    "duration_sec": 0.1,
+    "last_run_id": "36972903577",
+    "duration_sec": 0.2,
     "scanned": 1,
     "errors": 0
   },
@@ -11,7 +11,7 @@
     {
       "domain": "example.com",
       "company": "Example Inc",
-      "last_scanned": "2026-10-02T00:30:48Z",
+      "last_scanned": "2026-10-02T06:18:25Z",
       "error": null,
       "score": 100,
       "prev_score": 100,
@@ -55,7 +55,7 @@
         "up": true,
         "https": true,
         "status_code": 200,
-        "response_ms": 68,
+        "response_ms": 103,
         "final_url": "https://example.com/"
       },
       "flags": [],
